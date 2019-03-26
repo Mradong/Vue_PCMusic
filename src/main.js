@@ -45,7 +45,7 @@ Vue.prototype.$axios = Axios;
 // Axios:默认配置
 // Axios.defaults.baseURL = 'http://182.254.146.100:8899/api/';
 Axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-Axios.defaults.withCredentials = false;//请求是否携带cooike
+Axios.defaults.withCredentials = true;//请求是否携带cooike
 
 //全局路由,
 router.beforeEach((to, from, next) => {

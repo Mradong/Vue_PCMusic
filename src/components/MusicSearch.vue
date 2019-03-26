@@ -1,14 +1,40 @@
 <template>
   <div>
     <div class="music-search-result"><h2>搜索 "<i style="color: blue"> {{ name }} </i>"，共找到了{{musicNum}}首单曲</h2></div>
-    <div>
-      <h2> 最佳匹配</h2>
-      <div class="best-fit">
+    <div >
+      <h2 style="display: block; border: 1px solid #f0eeec; padding: 5px 25px"> 最佳匹配</h2>
+      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='artist'" >
+        {{ item[1].name}}
         <div class="best-fit-content">
-          <div class="best-fit-img fl"><img :src="bestFit.pic" alt=""></div>
+          <div class="best-fit-img fl"><img :src="item[1][0].picUrl+'?param=55y50'" alt=""></div>
+          <div class="best-fit-zi fl" style="margin-top: 10px;">
+            <span>歌手：{{ item[1][0].name}}</span>
+          </div>
+          <div class="best-fit-go fr">
+            <i class="el-icon-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='album'" >
+        {{ item[1].name}}
+        <div class="best-fit-content">
+          <div class="best-fit-img fl"><img :src="item[1][0].picUrl+'?param=55y50'" alt=""></div>
           <div class="best-fit-zi fl">
-            <p>歌名：{{bestFit.name | hanziLimit(10)}}</p>
-            <span>歌手：{{bestFit.singer }} </span>
+            <h3>专辑：{{ item[1][0].name}}</h3>
+            <span>{{ item[1][0].artists[0].name}}</span>
+          </div>
+          <div class="best-fit-go fr">
+            <i class="el-icon-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='mv'" >
+        {{ item[1].name}}
+        <div class="best-fit-content">
+          <div class="best-fit-img fl"><img :src="item[1][0].cover+'?param=55y50'" alt=""></div>
+          <div class="best-fit-zi fl">
+            <h3>{{ item[1][0].name}}</h3>
+            <span>{{ item[1][0].artists[0].name}}</span>
           </div>
           <div class="best-fit-go fr">
             <i class="el-icon-arrow-right"></i>
@@ -17,8 +43,8 @@
       </div>
     </div>
     <div>
+      <div style="clear:both;"></div>
       <el-row class="music-menu">
-
         <el-col :span="1">&nbsp;&nbsp;</el-col>
         <el-col :span="2">操作</el-col>
         <el-col :span="7">音乐标题</el-col>
@@ -35,13 +61,13 @@
           <el-col :span="1" v-if="index==doubleCurrent"><i class="lyd-yinliang iconfont"></i></el-col>
           <el-col :span="2"><i class="el-icon-star-off"></i><i class="el-icon-download"></i></el-col>
           <el-col :span="7">{{item.name | hanziLimit(14) }}</el-col>
-          <el-col :span="4">{{item.singer | hanziLimit(7)}}</el-col>
-          <el-col :span="4">暂无专辑信息</el-col>
+          <el-col :span="4">{{ item.singer | hanziLimit(7) }}</el-col>
+          <el-col :span="4">{{ item.album | hanziLimit(7) }}</el-col>
 
-          <el-col :span="2">{{item.time | musicDate}}</el-col>
+          <el-col :span="2">{{item.time | mvDate}}</el-col>
           <el-col :span="4" style=" padding-top: 4px;">
             <el-progress :text-inside="true" :show-text="false" :stroke-width="14"
-                         :percentage="100-(index*2) >=0? 100-(index*2): 0"></el-progress>
+                         :percentage=" Math.floor(Math.random()*(100 - 50) + 50)"></el-progress>
           </el-col>
         </el-row>
       </div>
@@ -84,22 +110,67 @@
       cutMusic(index) {
         this.doubleCurrent = index;
         let musicplay = this.musicSearchList[index];
-        localStorage.setItem("musicplay", JSON.stringify(musicplay));
-        this.changemusicPlay();
+        console.log(this.musicSearchList[index])
+        let  song = 'http://musicapi.leanapp.cn/song/detail?ids='+ musicplay.id ;
+        this.$axios.get(song ).then((response) => {
+          musicplay.pic = response.data.songs[0].al.picUrl ;
+          localStorage.setItem("musicplay", JSON.stringify(musicplay));
+          this.changemusicPlay();
+        }).catch((error) => {
+          console.log(error);
+        })
       }
 
     },
     created: function () {
-      let url = 'https://api.bzqll.com/music/netease/search?key=579621905&type=song&limit=50&offset=0&s=' + this.name;
-      let musicUrl = 'https://api.bzqll.com/music/netease/song?key=579621905&id=' + this.id;
-      this.$axios.get(url).then((response) => {
-        this.musicSearchList = response.data.data;
-        this.musicNum = response.data.data.length;
+      let  songs = 'http://musicapi.leanapp.cn/search?keywords='+ this.name +'&type=1';
+      let  songDetail = 'http://musicapi.leanapp.cn/search/multimatch?keywords='+ this.name ;
+      this.$axios.get(songDetail ).then((response) => {
+        this.restaurants = response.data.result;
+        let searchResult = Object.entries(this.restaurants);
+        let searchResultLen = searchResult.length;
+        let orderlen = searchResult[searchResultLen - 1][1];
+        let orderSearchResult = [];
+        searchResult.map(item => {
+          for (let i = 0; i < orderlen.length; i++) {
+            if (item[0] == orderlen[i]) {
+              orderSearchResult[i] = item;
+            }
+          }
+        })
+        this.bestFit =searchResult;
+        console.log( this.bestFit)
       }).catch((error) => {
         console.log(error);
-      })
-      this.$axios.get(musicUrl).then((response) => {
-        this.bestFit = response.data.data;
+      }),
+      this.$axios.get(songs).then((response) => {
+        console.log( response.data.result.songs)
+        let musicSearchList = response.data.result.songs.map((item,index)=>{
+            return {
+              id:item.id,
+              name:item.name,
+              time:item.duration,
+              singer:item.artists.map((singers)=>{
+                return {
+                  singers:singers.name,
+                }
+              }),
+              album:item.album.name,
+              lrc:'http://musicapi.leanapp.cn/lyric?id='+item.id,
+              url:'https://music.163.com/song/media/outer/url?id='+item.id+'.mp3'
+            }
+        });
+        for(let value of musicSearchList ){
+          var valuelen = value.singer.length;
+          var singers ='';
+          for( let i=0;i < valuelen;i++){
+            singers += value.singer[i].singers.toString()+' ';
+
+          }
+          value.singer = singers;
+        };
+        this.musicSearchList = musicSearchList;
+        this.musicNum = musicSearchList.length;
       }).catch((error) => {
         console.log(error);
       })
@@ -122,16 +193,15 @@
 
 <style scoped>
   .best-fit {
-    border-top: 1px solid #f0eeec;
     height: 100px;
-    padding: 0 30px;
+    padding: 0 10px;
   }
 
   .best-fit-content {
     margin-top: 16px;
     padding: 5px;
     border: 1px solid #f0eeec;
-    width: 270px;
+    width: 250px;
     height: 55px;
   }
 

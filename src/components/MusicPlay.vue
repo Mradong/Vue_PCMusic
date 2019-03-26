@@ -27,8 +27,8 @@
       <div><i class=" iconfont lyd-MINIMIZE"></i></div>
     </router-link>
     <div style="clear:both;"></div>
-    <div class="music-play-bottom" style="margin:60px;">
-      <div class="Song-reviews fl" style="width: 70%; ">
+    <div class="music-play-bottom fl" style="margin:60px 20px;width: 100%">
+      <div class="Song-reviews fl" style="width: 65%; min-height: 500px">
         <div class="user-ratings">
           <div class="music-user">听友评论</div>
           <el-input
@@ -52,7 +52,7 @@
           </li>
         </ul>
       </div>
-      <div class="hit-music fr" style="  width:25%; margin-left: 5%">
+      <div class="hit-music fr" style="  width:30%;">
         <div class="music-user">相似歌曲</div>
         <div class="sim-song" style="margin-top: 20px">
           <ul>
@@ -66,6 +66,20 @@
                 <span v-for="artist,i in item.artists" :key="i">
                   {{artist.name}}
                 </span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="hit-music fr" style="  width:30%;margin-top: 20px">
+        <div class="music-user">喜欢这首歌的人</div>
+        <div class="sim-song" style="margin-top: 20px">
+          <ul>
+            <li v-for=" item,index in SongUser" :key="index">
+              <div class="sim-user">
+                <img :src="item.avatarUrl+'?param=40y40'" alt="" class="fl">
+                <span class="sim-user-nickname fl" style="padding-right: 15px"> {{item.nickname }}</span>
+                <span class="sim-user-nickname fr" > {{item.recommendReason }}</span>
               </div>
             </li>
           </ul>
@@ -126,12 +140,14 @@
       let SongReviews = 'http://musicapi.leanapp.cn/comment/music?id= ' + musicPlay.id + '&limit=1';
       //相似歌曲api
       let similaritySong = 'http://musicapi.leanapp.cn/simi/song?id=' + musicPlay.id;
+      let recommendUser = 'http://musicapi.leanapp.cn/simi/user?id=' + musicPlay.id;
+
       this.picUrl = musicPlay.pic;
       this.musicTitle = musicPlay.name;
       this.singer = musicPlay.singer;
       //获取歌词
       this.$axios.get(lrcUrl).then((response) => {
-        this.lyric = this.parseLyric(response.data);
+        this.lyric = this.parseLyric(response.data.lrc.lyric);
         var lrcTime = [];
         var lrcList = [];
         for (let [index, value] of Object.entries(this.lyric)) {
@@ -155,7 +171,13 @@
       }).catch((error) => {
         console.log(error);
       });
-
+      //获取最近 5 个听了这首歌的用户
+      this.$axios.get(recommendUser).then((response) => {
+        console.log(response.data.userprofiles)
+        this.SongUser = response.data.userprofiles;
+      }).catch((error) => {
+        console.log(error);
+      });
     },
     computed: {
       getmusic() {
@@ -194,6 +216,21 @@
   }
 </style>
 <style scoped>
+  .sim-song .sim-user{
+    height: 40px;
+    margin-bottom: 20px;
+  }
+  .sim-song .sim-user img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+
+  }
+  .sim-song .sim-user-nickname{
+    padding: 10px;
+    font-size: 12px;
+  }
   .on {
     color: red;
   }

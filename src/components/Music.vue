@@ -53,8 +53,11 @@
 
     },
     created: function () {
-      if (localStorage.getItem("musicplay") == null) {
-        localStorage.setItem("musicplay", '')
+      console.log(12233)
+      console.log( localStorage.getItem("musicplay") )
+      if (localStorage.getItem("musicplay") == '') {
+        console.log(12233)
+        localStorage.setItem("musicplay",null)
       }
     },
     watch: {

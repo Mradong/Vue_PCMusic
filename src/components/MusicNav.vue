@@ -136,7 +136,7 @@
 
               <div class="user-info-for">
                 <div>
-                  <span><i class="iconfont lyd-tuichu5" style="padding-right: 3px"></i> 退出登录</span>
+                  <span @click="logout"><i class="iconfont lyd-tuichu5" style="padding-right: 3px"></i> 退出登录</span>
                 </div>
               </div>
             </div>
@@ -248,7 +248,7 @@
               }
             }
           })
-          console.log( orderSearchResult )
+
           cb(orderSearchResult); //回调函数 指向 => handleSelect();
 
         }).catch((error) => {
@@ -313,7 +313,6 @@
         this.$router.push({
             name: 'search',
             query: {
-              id: this.musicId,
               name: this.searchMusic
             }
           }
@@ -332,12 +331,8 @@
       }
       ,
       logout() {
-        let logoutUrl = "http://musicapi.leanapp.cn/user/subcount";
-        this.$axios.get(logoutUrl).then((response) => {
-          console.log(response)
-        }).catch((error) => {
-          console.log(error);
-        })
+        this.userInfo =null;
+        localStorage.removeItem("userInfo");
       }
     }
   }

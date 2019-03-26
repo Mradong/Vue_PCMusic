@@ -131,9 +131,19 @@
         changemusicPlay: 'changemusicPlay'
       }),
       dblclick(e) {
-        let url = 'https://api.bzqll.com/music/netease/search?key=579621905&type=song&limit=50&offset=0&s=' + e.id;
-        this.$axios.get(url).then((response) => {
-          localStorage.setItem("musicplay", JSON.stringify(response.data.data[0]));
+        // let url = 'https://api.bzqll.com/music/netease/search?key=579621905&type=song&limit=50&offset=0&s=' + e.id;
+        console.log(e )
+        let song = 'http://musicapi.leanapp.cn/song/detail?ids='+ e.id ;
+        let musicplay ={};
+        this.$axios.get(song ).then((response) => {
+
+          musicplay.lrc='http://musicapi.leanapp.cn/lyric?id='+e.id,
+          musicplay.url='https://music.163.com/song/media/outer/url?id='+e.id+'.mp3',
+          musicplay.id = e.id ;
+          musicplay.name = e.name ;
+          musicplay.singer = e.arname ;
+          musicplay.pic = response.data.songs[0].al.picUrl ;
+          localStorage.setItem("musicplay", JSON.stringify(musicplay));
           this.changemusicPlay();
         }).catch((error) => {
           console.log(error);

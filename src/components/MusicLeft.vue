@@ -33,12 +33,12 @@
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
-    <div class="box-music-card" v-if=" musicPlay.name != null ">
+    <div class="box-music-card" v-if=" musicPlay != null ">
       <div class="best-fit">
         <router-link to="/play">
           <div class="best-fit-content">
             <div class="best-fit-img fl"><img
-              :src="musicPlay.pic" alt=""></div>
+              :src="musicPlay.pic+'?param=52y52'" alt=""></div>
             <div class="best-fit-zi fl">
               <p>{{ musicPlay.name | hanziLimit(7)}}</p>
               <span>{{ musicPlay.singer | hanziLimit(7) }}</span>
@@ -62,7 +62,7 @@
       return {
         isCollapse: false,
         current: 1,
-        musicPlay: []
+        musicPlay: null
       };
     },
     methods: {

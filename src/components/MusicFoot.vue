@@ -19,7 +19,7 @@
             v-model="musicValue "></el-slider>
         </div>
         <audio style="display: none" :src="musicUrl"
-               ref='player' controls="controls">
+               ref='player' controls="controls" v-if=" musicUrl != ''">
           Your browser does not support the audio tag.
         </audio>
       </el-col>
