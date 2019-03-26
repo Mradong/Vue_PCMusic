@@ -33,7 +33,7 @@
         <div class="best-fit-content">
           <div class="best-fit-img fl"><img :src="item[1][0].cover+'?param=55y50'" alt=""></div>
           <div class="best-fit-zi fl">
-            <h3>{{ item[1][0].name}}</h3>
+            <h3><span class="span_mv">mv</span>{{ item[1][0].name}}</h3>
             <span>{{ item[1][0].artists[0].name}}</span>
           </div>
           <div class="best-fit-go fr">
@@ -110,7 +110,6 @@
       cutMusic(index) {
         this.doubleCurrent = index;
         let musicplay = this.musicSearchList[index];
-        console.log(this.musicSearchList[index])
         let  song = 'http://musicapi.leanapp.cn/song/detail?ids='+ musicplay.id ;
         this.$axios.get(song ).then((response) => {
           musicplay.pic = response.data.songs[0].al.picUrl ;
@@ -192,6 +191,18 @@
 </script>
 
 <style scoped>
+  span.span_mv{
+    display: inline-block;
+    width: 25px;
+    height: 15px;
+    border: 1px solid rgba(162, 0, 0, 0.69);
+    text-align: center;
+    color: rgba(162, 0, 0, 0.69);
+    position: relative;
+    top: 0;
+    font-family: Arial;
+    margin-right: 5px;
+  }
   .best-fit {
     height: 100px;
     padding: 0 10px;

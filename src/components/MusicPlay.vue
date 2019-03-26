@@ -173,7 +173,6 @@
       });
       //获取最近 5 个听了这首歌的用户
       this.$axios.get(recommendUser).then((response) => {
-        console.log(response.data.userprofiles)
         this.SongUser = response.data.userprofiles;
       }).catch((error) => {
         console.log(error);

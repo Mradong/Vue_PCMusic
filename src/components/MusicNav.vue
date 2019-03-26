@@ -30,10 +30,12 @@
               <div class="item-name" v-if=" item[0] == 'playlists' "><i class="iconfont lyd-gedan"></i> 歌单</div>
               <div class="item-name" v-if=" item[0] == 'mvs' "><i class="iconfont lyd-shipin2"></i> 视频</div>
               <div class="item-name" v-if=" item[0] == 'albums' "><i class="iconfont lyd-zhuanji1"></i> 专辑</div>
-              <span v-for=" val,index in item[1]" :key="index" class="item-content" v-if="val.name.length < 12 "  @click="getIndex(index)">
+              <span v-for=" val,index in item[1]" :key="index" class="item-content" v-if="val.name.length < 12 "
+                    @click="getIndex(index)">
                 {{val.name}} <span v-for="item,index in val.artists" v-if=" val.artists != 'undefined'">- {{ item.name  | hanziLimit(6)}}</span>
               </span>
-              <span v-for=" val,index in item[1]" :key="index" class="item-content" v-if="val.name.length >= 12 " @click="getIndex(index)">
+              <span v-for=" val,index in item[1]" :key="index" class="item-content" v-if="val.name.length >= 12 "
+                    @click="getIndex(index)">
                 {{val.name | hanziLimit(12)}}
               </span>
             </template>
@@ -108,29 +110,30 @@
               <div class="user-info-for">
                 <div>
                   <span><i class="iconfont lyd-huiyuan" style="padding-right: 3px"></i> 会员中心</span>
-                  <div class="fr">未订购  ></div>
+                  <div class="fr">未订购 ></div>
                 </div>
                 <div>
                   <span><i class="iconfont lyd-dengji" style="padding-right: 3px"></i> 等级</span>
-                  <div class="fr">Lv.5  ></div>
+                  <div class="fr">Lv.5 ></div>
                 </div>
                 <div>
                   <span><i class="iconfont lyd-gouwuche" style="padding-right: 3px"></i> 商城</span>
-                  <div class="fr">  ></div>
+                  <div class="fr"> ></div>
                 </div>
               </div>
 
               <div class="user-info-for">
                 <div>
                   <span><i class="el-icon-setting" style="padding-right: 3px"></i> 个人信息设置</span>
-                  <div class="fr">  ></div>
+                  <div class="fr"> ></div>
                 </div>
                 <div>
                   <span><i class="iconfont lyd-shouji" style="padding-right: 3px"></i> 绑定社交账号</span>
                   <div class="fr">
                     <i class="iconfont lyd-weibo1" style="padding-right: 3px"></i>
                     <i class="iconfont lyd-changyonglogo28" style="padding-right: 3px"></i>
-                    ></div>
+                    >
+                  </div>
                 </div>
               </div>
 
@@ -211,12 +214,14 @@
         activeName: 'first',
         typeNum: 1,
         isRedirect: true,
-        userInfo:null,
+        userInfo: null,
       };
     },
-    created:function () {
-      this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      console.log(this.userInfo)
+    created: function () {
+
+      if(localStorage.getItem("userStatus") == 200){
+        this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      }
     },
     methods: {
       ...mapMutations({
@@ -248,21 +253,19 @@
               }
             }
           })
-
           cb(orderSearchResult); //回调函数 指向 => handleSelect();
-
         }).catch((error) => {
           console.log(error);
         })
       },
-      getIndex(i){
+      getIndex(i) {
         this.typeNum = i;
       },
       handleSelect(item) {
         let type = item[0];
         let items = item[1];
         let itemNum = this.typeNum;
-        switch(type){
+        switch (type) {
           case "songs":
             this.$router.push({
                 name: 'search',
@@ -274,10 +277,10 @@
             );
             break;
           case "artists":
-            console.log( 2)
+            console.log(2)
             break;
           case "albums":
-            console.log( 3)
+            console.log(3)
             break;
           case "mvs":
             this.$router.push({
@@ -298,7 +301,7 @@
             );
             break;
           default:
-            console.log( 6)
+            console.log(6)
             break;
         }
         this.clickSearchMusic();
@@ -331,7 +334,7 @@
       }
       ,
       logout() {
-        this.userInfo =null;
+        this.userInfo = null;
         localStorage.removeItem("userInfo");
       }
     }
@@ -339,17 +342,19 @@
 </script>
 
 <style>
-  .user-info .circle{
+  .user-info .circle {
     width: 40px;
     height: 40px;
   }
-  .user-info-name{
+
+  .user-info-name {
     display: inline-block;
     height: 40px;
     line-height: 40px;
     margin: 0 20px 0 8px;
   }
-  .user-info-sign{
+
+  .user-info-sign {
     padding: 2px;
     display: inline-block;
     width: 50px;
@@ -359,23 +364,28 @@
     border: 1px solid rgba(194, 194, 194, 0.38);
     border-radius: 3px;
   }
-  .user-info-fans div{
-      width: 32%;
+
+  .user-info-fans div {
+    width: 32%;
     text-align: center;
     margin: 10px 0;
   }
-  .user-info-for{
+
+  .user-info-for {
     border-top: 1px solid rgba(194, 194, 194, 0.38);
   }
-  .user-info-for > div{
+
+  .user-info-for > div {
     height: 20px;
     padding: 10px 5px;
     cursor: pointer;
     line-height: 20px;
   }
-  .user-info-for > div:hover{
+
+  .user-info-for > div:hover {
     background-color: #f5f7fa;
   }
+
   .item-name {
     background-color: #f5f7fa;
     padding-left: 5px;

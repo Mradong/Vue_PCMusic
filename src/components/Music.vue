@@ -53,12 +53,22 @@
 
     },
     created: function () {
-      console.log(12233)
-      console.log( localStorage.getItem("musicplay") )
-      if (localStorage.getItem("musicplay") == '') {
-        console.log(12233)
-        localStorage.setItem("musicplay",null)
-      }
+      let userStatus = 'http://musicapi.leanapp.cn/user/subcount';
+      this.$axios.get( userStatus).then((response) => {
+        console.log(response.data.code )
+        if(response.data.code == 200){
+          localStorage.setItem("userStatus", 200);
+        }
+        else if(response.data.code == 301){
+          localStorage.setItem("userStatus", 301);
+          localStorage.removeItem("userInfo")
+        }
+        else {
+          alert( '登录状态获取失败')
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
     },
     watch: {
       $route(to, from) {

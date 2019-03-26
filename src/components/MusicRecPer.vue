@@ -63,7 +63,7 @@
       </div>
       <div class="new_song">
         <ul>
-          <li v-for="(item,index) in newSongList" :key="index">
+          <li v-for="(item,index) in newSongList" :key="index" @dblclick="cutMusic(index)">
             <div class="fl" style="padding-right: 5px">
               <h4>{{index | completion(2,'0')}}</h4><img :src="item.song.album.picUrl+'?param=40y40'" alt=""
                                                          style="width: 40px;height: 40px">
@@ -91,8 +91,8 @@
       <div class="song_content">
         <ul>
           <li v-for="(item,index) in personalizedPrivate" :key="index" style="width:230px; margin: 0 12px">
-            <router-link to="/music/mv"><img :src="item.sPicUrl +'?param=230y130'" alt="" style="width: 100%"></router-link>
-            <router-link to="/music/mv"><p> {{item.copywriter}}</p></router-link>
+            <router-link :to="{name:'mv', query: { id: item.id } }"><img :src="item.sPicUrl +'?param=230y130'" alt="" style="width: 100%"></router-link>
+            <router-link :to="{name:'mv', query: { id: item.id } }"><p> {{item.copywriter}}</p></router-link>
           </li>
         </ul>
       </div>
@@ -111,6 +111,11 @@
         newSongList: [],
         personalizedMv: [],
       };
+    },
+    methods:{
+      cutMusic(index){
+        console.log(this.newSongList)
+      }
     },
     created: function () {
       let bannerUrl = 'http://musicapi.leanapp.cn/banner';

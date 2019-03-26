@@ -80,7 +80,6 @@
     },
     created: function () {
       this.musicPlay = JSON.parse( localStorage.getItem("musicplay"));
-      console.log( this.musicPlay )
     },
     watch: {
       $route(to, from) {

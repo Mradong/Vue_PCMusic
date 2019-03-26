@@ -45,7 +45,7 @@ Vue.prototype.$axios = Axios;
 // Axios:默认配置
 // Axios.defaults.baseURL = 'http://182.254.146.100:8899/api/';
 Axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-Axios.defaults.withCredentials = true;//请求是否携带cooike
+Axios.defaults.withCredentials = true;//跨域请求是否携带cooike
 
 //全局路由,
 router.beforeEach((to, from, next) => {
@@ -56,6 +56,7 @@ router.beforeEach((to, from, next) => {
     case 'mv':
       store.commit('changeIsPlayHtml', true);
       store.commit('changeMvPlay', true);
+      store.commit('changeIsplay', false);
       break;
     default:
       store.commit('changeIsPlayHtml', false);

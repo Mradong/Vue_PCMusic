@@ -4,7 +4,7 @@
       <div class="music_mv_play">
         <div style="margin-bottom: 5px">
           <i class="el-icon-arrow-left" @click="$router.go(-1)"></i>
-          <i class="i_mv">mv</i>
+          <span class="span_mv">mv</span>
           <span style="font-size: 18px;">{{ mvdetails.name }}</span>
           <span>{{ mvdetails.artistName}}</span>
         </div>
@@ -218,7 +218,7 @@
     cursor: pointer;
   }
 
-  .music_mv_play i.i_mv {
+  .music_mv_play span.span_mv {
     display: inline-block;
     width: 30px;
     height: 20px;
