@@ -218,7 +218,6 @@
       };
     },
     created: function () {
-
       if(localStorage.getItem("userStatus") == 200){
         this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
       }

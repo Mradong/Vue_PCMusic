@@ -69,8 +69,9 @@
                                                          style="width: 40px;height: 40px">
             </div>
             <div class="fl">
-              <p v-if="item.name.length <= 12"> {{item.name}} - {{item.song.alias[0] | hanziLimit(12) }}</p>
-              <p v-if="item.name.length > 12">{{item.name }} - {{item.song.alias[0] | hanziLimit(4) }}</p>
+              <p v-if="item.song.name.length >10">{{item.song.name}}<span v-if="item.song.alias[0]">({{item.song.alias[0] | hanziLimit(4) }} </span></p>
+              <p v-if="item.song.name.length <= 10">{{item.song.name}}<span v-if="item.song.alias[0]">({{item.song.alias[0] }}) </span></p>
+
               <span>{{item.song.artists[0].name }}</span></div>
           </li>
         </ul>
@@ -101,6 +102,7 @@
 </template>
 
 <script>
+  import {mapState,mapGetters, mapMutations,} from 'vuex'
   export default {
     name: "MusicRecPer",
     data() {
@@ -113,8 +115,22 @@
       };
     },
     methods:{
+      ...mapMutations({
+        changemusicPlay: 'changemusicPlay'
+      }),
       cutMusic(index){
-        console.log(this.newSongList)
+        let musicplay = {};
+        musicplay.id = this.newSongList[index].song.id ;
+        musicplay.name = this.newSongList[index].song.name;
+        musicplay.time = '';
+        musicplay.singer = this.newSongList[index].song.artists[0].name;
+        musicplay.album = this.newSongList[index].song.alias[0];
+        musicplay.pic = this.newSongList[index].song.album.picUrl ;
+        musicplay.lrc = 'http://musicapi.leanapp.cn/lyric?id='+this.newSongList[index].song.id;
+        musicplay.url = 'https://music.163.com/song/media/outer/url?id='+this.newSongList[index].song.id+'.mp3';
+        localStorage.setItem("musicplay", JSON.stringify(musicplay));
+        this.changemusicPlay();
+        console.log( musicplay )
       }
     },
     created: function () {
