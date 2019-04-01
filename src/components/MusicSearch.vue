@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="music-search-result"><h2>搜索 "<i style="color: blue"> {{ name }} </i>"，共找到了{{musicNum}}首单曲</h2></div>
-    <div >
+    <div>
       <h2 style="display: block; border: 1px solid #f0eeec; padding: 5px 25px"> 最佳匹配</h2>
-      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='artist'" >
+      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='artist'">
         {{ item[1].name}}
         <div class="best-fit-content">
           <div class="best-fit-img fl"><img :src="item[1][0].picUrl+'?param=55y50'" alt=""></div>
@@ -15,7 +15,7 @@
           </div>
         </div>
       </div>
-      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='album'" >
+      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='album'">
         {{ item[1].name}}
         <div class="best-fit-content">
           <div class="best-fit-img fl"><img :src="item[1][0].picUrl+'?param=55y50'" alt=""></div>
@@ -28,7 +28,7 @@
           </div>
         </div>
       </div>
-      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='mv'" >
+      <div class="best-fit fl" v-for="item,index in bestFit" :key="index" v-if="item[0] =='mv'">
         {{ item[1].name}}
         <div class="best-fit-content">
           <div class="best-fit-img fl"><img :src="item[1][0].cover+'?param=55y50'" alt=""></div>
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-  import {mapState,mapGetters, mapMutations,} from 'vuex'
+  import {mapState, mapGetters, mapMutations,} from 'vuex'
 
   export default {
     name: "search",
@@ -97,7 +97,7 @@
       ...mapState([
         'musicTime',
         'isRouterAlive'
-        ]),
+      ]),
       ...mapGetters([])
     },
     methods: {
@@ -110,9 +110,9 @@
       cutMusic(index) {
         this.doubleCurrent = index;
         let musicplay = this.musicSearchList[index];
-        let  song = 'http://musicapi.leanapp.cn/song/detail?ids='+ musicplay.id ;
-        this.$axios.get(song ).then((response) => {
-          musicplay.pic = response.data.songs[0].al.picUrl ;
+        let song = 'http://musicapi.leanapp.cn/song/detail?ids=' + musicplay.id;
+        this.$axios.get(song).then((response) => {
+          musicplay.pic = response.data.songs[0].al.picUrl;
           localStorage.setItem("musicplay", JSON.stringify(musicplay));
           this.changemusicPlay();
         }).catch((error) => {
@@ -122,9 +122,9 @@
 
     },
     created: function () {
-      let  songs = 'http://musicapi.leanapp.cn/search?keywords='+ this.name +'&type=1';
-      let  songDetail = 'http://musicapi.leanapp.cn/search/multimatch?keywords='+ this.name ;
-      this.$axios.get(songDetail ).then((response) => {
+      let songs = 'http://musicapi.leanapp.cn/search?keywords=' + this.name + '&type=1';
+      let songDetail = 'http://musicapi.leanapp.cn/search/multimatch?keywords=' + this.name;
+      this.$axios.get(songDetail).then((response) => {
         this.restaurants = response.data.result;
         let searchResult = Object.entries(this.restaurants);
         let searchResultLen = searchResult.length;
@@ -137,42 +137,43 @@
             }
           }
         })
-        this.bestFit =searchResult;
-        console.log( this.bestFit)
+        this.bestFit = searchResult;
+        console.log(this.bestFit)
       }).catch((error) => {
         console.log(error);
       }),
-      this.$axios.get(songs).then((response) => {
-        console.log( response.data.result.songs)
-        let musicSearchList = response.data.result.songs.map((item,index)=>{
+        this.$axios.get(songs).then((response) => {
+          console.log(response.data.result.songs)
+          let musicSearchList = response.data.result.songs.map((item, index) => {
             return {
-              id:item.id,
-              name:item.name,
-              time:item.duration,
-              singer:item.artists.map((singers)=>{
+              id: item.id,
+              name: item.name,
+              time: item.duration,
+              singer: item.artists.map((singers) => {
                 return {
-                  singers:singers.name,
+                  singers: singers.name,
                 }
               }),
-              album:item.album.name,
-              lrc:'http://musicapi.leanapp.cn/lyric?id='+item.id,
-              url:'https://music.163.com/song/media/outer/url?id='+item.id+'.mp3'
+              album: item.album.name,
+              lrc: 'http://musicapi.leanapp.cn/lyric?id=' + item.id,
+              url: 'https://music.163.com/song/media/outer/url?id=' + item.id + '.mp3'
             }
-        });
-        for(let value of musicSearchList ){
-          var valuelen = value.singer.length;
-          var singers ='';
-          for( let i=0;i < valuelen;i++){
-            singers += value.singer[i].singers.toString()+' ';
+          });
+          for (let value of musicSearchList) {
+            var valuelen = value.singer.length;
+            var singers = '';
+            for (let i = 0; i < valuelen; i++) {
+              singers += value.singer[i].singers.toString() + ' ';
 
+            }
+            value.singer = singers;
           }
-          value.singer = singers;
-        };
-        this.musicSearchList = musicSearchList;
-        this.musicNum = musicSearchList.length;
-      }).catch((error) => {
-        console.log(error);
-      })
+          ;
+          this.musicSearchList = musicSearchList;
+          this.musicNum = musicSearchList.length;
+        }).catch((error) => {
+          console.log(error);
+        })
     },
     watch: {
       $route(to, from) {
@@ -191,7 +192,7 @@
 </script>
 
 <style scoped>
-  span.span_mv{
+  span.span_mv {
     display: inline-block;
     width: 25px;
     height: 15px;
@@ -203,6 +204,7 @@
     font-family: Arial;
     margin-right: 5px;
   }
+
   .best-fit {
     height: 100px;
     padding: 0 10px;

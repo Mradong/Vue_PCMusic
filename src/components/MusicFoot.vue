@@ -36,9 +36,23 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="4">
-        <div class="grid-content bg-purple-light"></div>
-      </el-col>
+      <div class="fr last-iconbox">
+        <i class="lyd-liebiaoxunhuan iconfont"></i>
+        <i class="lyd-gecitiaozheng iconfont"></i>
+        <div class="fr music-plist">
+          <el-popover
+            placement="top"
+            width="570"
+            popper-class="music-play-plist"
+            :visible-arrow="false"
+            trigger="click">
+            <el-button class="lyd-plist iconfont " slot="reference">
+              20
+            </el-button>
+          </el-popover>
+        </div>
+      </div>
+
 
     </el-row>
   </div>
@@ -72,18 +86,16 @@
       } else {
         let musicIfo = JSON.parse(localStorage.getItem("musicplay"));
         this.musicUrl = musicIfo.url;
-        if( this.timeNow != 0){
-          if( musicIfo.hasOwnProperty("volume") ){
+        if (this.timeNow != 0) {
+          if (musicIfo.hasOwnProperty("volume")) {
             this.$refs.songPlayer.volume = musicIfo.volume / 100;
             this.musicVolume = musicIfo.volume;
             console.log(this.$refs.songPlayer);
-          }
-          else {
+          } else {
             this.$refs.songPlayer.volume = this.musicVolume / 100;
           }
-        }
-        else {
-          if( musicIfo.hasOwnProperty("volume") ){
+        } else {
+          if (musicIfo.hasOwnProperty("volume")) {
             this.musicVolume = musicIfo.volume;
           }
         }
@@ -167,6 +179,7 @@
 </script>
 
 <style>
+
   .music-volume .el-slider__runway, .music-volume .el-slider__runway .el-slider__bar {
     height: 4px;
   }
@@ -180,6 +193,17 @@
     height: 8px;
     border: 3px solid #eeecffeb;
     background-color: #ff4040;
+  }
+
+  .music-play-plist {
+    top: 179px !important;
+    left: 849px !important;
+    box-shadow: none !important;
+    height: 430px;
+  }
+
+  .el-row .last-iconbox div.music-plist .lyd-plist span {
+    font-size: 12px;
   }
 </style>
 
@@ -203,6 +227,7 @@
     font-size: 28px;
     color: #d31515e0;
     cursor: pointer;
+    margin: 0 5px;
   }
 
   .lyd-yinliang, .lyd-jinyin {
@@ -212,4 +237,37 @@
     top: 7px;
     left: 10px;
   }
+
+  .last-iconbox {
+    width: 98px;
+    margin: 5px 10px;
+
+  }
+
+  .last-iconbox i {
+    padding: 0 2px;
+    font-size: 18px;
+  }
+
+  .el-row .last-iconbox div.music-plist {
+    padding: 0;
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 4px;
+    padding-left: 6px;
+  }
+
+  .el-row .last-iconbox div.music-plist .lyd-plist {
+    position: absolute;
+    top: 0;
+    left: -15px;
+    z-index: 10;
+    padding: 0;
+    font-size: 16px;
+    background-color: rgba(189, 189, 189, 0.32);
+    color: #000000;
+  }
+
 </style>
