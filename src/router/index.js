@@ -1,15 +1,20 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import blankVue from '@/components/blankVue'
-import Music from '@/components/Music'
-import MusicRec from '@/components/MusicRec'
-import MusicSearch from '@/components/MusicSearch'
-import MusicPlay from '@/components/MusicPlay'
-import MusicVideo from '@/components/MusicVideo'
-import MusicMenu from '@/components/MusicMenu'
+// import blankVue from '@/components/blankVue'
+// import Music from '@/components/Music'
+// import MusicRec from '@/components/MusicRec'
+// import MusicSearch from '@/components/MusicSearch'
+// import MusicPlay from '@/components/MusicPlay'
+// import MusicVideo from '@/components/MusicVideo'
+// import MusicMenu from '@/components/MusicMenu'
 
 Vue.use(Router)
+
+function loadView(view) {
+  return () => import(/* webpackChunkName: "view-[request]" */ `@/components/${view}.vue`)
+}
+
 
 export default new Router({
   mode: 'history',
@@ -18,7 +23,7 @@ export default new Router({
       path: '/',
       name: 'music',
       redirect: '/recommend',
-      component: Music,
+      component: loadView('Music'),
       meta: {
         keepAlive: true,
         isBack: false
@@ -27,7 +32,7 @@ export default new Router({
         {
           path: 'recommend',
           name: 'recommend',
-          component: MusicRec,
+          component: loadView('MusicRec'),
           meta: {
             keepAlive: true,
             isBack: false
@@ -36,7 +41,7 @@ export default new Router({
         {
           path: 'search',
           name: 'search',
-          component: MusicSearch,
+          component: loadView('MusicSearch'),
           meta: {
             keepAlive: true,
             isBack: false
@@ -45,7 +50,7 @@ export default new Router({
         {
           path: 'play',
           name: 'play',
-          component: MusicPlay,
+          component: loadView('MusicPlay'),
           meta: {
             keepAlive: true,
             isBack: false
@@ -54,7 +59,7 @@ export default new Router({
         {
           path: 'mv',
           name: 'mv',
-          component: MusicVideo,
+          component: loadView('MusicVideo'),
           meta: {
             keepAlive: true,
             isBack: false
@@ -63,7 +68,7 @@ export default new Router({
         {
           path: 'menu',
           name: 'menu',
-          component: MusicMenu,
+          component: loadView('MusicMenu'),
           meta: {
             keepAlive: true,
             isBack: false
@@ -72,7 +77,7 @@ export default new Router({
         {
           path: 'blank',
           name: 'blank',
-          component: blankVue,
+          component: loadView('blankVue'),
           meta: {
             keepAlive: true,
             isBack: false

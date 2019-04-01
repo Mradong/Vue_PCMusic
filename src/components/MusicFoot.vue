@@ -46,7 +46,7 @@
 </template>
 
 <script>
-  import {mapState,mapGetters, mapMutations, mapActions} from 'vuex'
+  import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
   export default {
     name: "MusicFoot",
@@ -55,31 +55,45 @@
         timeNow: 0,
         timeDuration: 0,
         musicValue: 0,
-        musicVolume:0,
-        currentVolume:0,
-        musicUrl:''
+        musicVolume: 50,
+        currentVolume: 0,
+        musicUrl: ''
       }
     },
     computed: {
-      ...mapState([
-
-      ]),
+      ...mapState([]),
       ...mapGetters([
         'watchMusicPlay'
       ]),
     },
-    created: function (){
-      if( JSON.parse(localStorage.getItem("musicplay")) == null){
+    created: function () {
+      if (JSON.parse(localStorage.getItem("musicplay")) == null) {
         this.musicUrl = '';
+      } else {
+        let musicIfo = JSON.parse(localStorage.getItem("musicplay"));
+        this.musicUrl = musicIfo.url;
+        if( this.timeNow != 0){
+          if( musicIfo.hasOwnProperty("volume") ){
+            this.$refs.songPlayer.volume = musicIfo.volume / 100;
+            this.musicVolume = musicIfo.volume;
+            console.log(this.$refs.songPlayer);
+          }
+          else {
+            this.$refs.songPlayer.volume = this.musicVolume / 100;
+          }
+        }
+        else {
+          if( musicIfo.hasOwnProperty("volume") ){
+            this.musicVolume = musicIfo.volume;
+          }
+        }
       }
-      else {
-        this.musicUrl = JSON.parse(localStorage.getItem("musicplay")).url;
-      }
+
     },
     methods: {
       _currentTime: function () {
         this.timeNow = parseInt(this.$refs.songPlayer.currentTime)
-        this.changeMusicTime( this.timeNow  )
+        this.changeMusicTime(this.timeNow)
       },
       _durationTime: function () {
         this.timeDuration = parseInt(this.$refs.songPlayer.duration)
@@ -96,16 +110,19 @@
       musicPlay: function () {
         this.changeIsplay(true);
         this.$refs.songPlayer.play();
+        this.$refs.songPlayer.volume = this.musicVolume / 100;
       },
       musicStop: function () {
         this.changeIsplay(false);
         this.$refs.songPlayer.pause();
-
       },
-      musicvolume( val){
-
+      musicvolume(val) {
+        console.log(this.$refs.songPlayer);
         this.currentVolume = val;
         this.$refs.songPlayer.volume = val / 100;
+        let musicIfo = JSON.parse(localStorage.getItem('musicplay'));
+        musicIfo.volume = val;
+        localStorage.setItem("musicplay", JSON.stringify(musicIfo));
       },
       //滑块点击控制音乐播放进度
       newNum: function (value) {
@@ -123,7 +140,7 @@
     watch: {
       //监听 当前音乐播放时间，来控制滑条进度
       timeNow(newValue) {
-        if(newValue == this.timeDuration){
+        if (newValue == this.timeDuration) {
           this.changeIsplay(false);
           this.timeNow = 0;
         }
@@ -136,7 +153,7 @@
         this.$refs.songPlayer.src = musicifo.url;
         this.musicPlay();
       },
-      musicVolume( val ){
+      musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
       }
     },
@@ -150,13 +167,15 @@
 </script>
 
 <style>
-  .music-volume .el-slider__runway, .music-volume .el-slider__runway .el-slider__bar{
+  .music-volume .el-slider__runway, .music-volume .el-slider__runway .el-slider__bar {
     height: 4px;
   }
-  .music-volume .el-slider__runway .el-slider__bar{
+
+  .music-volume .el-slider__runway .el-slider__bar {
     background-color: #ff4040;
   }
-  .music-volume .el-slider__runway .el-slider__button{
+
+  .music-volume .el-slider__runway .el-slider__button {
     width: 8px;
     height: 8px;
     border: 3px solid #eeecffeb;
@@ -180,12 +199,13 @@
     margin-left: 15px;
   }
 
-  .lyd-bofang, .lyd-zanting1, .lyd-shangyixiang, .lyd-xiayixiang{
+  .lyd-bofang, .lyd-zanting1, .lyd-shangyixiang, .lyd-xiayixiang {
     font-size: 28px;
     color: #d31515e0;
     cursor: pointer;
   }
-  .lyd-yinliang, .lyd-jinyin{
+
+  .lyd-yinliang, .lyd-jinyin {
     padding-left: 20px;
     font-size: 16px;
     position: relative;
