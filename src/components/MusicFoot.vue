@@ -37,15 +37,57 @@
         </div>
       </el-col>
       <div class="fr last-iconbox">
-        <i class="lyd-liebiaoxunhuan iconfont"></i>
+        <i class="lyd-liebiaoxunhuan iconfont" v-if="playOrder == 0" @click="playOrder++"></i>
+        <i class="lyd-gecitiaozheng iconfont" v-if="playOrder == 1" @click="playOrder++"></i>
+        <i class="lyd-plist iconfont" v-if="playOrder == 2" @click="playOrder++"></i>
+        <i class="lyd-zanting1 iconfont" v-if="playOrder == 3" @click="playOrder=0"></i>
+
         <i class="lyd-gecitiaozheng iconfont"></i>
         <div class="fr music-plist">
           <el-popover
             placement="top"
             width="570"
+            show-header="false"
             popper-class="music-play-plist"
             :visible-arrow="false"
             trigger="click">
+
+            <template>
+              <el-table
+                :data="tableData"
+                style="width: 100%">
+                <el-table-column
+                  label="日期"
+                  width="180">
+                  <template slot-scope="scope">
+                    <i class="el-icon-time"></i>
+                    <span style="margin-left: 10px">{{ scope.row.date }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="姓名"
+                  width="180">
+                  <template slot-scope="scope">
+                    <el-popover trigger="hover" placement="top">
+                      <p>姓名: {{ scope.row.name }}</p>
+                      <p>住址: {{ scope.row.address }}</p>
+                      <div slot="reference" class="name-wrapper">
+                        <el-tag size="medium">{{ scope.row.name }}</el-tag>
+                      </div>
+                    </el-popover>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作">
+                  <template slot-scope="scope">
+                    <el-button
+                      size="mini"
+                      type="danger"
+                      @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+
             <el-button class="lyd-plist iconfont " slot="reference">
               20
             </el-button>
@@ -69,7 +111,9 @@
         musicValue: 0,
         musicVolume: 50,
         currentVolume: 0,
-        musicUrl: ''
+        musicUrl: '',
+        playOrder:0,//0列表循环、1单曲循环、2随机播放、3、顺序播放
+        musicList:[],
       }
     },
     computed: {
@@ -151,8 +195,27 @@
       //监听 当前音乐播放时间，来控制滑条进度
       timeNow(newValue) {
         if (newValue == this.timeDuration) {
-          this.changeIsplay(false);
-          this.timeNow = 0;
+            switch (this.playOrder) {
+              case 0 :
+                console.log( '0')
+                break;
+              case 1:
+                this.changeIsplay(false);
+                console.log( '1')
+                this.timeNow = 0;
+                setTimeout(()=>{
+                  this.musicPlay();
+                },200)
+                break;
+              case 2:
+                console.log( '2')
+                break;
+              case 3:
+                console.log( '3')
+                break;
+              default:
+                break;
+            }
         }
         this.musicValue = (newValue / this.timeDuration);
         this.musicValue = this.musicValue.toFixed(3) * 100;

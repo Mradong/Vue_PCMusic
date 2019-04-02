@@ -7,7 +7,6 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    musicTime: 1,
     isRouterAlive: true,//是否显示右侧导航栏
     isPlayHtml:false,//是否显示音乐页面
     isMvPlay:false,//是否显示MV页面
@@ -36,7 +35,6 @@ export default new Vuex.Store({
     // 改变state状态的方法，不建议直接通过
     // this.$store.state.? = ？的方式改变state中的状态
     changemusicPlay:(state,n) =>{
-      state.musicTime= 2;
       state.musicPlay = localStorage.getItem("musicplay");
     },
     changeIsplay:(state,n) =>{
