@@ -131,13 +131,12 @@
         changemusicPlay: 'changemusicPlay'
       }),
       dblclick(e) {
-        // let url = 'https://api.bzqll.com/music/netease/search?key=579621905&type=song&limit=50&offset=0&s=' + e.id;
         console.log(e )
-        let song = 'http://musicapi.leanapp.cn/song/detail?ids='+ e.id ;
+        let song = '/song/detail?ids='+ e.id ;
         let musicplay ={};
         this.$axios.get(song ).then((response) => {
 
-          musicplay.lrc='http://musicapi.leanapp.cn/lyric?id='+e.id,
+          musicplay.lrc='/lyric?id='+e.id,
           musicplay.url='https://music.163.com/song/media/outer/url?id='+e.id+'.mp3',
           musicplay.id = e.id ;
           musicplay.name = e.name ;
@@ -151,7 +150,7 @@
       }
     },
     created() {
-      let playlistUrl = 'http://musicapi.leanapp.cn/playlist/detail?id=' + this.$route.query.id;
+      let playlistUrl = '/playlist/detail?id=' + this.$route.query.id;
       //获取歌单详
       this.$axios.get(playlistUrl).then((response) => {
         this.playlist = response.data.playlist;

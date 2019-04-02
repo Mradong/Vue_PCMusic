@@ -238,7 +238,7 @@
       //搜索框下拉搜索
       querySearchAsync(queryString, cb) {
         this.searchMusic = queryString;
-        let url = 'http://musicapi.leanapp.cn/search/suggest?keywords=' + queryString;
+        let url = '/search/suggest?keywords=' + queryString;
         this.$axios.get(url).then((response) => {
           this.restaurants = response.data.result;
           let searchResult = Object.entries(this.restaurants);
@@ -322,7 +322,7 @@
         this.clickSearchMusic();
       },
       login() {
-        let loginUrl = "http://musicapi.leanapp.cn/login/cellphone?phone=" + this.country + this.loginId + "&password=" + this.password;
+        let loginUrl = "/login/cellphone?phone=" + this.country + this.loginId + "&password=" + this.password;
         this.$axios.get(loginUrl).then((response) => {
           localStorage.setItem("userInfo", JSON.stringify(response.data.profile));
           this.userInfo = JSON.parse(localStorage.getItem("userInfo"));

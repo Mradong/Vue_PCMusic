@@ -2,7 +2,7 @@
   <div style="margin: 20px">
     <el-carousel :interval="4000" type="card" height="200px" class="new-nav">
       <el-carousel-item v-for="(item,index) in bannerList" :key="index">
-        <img :src="item.picUrl+'?param=400y200'" alt="">
+        <img :src="item.imageUrl+'?param=400y200'" alt="">
       </el-carousel-item>
     </el-carousel>
     <div>
@@ -126,7 +126,7 @@
         musicplay.singer = this.newSongList[index].song.artists[0].name;
         musicplay.album = this.newSongList[index].song.alias[0];
         musicplay.pic = this.newSongList[index].song.album.picUrl ;
-        musicplay.lrc = 'http://musicapi.leanapp.cn/lyric?id='+this.newSongList[index].song.id;
+        musicplay.lrc = '/lyric?id='+this.newSongList[index].song.id;
         musicplay.url = 'https://music.163.com/song/media/outer/url?id='+this.newSongList[index].song.id+'.mp3';
         localStorage.setItem("musicplay", JSON.stringify(musicplay));
         this.changemusicPlay();
@@ -134,11 +134,11 @@
       }
     },
     created: function () {
-      let bannerUrl = 'http://musicapi.leanapp.cn/banner';
-      let personalizedUrl = 'http://musicapi.leanapp.cn/personalized';
-      let personalizedprivateUrl = 'http://musicapi.leanapp.cn/personalized/privatecontent';
-      let personalizedNewsongUrl = 'http://musicapi.leanapp.cn/personalized/newsong';
-      let personalizedMvUrl = 'http://musicapi.leanapp.cn/personalized/mv';
+      let bannerUrl = '/banner';
+      let personalizedUrl = '/personalized';
+      let personalizedprivateUrl = '/personalized/privatecontent';
+      let personalizedNewsongUrl = '/personalized/newsong';
+      let personalizedMvUrl = '/personalized/mv';
       //轮播图
       this.$axios.get(bannerUrl).then((response) => {
         this.bannerList = response.data.banners;

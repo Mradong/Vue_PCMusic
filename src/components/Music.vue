@@ -53,7 +53,7 @@
 
     },
     created: function () {
-      let userStatus = 'http://musicapi.leanapp.cn/user/subcount';
+      let userStatus = '/user/subcount';
       this.$axios.get( userStatus).then((response) => {
         console.log(response.data.code )
         if(response.data.code == 200){

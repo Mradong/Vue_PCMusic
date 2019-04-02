@@ -116,9 +116,9 @@
       };
     },
     created() {
-      let mvUrl = 'http://musicapi.leanapp.cn/mv/detail?mvid=' + this.$route.query.id;
-      let mvComment = 'http://musicapi.leanapp.cn/comment/mv?id=' + this.$route.query.id;
-      let mvSimi = 'http://musicapi.leanapp.cn/simi/mv?mvid=' + this.$route.query.id;
+      let mvUrl = '/mv/detail?mvid=' + this.$route.query.id;
+      let mvComment = '/comment/mv?id=' + this.$route.query.id;
+      let mvSimi = '/simi/mv?mvid=' + this.$route.query.id;
       //MV详情获取
       this.$axios.get(mvUrl).then((response) => {
         this.mvdetails = response.data.data;

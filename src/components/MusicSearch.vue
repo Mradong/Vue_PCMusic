@@ -110,7 +110,7 @@
       cutMusic(index) {
         this.doubleCurrent = index;
         let musicplay = this.musicSearchList[index];
-        let song = 'http://musicapi.leanapp.cn/song/detail?ids=' + musicplay.id;
+        let song = '/song/detail?ids=' + musicplay.id;
         this.$axios.get(song).then((response) => {
           musicplay.pic = response.data.songs[0].al.picUrl;
           localStorage.setItem("musicplay", JSON.stringify(musicplay));
@@ -122,8 +122,8 @@
 
     },
     created: function () {
-      let songs = 'http://musicapi.leanapp.cn/search?keywords=' + this.name + '&type=1';
-      let songDetail = 'http://musicapi.leanapp.cn/search/multimatch?keywords=' + this.name;
+      let songs = '/search?keywords=' + this.name + '&type=1';
+      let songDetail = '/search/multimatch?keywords=' + this.name;
       this.$axios.get(songDetail).then((response) => {
         this.restaurants = response.data.result;
         let searchResult = Object.entries(this.restaurants);
@@ -155,7 +155,7 @@
                 }
               }),
               album: item.album.name,
-              lrc: 'http://musicapi.leanapp.cn/lyric?id=' + item.id,
+              lrc: '/lyric?id=' + item.id,
               url: 'https://music.163.com/song/media/outer/url?id=' + item.id + '.mp3'
             }
           });

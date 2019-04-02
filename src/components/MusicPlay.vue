@@ -137,10 +137,10 @@
       //歌词api
       let lrcUrl = musicPlay.lrc;
       //评论api
-      let SongReviews = 'http://musicapi.leanapp.cn/comment/music?id= ' + musicPlay.id + '&limit=1';
+      let SongReviews = '/comment/music?id= ' + musicPlay.id + '&limit=1';
       //相似歌曲api
-      let similaritySong = 'http://musicapi.leanapp.cn/simi/song?id=' + musicPlay.id;
-      let recommendUser = 'http://musicapi.leanapp.cn/simi/user?id=' + musicPlay.id;
+      let similaritySong = '/simi/song?id=' + musicPlay.id;
+      let recommendUser = '/simi/user?id=' + musicPlay.id;
 
       this.picUrl = musicPlay.pic;
       this.musicTitle = musicPlay.name;

@@ -43,7 +43,7 @@ import Axios from 'axios';
 //Axios:挂载原型
 Vue.prototype.$axios = Axios;
 // Axios:默认配置
-// Axios.defaults.baseURL = 'http://182.254.146.100:8899/api/';
+Axios.defaults.baseURL = 'http://music.rexinshimin.cn:3000';
 Axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 Axios.defaults.withCredentials = true;//跨域请求是否携带cooike
 
