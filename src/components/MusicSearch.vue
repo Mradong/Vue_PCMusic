@@ -90,7 +90,7 @@
         musicSearchList: [],
         musicNum: '',
         currentSrc: '',
-        bestFit: []
+        bestFit: [],
       };
     },
     computed: {
@@ -118,6 +118,7 @@
         }).catch((error) => {
           console.log(error);
         })
+
       }
 
     },
@@ -138,12 +139,10 @@
           }
         })
         this.bestFit = searchResult;
-        console.log(this.bestFit)
       }).catch((error) => {
         console.log(error);
       }),
         this.$axios.get(songs).then((response) => {
-          console.log(response.data.result.songs)
           let musicSearchList = response.data.result.songs.map((item, index) => {
             return {
               id: item.id,

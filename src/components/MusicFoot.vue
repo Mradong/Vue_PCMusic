@@ -38,30 +38,31 @@
       </el-col>
       <div class="fr last-iconbox">
         <i class="lyd-liebiaoxunhuan iconfont" v-if="playOrder == 0" @click="playOrder++"></i>
-        <i class="lyd-gecitiaozheng iconfont" v-if="playOrder == 1" @click="playOrder++"></i>
-        <i class="lyd-plist iconfont" v-if="playOrder == 2" @click="playOrder++"></i>
-        <i class="lyd-zanting1 iconfont" v-if="playOrder == 3" @click="playOrder=0"></i>
+        <i class="lyd-danquxunhuan iconfont" v-if="playOrder == 1" @click="playOrder++"></i>
+        <i class="lyd-suiji iconfont" v-if="playOrder == 2" @click="playOrder++"></i>
+        <i class="lyd-shunxubofang iconfont" v-if="playOrder == 3" @click="playOrder=0"></i>
 
         <i class="lyd-gecitiaozheng iconfont"></i>
         <div class="fr music-plist">
           <el-popover
             placement="top"
             width="570"
-            show-header="false"
+            show-header
             popper-class="music-play-plist"
             :visible-arrow="false"
+            stripe
             trigger="click">
 
             <template>
               <el-table
-                :data="tableData"
+                :data="musicPlayList"
                 style="width: 100%">
                 <el-table-column
                   label="日期"
                   width="180">
                   <template slot-scope="scope">
                     <i class="el-icon-time"></i>
-                    <span style="margin-left: 10px">{{ scope.row.date }}</span>
+                    <span style="margin-left: 10px">{{ scope.name }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -77,13 +78,11 @@
                     </el-popover>
                   </template>
                 </el-table-column>
-                <el-table-column label="操作">
-                  <template slot-scope="scope">
-                    <el-button
-                      size="mini"
-                      type="danger"
-                      @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                  </template>
+                <el-table-column
+                  sortable
+                  width="250"
+                  label="音乐标题"
+                  prop="name">
                 </el-table-column>
               </el-table>
             </template>
@@ -113,7 +112,7 @@
         currentVolume: 0,
         musicUrl: '',
         playOrder:0,//0列表循环、1单曲循环、2随机播放、3、顺序播放
-        musicList:[],
+        musicPlayList:[],
       }
     },
     computed: {
@@ -128,6 +127,12 @@
       } else {
         let musicIfo = JSON.parse(localStorage.getItem("musicplay"));
         this.musicUrl = musicIfo.url;
+        this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
+        let parseMusicPlayList = this.musicPlayList.map(item =>{
+          return JSON.parse(item )
+        })
+
+        this.musicPlayList = parseMusicPlayList ;
         if (this.timeNow != 0) {
           if (musicIfo.hasOwnProperty("volume")) {
             this.$refs.songPlayer.volume = musicIfo.volume / 100;
@@ -199,7 +204,6 @@
                 break;
               case 1:
                 this.changeIsplay(false);
-                console.log( '1')
                 this.timeNow = 0;
                 setTimeout(()=>{
                   this.musicPlay();
@@ -217,12 +221,17 @@
         }
         this.musicValue = (newValue / this.timeDuration);
         this.musicValue = this.musicValue.toFixed(3) * 100;
+
       },
-      //监听vuex中的currentSrc数据
-      watchMusicPlay(musicIfo) {
+      //监听vuex中的音乐信息数据
+
+      watchMusicPlay(musicIfo,oldMusicIfo ) {
         let musicifo = JSON.parse(musicIfo);
         this.$refs.songPlayer.src = musicifo.url;
         this.musicPlay();
+        this.musicPlayList.push(musicIfo )
+        let musicPlayList = new Set(this.musicPlayList)
+        localStorage.setItem("musicPlayList", JSON.stringify(musicPlayList));
       },
       musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
