@@ -130,7 +130,6 @@
         musicplay.url = 'https://music.163.com/song/media/outer/url?id='+this.newSongList[index].song.id+'.mp3';
         localStorage.setItem("musicplay", JSON.stringify(musicplay));
         this.changemusicPlay();
-        console.log( musicplay )
       }
     },
     created: function () {

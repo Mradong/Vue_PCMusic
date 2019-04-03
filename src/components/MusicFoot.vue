@@ -132,7 +132,6 @@
           if (musicIfo.hasOwnProperty("volume")) {
             this.$refs.songPlayer.volume = musicIfo.volume / 100;
             this.musicVolume = musicIfo.volume;
-            console.log(this.$refs.songPlayer);
           } else {
             this.$refs.songPlayer.volume = this.musicVolume / 100;
           }
@@ -171,7 +170,6 @@
         this.$refs.songPlayer.pause();
       },
       musicvolume(val) {
-        console.log(this.$refs.songPlayer);
         this.currentVolume = val;
         this.$refs.songPlayer.volume = val / 100;
         let musicIfo = JSON.parse(localStorage.getItem('musicplay'));

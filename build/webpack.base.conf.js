@@ -8,8 +8,6 @@ function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
-
-
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
@@ -29,10 +27,15 @@ module.exports = {
       '@': resolve('src'),
     }
   },
-  // externals: {
-  //   'AMap': 'AMap',
-  //   'AMapUI': 'AMapUI'
-  // },
+  externals: {
+    'vue': 'Vue',
+    'vue-router': 'VueRouter',
+    'vuex': 'Vuex',
+    'axios': 'axios',
+    'moment': 'moment',
+    'element-ui': 'ELEMENT',
+    'velocity-animate':'Velocity'
+  },
   module: {
     rules: [
       {

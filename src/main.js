@@ -2,50 +2,35 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 
 //引入第三方包 开始
-import Vue from 'vue'
 import router from './router'
 import store from './store'
 import '@/assets/icon/iconfont.css'
 
-Vue.config.productionTip = false
-
-
+//npm 引入方式
+// import Vue from 'vue'
 //引入ElementUI
-import ElementUI from 'element-ui';
-import {Loading, Message} from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css';
-
-Vue.use(ElementUI);
-
-//引入高德地图插件
-import VueAMap from 'vue-amap';  //注意不要和 AMap原始名称覆盖
-Vue.use(VueAMap);
-// 初始化vue-amap
-VueAMap.initAMapApiLoader({
-  // 高德的key
-  key: '17841ab04122024dfe0ebc390b1506e2',
-  // 插件集合
-  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor', 'AMap.Geolocation'],
-});
-
+// import ElementUI from 'element-ui';
+// import {Loading, Message} from 'element-ui'
+// import 'element-ui/lib/theme-chalk/index.css';
+// Vue.use(ElementUI);
 //引入moment时间插件
-import Moment from 'moment'
-
-Vue.prototype.$moment = Moment;//赋值使用
-
+// import Moment from 'moment'
 //引入Velocity.js动画组件
-import Velocity from 'velocity-animate'
+// import Velocity from 'velocity-animate'
+//引入axios
+// import Axios from 'axios';
 
-Vue.prototype.$Velocity = Velocity;
-
-//Axios:引入axios
-import Axios from 'axios';
+//取消vue警告提示
+Vue.config.productionTip = false
 //Axios:挂载原型
-Vue.prototype.$axios = Axios;
+
+Vue.prototype.$moment = moment;
+Vue.prototype.$Velocity = Velocity;
+Vue.prototype.$axios = axios;
 // Axios:默认配置
-Axios.defaults.baseURL = 'http://music.rexinshimin.cn:3000';
-Axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-Axios.defaults.withCredentials = true;//跨域请求是否携带cooike
+axios.defaults.baseURL = 'http://music.rexinshimin.cn:3000';
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.withCredentials = true;//跨域请求是否携带cooike
 
 //全局路由,
 router.beforeEach((to, from, next) => {
@@ -63,68 +48,26 @@ router.beforeEach((to, from, next) => {
       store.commit('changeMvPlay', false);
   }
   next();
-  // if(to.name =='mv' ){
-  //   store.commit('changeIsPlayHtml', true)
-  //   store.commit('changeMvPlay', true)
-  // }
-  // else {
-  //   store.commit('changeIsPlayHtml', false)
-  //   store.commit('changeMvPlay', false)
-  // }
-
 });
-
-
-// // Axios:拦截器操作loadding
-// // 超时时间
-// Axios.defaults.timeout = 5000
-// // http请求拦截器
-// let loadinginstace
-// Axios.interceptors.request.use(config => {
-//   loadinginstace = Loading.service({fullscreen: true})
-//   return config
-// }, error => {
-//   loadinginstace.close()
-//   Message.error({
-//     message: '加载超时'
-//   })
-//   return Promise.reject(error)
-// })
-
-// // http响应拦截器
-// Axios.interceptors.response.use(data => {// 响应成功关闭loading
-//   loadinginstace.close()
-//   return data
-// }, error => {
-//   loadinginstace.close()
-//   Message.error({
-//     message: '加载失败'
-//   })
-//   return Promise.reject(error)
-// })
 
 
 //全局样式
 import '@/assets/css/global.css';
 
-//引入全局组件需要的组件对象 开始
+//引入全局组件需要的组件对象
 import VueXgplayer from '@/components/MusicXgplayer.vue'
-
-Vue.config.productionTip = false
 Vue.component('VueXgplayer', VueXgplayer)
-
-//引入全局组件需要的组件对象 结束
 
 
 // 定义成全局组件或过滤器
 Vue.filter('convertDate', function (value) {
-  return Moment(value).format('YYYY年MM月DD日 HH：mm');
+  return moment(value).format('YYYY年MM月DD日 HH：mm');
 });
 Vue.filter('mvDate', function (value) {
-  return Moment(value).format('mm：ss');
+  return moment(value).format('mm：ss');
 });
 Vue.filter('musicmenuDate', function (value) {
-  return Moment(value).format('YYYY-MM-DD');
+  return moment(value).format('YYYY-MM-DD');
 });
 
 Vue.filter('musicDate', function (value) {

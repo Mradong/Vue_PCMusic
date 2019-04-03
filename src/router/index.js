@@ -1,22 +1,13 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+// import Vue from 'vue'
+// import Router from 'vue-router'
+// Vue.use(Router)
 
-// import blankVue from '@/components/blankVue'
-// import Music from '@/components/Music'
-// import MusicRec from '@/components/MusicRec'
-// import MusicSearch from '@/components/MusicSearch'
-// import MusicPlay from '@/components/MusicPlay'
-// import MusicVideo from '@/components/MusicVideo'
-// import MusicMenu from '@/components/MusicMenu'
-
-Vue.use(Router)
 
 function loadView(view) {
   return () => import(/* webpackChunkName: "view-[request]" */ `@/components/${view}.vue`)
 }
 
-
-export default new Router({
+export default new VueRouter({
   mode: 'history',
   routes: [
     {

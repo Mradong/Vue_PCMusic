@@ -170,7 +170,6 @@
           }
         });
         this.tracks = tracks;
-        console.log(this.$store.state.musicPlay)
 
       }).catch((error) => {
         console.log(error);
