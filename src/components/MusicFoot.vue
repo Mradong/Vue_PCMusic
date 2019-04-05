@@ -1,13 +1,11 @@
 <template>
   <div>
-    <el-row>
+    <el-row class="play-detail">
       <el-col :span="4">
         <div class="grid-content bg-purple">
           <i class="iconfont lyd-shangyixiang"></i>
-          <i class="iconfont lyd-bofang" v-if="!this.$store.state.isPlay" @click=" musicPlay">
-          </i>
-          <i class="iconfont lyd-zanting1" v-if="this.$store.state.isPlay" @click=" musicStop">
-          </i>
+          <i class="iconfont lyd-bofang" v-if="!isPlay" @click=" musicPlay"></i>
+          <i class="iconfont lyd-zanting1" v-if="isPlay" @click=" musicStop"></i>
           <i class="lyd-xiayixiang iconfont"></i>
         </div>
       </el-col>
@@ -52,45 +50,74 @@
             :visible-arrow="false"
             stripe
             trigger="click">
-
-            <template>
-              <el-table
-                :data="musicPlayList"
-                style="width: 100%">
-                <el-table-column
-                  label="日期"
-                  width="180">
-                  <template slot-scope="scope">
-                    <i class="el-icon-time"></i>
-                    <span style="margin-left: 10px">{{ scope.name }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="姓名"
-                  width="180">
-                  <template slot-scope="scope">
-                    <el-popover trigger="hover" placement="top">
-                      <p>姓名: {{ scope.row.name }}</p>
-                      <p>住址: {{ scope.row.address }}</p>
-                      <div slot="reference" class="name-wrapper">
-                        <el-tag size="medium">{{ scope.row.name }}</el-tag>
-                      </div>
-                    </el-popover>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  sortable
-                  width="250"
-                  label="音乐标题"
-                  prop="name">
-                </el-table-column>
-              </el-table>
-            </template>
-
-            <el-button class="lyd-plist iconfont " slot="reference">
-              20
-            </el-button>
+            <div v-if=" musicPlayList.length != 0">
+              <div class="music-plist-header">
+                <el-row>
+                  <el-col :span="24" class="music-plist-header-title">
+                    <div >播放列表</div>
+                  </el-col>
+                  <el-col :span="2">
+                    <div>&emsp;&emsp;&emsp;</div>
+                  </el-col>
+                  <el-col :span="14">
+                    总{{ musicPlayList.length }}首
+                  </el-col>
+                  <el-col :span="4">
+                    <i class="el-icon-circle-plus-outline" style="margin-right: 5px"></i>收藏全部
+                  </el-col>
+                  <el-col :span="3" style="margin-left: 22px">
+                    <i class="el-icon-delete" style="margin-right: 3px"></i>清空
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="music-plist-form">
+                <el-row v-for=" (item,index) in musicPlayList" :key="index" @dblclick.native="cutMusic(index)">
+                  <el-col :span="2" v-if="index != musicIndex">
+                    <div>&emsp;</div>
+                  </el-col>
+                  <el-col :span="2" v-if="index == musicIndex">
+                    <i class="iconfont lyd-bofang" v-if="!isPlay" @click=" musicPlay"></i>
+                    <i class="iconfont lyd-zanting1" v-if="isPlay" @click=" musicStop"></i>
+                  </el-col>
+                  <el-col :span="12">
+                    {{item.name | hanziLimit(30)}}
+                  </el-col>
+                  <el-col :span="6">
+                    {{item.singer | hanziLimit(18)}}
+                  </el-col>
+                  <el-col :span="2">
+                    {{item.time}}
+                  </el-col>
+                </el-row>
+              </div>
+            </div>
+            <div v-if=" musicPlayList.length == 0">
+              <div class="music-plist-header">
+                <el-row>
+                  <el-col :span="24" class="music-plist-header-title">
+                    <div >播放列表</div>
+                  </el-col>
+                  <el-col :span="2">
+                    <div>&emsp;&emsp;&emsp;</div>
+                  </el-col>
+                  <el-col :span="14">
+                    总{{ musicPlayList.length }}首
+                  </el-col>
+                  <el-col :span="4">
+                    <i class="el-icon-circle-plus-outline" style="margin-right: 5px"></i>收藏全部
+                  </el-col>
+                  <el-col :span="3" style="margin-left: 22px">
+                    <i class="el-icon-delete" style="margin-right: 3px"></i>清空
+                  </el-col>
+                </el-row>
+              </div>
+              <div class="music-plist-form">
+                <div style="margin: 150px  250px"> 请添加歌曲 </div>
+              </div>
+            </div>
+            <el-button class="music-plist-button" icon="lyd-plist iconfont" slot="reference">{{ musicPlayList.length }}</el-button>
           </el-popover>
+
         </div>
       </div>
     </el-row>
@@ -111,28 +138,32 @@
         musicVolume: 50,
         currentVolume: 0,
         musicUrl: '',
-        playOrder:0,//0列表循环、1单曲循环、2随机播放、3、顺序播放
+        playOrder: 0,//0列表循环、1单曲循环、2随机播放、3、顺序播放
         musicPlayList:[],
+        musicIndex:0,
       }
     },
     computed: {
-      ...mapState([]),
+      ...mapState([
+        'isPlay'
+      ]),
       ...mapGetters([
         'watchMusicPlay'
       ]),
     },
     created: function () {
+
       if (JSON.parse(localStorage.getItem("musicplay")) == null) {
         this.musicUrl = '';
       } else {
         let musicIfo = JSON.parse(localStorage.getItem("musicplay"));
         this.musicUrl = musicIfo.url;
-        this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
-        let parseMusicPlayList = this.musicPlayList.map(item =>{
-          return JSON.parse(item )
-        })
 
-        this.musicPlayList = parseMusicPlayList ;
+        if (JSON.parse(localStorage.getItem("musicPlayList")) != null) {
+          this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
+          this.musicIndex = this.musicPlayList.findIndex( fruit => fruit.name === musicIfo.name );
+        }
+
         if (this.timeNow != 0) {
           if (musicIfo.hasOwnProperty("volume")) {
             this.$refs.songPlayer.volume = musicIfo.volume / 100;
@@ -164,7 +195,6 @@
         this.$refs.songPlayer.removeEventListener('timeupdate', this._currentTime)
         this.$refs.songPlayer.removeEventListener('canplay', this._durationTime)
       },
-      //
       musicPlay: function () {
         this.changeIsplay(true);
         this.$refs.songPlayer.play();
@@ -181,6 +211,11 @@
         musicIfo.volume = val;
         localStorage.setItem("musicplay", JSON.stringify(musicIfo));
       },
+      cutMusic(index){
+        console.log( '1')
+        localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[index]));
+        this.changemusicPlay();
+      },
       //滑块点击控制音乐播放进度
       newNum: function (value) {
         this.$refs.songPlayer.currentTime = (value / 100) * this.timeDuration;
@@ -189,6 +224,7 @@
       ...mapMutations({
         changeIsplay: 'changeIsplay',
         changeMusicTime: 'changeMusicTime',
+        changemusicPlay: 'changemusicPlay'
       }),
       ...mapActions([
         // addCount
@@ -198,40 +234,55 @@
       //监听 当前音乐播放时间，来控制滑条进度
       timeNow(newValue) {
         if (newValue == this.timeDuration) {
-            switch (this.playOrder) {
-              case 0 :
-                console.log( '0')
-                break;
-              case 1:
-                this.changeIsplay(false);
-                this.timeNow = 0;
-                setTimeout(()=>{
-                  this.musicPlay();
-                },200)
-                break;
-              case 2:
-                console.log( '2')
-                break;
-              case 3:
-                console.log( '3')
-                break;
-              default:
-                break;
-            }
+          switch (this.playOrder) {
+            case 0 :
+              console.log('0')
+              break;
+            case 1:
+              this.changeIsplay(false);
+              this.timeNow = 0;
+              setTimeout(() => {
+                this.musicPlay();
+              }, 200)
+              break;
+            case 2:
+              console.log('2')
+              break;
+            case 3:
+              console.log('3')
+              break;
+            default:
+              break;
+          }
         }
         this.musicValue = (newValue / this.timeDuration);
         this.musicValue = this.musicValue.toFixed(3) * 100;
 
       },
       //监听vuex中的音乐信息数据
-
-      watchMusicPlay(musicIfo,oldMusicIfo ) {
+      watchMusicPlay(musicIfo) {
         let musicifo = JSON.parse(musicIfo);
         this.$refs.songPlayer.src = musicifo.url;
         this.musicPlay();
-        this.musicPlayList.push(musicIfo )
-        let musicPlayList = new Set(this.musicPlayList)
-        localStorage.setItem("musicPlayList", JSON.stringify(musicPlayList));
+        if( JSON.parse(localStorage.getItem("musicPlayList")) == null){
+          this.musicPlayList.push(musicifo);
+          localStorage.setItem("musicPlayList", JSON.stringify(this.musicPlayList));
+        }
+        else{
+          this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
+          let musicPlayListLen =  this.musicPlayList.length;
+          let status = true;
+          for( let i= 0; i< musicPlayListLen;i++ ){
+              if( this.musicPlayList[i].id == musicifo.id ){
+                status = false ;
+              }
+          }
+          if(status == true){
+            this.musicPlayList.push(musicifo);
+            localStorage.setItem("musicPlayList", JSON.stringify(this.musicPlayList));
+          }
+          this.musicIndex = this.musicPlayList.findIndex( fruit => fruit.id === musicifo.id );
+        }
       },
       musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
@@ -262,27 +313,47 @@
     border: 3px solid #eeecffeb;
     background-color: #ff4040;
   }
-
   .music-play-plist {
-    top: 179px !important;
-    left: 849px !important;
-    box-shadow: none !important;
+    top: 203px !important;
+    left: 870px !important;
+    /*box-shadow: none !important;*/
     height: 430px;
+    padding: 0 !important;
+  }
+  .el-row .last-iconbox div.music-plist .music-plist-button i.lyd-plist{
+    position: relative;
+    left: -4px;
   }
 
-  .el-row .last-iconbox div.music-plist .lyd-plist span {
-    font-size: 12px;
+  .el-row .last-iconbox div.music-plist .music-plist-button span {
+    font-size: 14px;
+  }
+  .music-plist-form .el-row{
+    line-height: 28px;
+    height: 32px;
+    margin-top: 4px;
+  }
+   div.music-plist-form >div:nth-child(odd) {
+    background-color: #fff;
+  }
+
+  div.music-plist-form >div:nth-child(even) {
+    background-color: rgba(212, 212, 212, 0.28);
+  }
+  .music-plist-header .el-row .el-col{
+    height: 35px;
+    line-height: 35px;
   }
 </style>
 
 <style scoped>
 
-  .el-row div:nth-child(2) {
+  .play-detail div:nth-child(2) {
     margin-top: 8px;
     padding-right: 50px;
   }
 
-  .el-row div:nth-child(4) {
+  .play-detail div:nth-child(4) {
     margin-top: 8px;
     padding-left: 15px;
   }
@@ -309,33 +380,53 @@
   .last-iconbox {
     width: 98px;
     margin: 5px 10px;
-
   }
 
   .last-iconbox i {
     padding: 0 2px;
     font-size: 18px;
   }
-
-  .el-row .last-iconbox div.music-plist {
+  .el-row .last-iconbox div.music-plist .music-plist-button{
     padding: 0;
     margin: 0;
-    width: 16px;
+    width: 40px;
     height: 16px;
     position: relative;
     top: 4px;
-    padding-left: 6px;
+    background-color: rgba(201, 201, 201, 0.25);
+  }
+  .music-plist-header{
+    border-bottom: 1px solid rgba(6, 12, 6, 0.12);
+  }
+  .music-plist-form{
+    overflow: auto;
+    height: 345px;
+  }
+  .music-plist-form::-webkit-scrollbar { /*滚动条整体样式*/
+    width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 1px;
   }
 
-  .el-row .last-iconbox div.music-plist .lyd-plist {
-    position: absolute;
-    top: 0;
-    left: -15px;
-    z-index: 10;
-    padding: 0;
-    font-size: 16px;
-    background-color: rgba(189, 189, 189, 0.32);
-    color: #000000;
+  .music-plist-form::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+    border-radius: 10px;
+    background: rgba(203, 0, 0, 0.27);
   }
 
+  .music-plist-form::-webkit-scrollbar-track { /*滚动条里面轨道*/
+    background: #EDEDED;
+  }
+  .music-plist-header .el-row .music-plist-header-title{
+    height: 50px;
+    background: rgba(197, 197, 197, 0.29);
+    border-bottom: 1px solid rgba(6, 12, 6, 0.12);
+  }
+  .music-plist-header-title div{
+    margin:12.5px auto;
+    width: 100px;
+    height: 20px;
+    background-color: #0086b3;
+    text-align: center;
+    line-height: 20px;
+    color: #fff;
+  }
 </style>
