@@ -147,7 +147,7 @@
             return {
               id: item.id,
               name: item.name,
-              time: item.duration,
+              time: this.$moment(item.duration).format('mm：ss'),
               singer: item.artists.map((singers) => {
                 return {
                   singers: singers.name,

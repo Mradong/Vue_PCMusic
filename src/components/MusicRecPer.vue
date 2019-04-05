@@ -122,7 +122,7 @@
         let musicplay = {};
         musicplay.id = this.newSongList[index].song.id ;
         musicplay.name = this.newSongList[index].song.name;
-        musicplay.time = '';
+        musicplay.time = this.$moment(this.newSongList[index].song.duration).format('mm：ss');
         musicplay.singer = this.newSongList[index].song.artists[0].name;
         musicplay.album = this.newSongList[index].song.alias[0];
         musicplay.pic = this.newSongList[index].song.album.picUrl ;
@@ -159,6 +159,7 @@
       //最新音乐
       this.$axios.get(personalizedNewsongUrl).then((response) => {
         this.newSongList = response.data.result;
+        console.log( this.newSongList )
       }).catch((error) => {
         console.log(error);
       });

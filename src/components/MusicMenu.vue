@@ -138,6 +138,7 @@
           musicplay.lrc='/lyric?id='+e.id,
           musicplay.url='https://music.163.com/song/media/outer/url?id='+e.id+'.mp3',
           musicplay.id = e.id ;
+          musicplay.time= e.time;
           musicplay.name = e.name ;
           musicplay.singer = e.arname ;
           musicplay.pic = response.data.songs[0].al.picUrl ;
