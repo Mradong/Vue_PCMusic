@@ -3,10 +3,10 @@
     <el-row class="play-detail">
       <el-col :span="4">
         <div class="grid-content bg-purple">
-          <i class="iconfont lyd-shangyixiang"></i>
+          <i class="iconfont lyd-shangyixiang" @click="cutUpMusic"></i>
           <i class="iconfont lyd-bofang" v-if="!isPlay" @click=" musicPlay"></i>
           <i class="iconfont lyd-zanting1" v-if="isPlay" @click=" musicStop"></i>
-          <i class="lyd-xiayixiang iconfont"></i>
+          <i class="lyd-xiayixiang iconfont" @click="cutDownMusic"></i>
         </div>
       </el-col>
       <el-col :span="1"> {{ timeNow | musicDate}}</el-col>
@@ -65,8 +65,8 @@
                   <el-col :span="4">
                     <i class="el-icon-circle-plus-outline" style="margin-right: 5px"></i>收藏全部
                   </el-col>
-                  <el-col :span="3" style="margin-left: 22px">
-                    <i class="el-icon-delete" style="margin-right: 3px"></i>清空
+                  <el-col :span="3" style="margin-left: 22px" >
+                    <span @click="clearPlayList"><i class="el-icon-delete" style="margin-right: 3px" ></i>清空</span>
                   </el-col>
                 </el-row>
               </div>
@@ -152,7 +152,6 @@
       ]),
     },
     created: function () {
-
       if (JSON.parse(localStorage.getItem("musicplay")) == null) {
         this.musicUrl = '';
       } else {
@@ -161,7 +160,13 @@
 
         if (JSON.parse(localStorage.getItem("musicPlayList")) != null) {
           this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
-          this.musicIndex = this.musicPlayList.findIndex( fruit => fruit.name === musicIfo.name );
+        }
+        if(JSON.parse(localStorage.getItem('playOrder'))!=null ){
+          this.playOrder = JSON.parse(localStorage.getItem('playOrder'));
+        }
+
+        if(JSON.parse(localStorage.getItem('musicIndex'))!=null ){
+          this.musicIndex = JSON.parse(localStorage.getItem('musicIndex'));
         }
 
         if (this.timeNow != 0) {
@@ -186,6 +191,7 @@
       },
       _durationTime: function () {
         this.timeDuration = parseInt(this.$refs.songPlayer.duration)
+        console.log( this.$refs.songPlayer.duration)
       },
       addEventListeners: function () {
         this.$refs.songPlayer.addEventListener('timeupdate', this._currentTime),
@@ -216,6 +222,62 @@
         localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[index]));
         this.changemusicPlay();
       },
+      cutUpMusic(){
+        this.changeIsplay(false);
+        this.timeNow = 0;
+        if(this.musicPlayList.length == 1){
+          setTimeout(() => {
+            this.musicPlay();
+          }, 400)
+        }
+        else {
+          if( this.musicIndex == 0){
+            this.$refs.songPlayer.src = this.musicPlayList[this.musicPlayList.length-1].url ;
+            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicPlayList.length-1]));
+            this.musicIndex = this.musicPlayList.length-1;
+          }
+          else {
+            this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex-1].url ;
+            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex-1]));
+            this.musicIndex = this.musicIndex -1;
+          }
+          localStorage.setItem("playOrder", JSON.stringify(0));
+          localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+          this.changemusicPlay();
+        }
+      },
+      cutDownMusic(){
+        this.changeIsplay(false);
+        this.timeNow = 0;
+        if(this.musicPlayList.length == 1){
+          setTimeout(() => {
+            this.musicPlay();
+          }, 400)
+        }
+        else {
+          if( this.musicIndex == this.musicPlayList.length-1){
+            this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
+            this.musicIndex = 0;
+          }
+          else {
+            this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
+            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
+            this.musicIndex = this.musicIndex +1;
+          }
+          localStorage.setItem("playOrder", JSON.stringify(0));
+          localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+          this.changemusicPlay();
+        }
+      },
+      clearPlayList(){
+        this.musicPlayList=[];
+        localStorage.removeItem( "musicplay");
+        localStorage.removeItem( "musicPlayList");
+        this.$refs.songPlayer.src = '' ;
+        this.timeDuration= 0;
+        this.changemusicPlay();
+      },
       //滑块点击控制音乐播放进度
       newNum: function (value) {
         this.$refs.songPlayer.currentTime = (value / 100) * this.timeDuration;
@@ -234,22 +296,70 @@
       //监听 当前音乐播放时间，来控制滑条进度
       timeNow(newValue) {
         if (newValue == this.timeDuration) {
+          this.changeIsplay(false);
+          this.timeNow = 0;
           switch (this.playOrder) {
             case 0 :
-              console.log('0')
+              if(this.musicPlayList.length == 1){
+                setTimeout(() => {
+                  this.musicPlay();
+                }, 400)
+              }
+              else {
+                if( this.musicIndex == this.musicPlayList.length-1){
+                  this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+                  localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
+                  this.musicIndex = 0;
+                }
+                else {
+                  this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
+                  localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
+                  this.musicIndex = this.musicIndex +1;
+                }
+                localStorage.setItem("playOrder", JSON.stringify(0));
+                localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+                this.changemusicPlay();
+              }
               break;
             case 1:
-              this.changeIsplay(false);
-              this.timeNow = 0;
               setTimeout(() => {
                 this.musicPlay();
-              }, 200)
+              }, 400)
+              localStorage.setItem("playOrder", JSON.stringify(1));
+              localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
               break;
             case 2:
-              console.log('2')
+              if(this.musicPlayList.length == 1){
+                setTimeout(() => {
+                  this.musicPlay();
+                }, 400)
+              }
+              else {
+                let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
+                this.$refs.songPlayer.src = this.musicPlayList[random].url ;
+                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
+                this.musicIndex = random;
+              }
+              this.changemusicPlay();
+              localStorage.setItem("playOrder", JSON.stringify(2));
+              localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
               break;
             case 3:
-              console.log('3')
+              if( this.musicIndex == this.musicPlayList.length-1){
+                this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
+                this.musicIndex = 0;
+                this.changemusicPlay();
+                this.musicStop();
+              }
+              else {
+                this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
+                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
+                this.musicIndex = this.musicIndex +1;
+
+              }
+              localStorage.setItem("playOrder", JSON.stringify(3));
+              localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
               break;
             default:
               break;
@@ -312,6 +422,18 @@
     height: 8px;
     border: 3px solid #eeecffeb;
     background-color: #ff4040;
+  }
+
+  .music-plist .el-button:hover {
+    color: #606266;
+    border-color: rgba(201, 201, 201, 0.25);
+    outline: 0;
+  }
+
+  .music-plist .el-button:active {
+    color: #606266;
+    border-color: rgba(201, 201, 201, 0.25);
+    outline: 0;
   }
   .music-play-plist {
     top: 203px !important;
