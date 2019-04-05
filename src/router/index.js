@@ -52,7 +52,7 @@ export default new VueRouter({
           name: 'mv',
           component: loadView('MusicVideo'),
           meta: {
-            keepAlive: true,
+            keepAlive: false,
             isBack: false
           }
         },

@@ -23,7 +23,7 @@
         <music-foot ></music-foot>
       </el-footer>
 
-      <el-footer  v-if="this.$store.state.isMvPlay" style="display: none">
+      <el-footer v-if="this.$store.state.isMvPlay" style="display: none">
       </el-footer>
 
     </el-container>
@@ -65,7 +65,6 @@
     },
     watch: {
       $route(to, from) {
-        console.log()
       }
     },
 

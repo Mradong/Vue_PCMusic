@@ -64,7 +64,7 @@
           <el-col :span="4">{{ item.singer | hanziLimit(7) }}</el-col>
           <el-col :span="4">{{ item.album | hanziLimit(7) }}</el-col>
 
-          <el-col :span="2">{{item.time | mvDate}}</el-col>
+          <el-col :span="2">{{item.time }}</el-col>
           <el-col :span="4" style=" padding-top: 4px;">
             <el-progress :text-inside="true" :show-text="false" :stroke-width="14"
                          :percentage=" Math.floor(Math.random()*(100 - 50) + 50)"></el-progress>

@@ -90,7 +90,7 @@
 </template>
 
 <script>
-
+  import {mapState, mapGetters, mapMutations} from 'vuex'
   export default {
     name: "MusicPlay",
     data() {
@@ -105,32 +105,9 @@
         SongReviews: [],
         similaritySong: [],
         SongUser:[],
+        time:0,
+        isOver:true,
       };
-    },
-    methods: {
-      //歌词解析
-      parseLyric(lrc) {
-        var lyrics = lrc.split("\n");
-        var lrcObj = {};
-        for (var i = 0; i < lyrics.length; i++) {
-          var lyric = decodeURIComponent(lyrics[i]);
-          var timeReg = /\[\d*:\d*((\.|\:)\d*)*\]/g;
-          var timeRegExpArr = lyric.match(timeReg);
-          if (!timeRegExpArr) continue;
-          var clause = lyric.replace(timeReg, '');
-          for (var k = 0, h = timeRegExpArr.length; k < h; k++) {
-            var t = timeRegExpArr[k];
-            var min = Number(String(t.match(/\[\d*/i)).slice(1)),
-              sec = Number(String(t.match(/\:\d*/i)).slice(1));
-            var time = min * 60 + sec;
-            lrcObj[time] = clause;
-          }
-        }
-        return lrcObj;
-      },
-      changeSong(i) {
-        console.log(i)
-      }
     },
     created: function () {
       let musicPlay = JSON.parse(localStorage.getItem("musicplay"));
@@ -145,6 +122,9 @@
       this.picUrl = musicPlay.pic;
       this.musicTitle = musicPlay.name;
       this.singer = musicPlay.singer;
+      let times = musicPlay.time.toString().split('：');
+      this.time = parseFloat(times[0])*60 + parseFloat(times[1]);
+
       //获取歌词
       this.$axios.get(lrcUrl).then((response) => {
         this.lyric = this.parseLyric(response.data.lrc.lyric);
@@ -179,12 +159,45 @@
       });
     },
     computed: {
-      getmusic() {
-        return this.$store.state.musicTime;
-      }
+      ...mapState([
+        'musicTime',
+        'musicPlay'
+      ]),
+      ...mapGetters([
+        'watchMusicPlay'
+      ]),
+    },
+    methods: {
+      ...mapMutations({
+        changeIsPlayHtml: 'changeIsPlayHtml'
+      }),
+      //歌词解析
+      parseLyric(lrc) {
+        var lyrics = lrc.split("\n");
+        var lrcObj = {};
+        for (var i = 0; i < lyrics.length; i++) {
+          var lyric = decodeURIComponent(lyrics[i]);
+          var timeReg = /\[\d*:\d*((\.|\:)\d*)*\]/g;
+          var timeRegExpArr = lyric.match(timeReg);
+          if (!timeRegExpArr) continue;
+          var clause = lyric.replace(timeReg, '');
+          for (var k = 0, h = timeRegExpArr.length; k < h; k++) {
+            var t = timeRegExpArr[k];
+            var min = Number(String(t.match(/\[\d*/i)).slice(1)),
+              sec = Number(String(t.match(/\:\d*/i)).slice(1));
+            var time = min * 60 + sec;
+            lrcObj[time] = clause;
+          }
+        }
+        return lrcObj;
+      },
+      changeSong(i) {
+        console.log(i)
+      },
+
     },
     watch: {
-      getmusic(val, oldval) {
+      musicTime(val) {
         for (let i = 0; i < this.lyricList.length; i++) {
           if (val == this.lyricTime[i]) {
             this.$Velocity(this.$refs.lyricsBox, 'scroll', {
@@ -196,7 +209,23 @@
             this.currentLrc = i
           }
         }
+        if( val == this.time ){
+          this.isOver = false;
+          this.changeIsPlayHtml( false );
+          this.$nextTick(function (){
+            this.isOver = false;
+            this.changeIsPlayHtml( true);
+          })
+        }
       },
+      musicPlay(){
+        this.isOver = false;
+        this.changeIsPlayHtml( false );
+        this.$nextTick(function (){
+          this.isOver = false;
+          this.changeIsPlayHtml( true);
+        })
+      }
     }
   }
 </script>

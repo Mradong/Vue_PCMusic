@@ -6,6 +6,7 @@
 
 export default new Vuex.Store({
   state: {
+    musicTime:0,//储存当前播放时间
     isRouterAlive: true,//是否显示右侧导航栏
     isPlayHtml:false,//是否显示音乐页面
     isMvPlay:false,//是否显示MV页面
@@ -18,11 +19,11 @@ export default new Vuex.Store({
   getters: {
     // 接受state作为参数，每次 count发生变化时 ， 都会被调用
     //就是用来监听数据变化的方法。
+    watchmusicTime: state => {
+      return state.musicTime;
+    },
     watchMusicPlay: state => {
       return state.musicPlay;
-    },
-    doneTodos: (state, n) => {//通过方法访问
-      return state.count += n;
     },
     getnewcurrentSrc: state => {
       return state.isPlay;

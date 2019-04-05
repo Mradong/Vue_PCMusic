@@ -60,13 +60,13 @@
         <div class="music-user">相关推荐</div>
         <div class="sim-song" style="margin-top: 20px">
           <ul>
-            <li v-for=" item,index in mvSimi" :key="index"
+            <li v-for=" item,index in mvSimi" :key="index" @click="cutVideo(index)"
                 style="width: 240px; height: 80px; display: block;margin-bottom: 5px">
-              <router-link :to="{ name:'blank', query: { id: item.id,type: 'mv' } }">
-                <div class="fl">
+              <!--<router-link :to="{ name:'blank', query: { id: item.id,type: 'mv' } }">-->
+              <div class="fl">
                 <img :src="item.cover" alt="" style="width: 120px;height: 70px; cursor: pointer">
               </div>
-              </router-link>
+              <!--</router-link>-->
               <div class="fr" style="margin:3px 0 010px;width: 110px">
                 <p style="font-size: 14px;line-height: 16px;">{{item.name| hanziLimit(14)}}</p>
                 <span style="font-size: 12px;color: #555555">{{ item.duration | mvDate}}</span>
@@ -83,6 +83,7 @@
 <script>
   import mrct from '@/assets/imges/timg2.jpg'
   import hzw from '@/assets/imges/timg1.jpg'
+  import {mapMutations} from 'vuex'
 
   export default {
     name: "MusicVideo",
@@ -98,7 +99,7 @@
           width: 690,
           height: 410,
         },
-        enterLogo:{ //视频加载页logo
+        enterLogo: { //视频加载页logo
           url: hzw,
           width: 231,
           height: 42
@@ -106,7 +107,7 @@
         rootStyle: {
           backgroundColor: 'rgba(0,0,0,0.87)'
         },
-        isPlayer:false,
+        isPlayer: true,
         resourceReady: [],
         Player: null,
         mvdetails: [],
@@ -144,15 +145,43 @@
         console.log(error);
       });
     },
-    mounted(){
+    methods: {
+      ...mapMutations({
+        changeIsPlayHtml:'changeIsPlayHtml'
+      }),
+      clickVideoMusic() {
+        this.isPlayer = false;
+        this.changeIsPlayHtml(false);
+        this.$nextTick(() => {
+          this.isPlayer = false;
+          this.changeIsPlayHtml(true);
+        })
+      },
+      cutVideo(index) {
+        this.$router.push({
+            name: 'mv',
+            query: {
+              id: this.mvSimi[index].id,
+            }
+          }
+        );
+        this.clickVideoMusic();
+      }
+
+    },
+    mounted() {
 
     },
     watch: {
+      $route(to, from) {
+        if( to.query.id != from.query.id){
+          this.clickVideoMusic();
+        }
+      },
       resourceReady(newValue) {
         this.Player.emit('resourceReady', newValue);
       }
     },
-
   }
 
 </script>
