@@ -134,7 +134,7 @@
     },
     created: function () {
       let bannerUrl = '/banner';
-      let personalizedUrl = '/personalized';
+      let personalizedUrl = '/personalized?limit=10';
       let personalizedprivateUrl = '/personalized/privatecontent';
       let personalizedNewsongUrl = '/personalized/newsong';
       let personalizedMvUrl = '/personalized/mv';
@@ -241,7 +241,7 @@
   }
 
   .new_song > ul > li:nth-child(3), .new_song > ul > li:nth-child(4), .new_song > ul > li:nth-child(7), .new_song > ul > li:nth-child(8) {
-    background-color: rgba(215, 215, 215, 0.35);
+    background-color: rgb(246, 246, 246);
 
   }
 

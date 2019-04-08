@@ -70,7 +70,7 @@
           label="操作"
           width="80">
           <template slot-scope="scope">
-            <i class="el-icon-star-off"></i><i class="el-icon-download"></i>
+            <i class="lyd-xihuan1 iconfont"></i> <i class="lyd-xiazaiguanli-xiazai iconfont" style="font-size: 18px"></i>
           </template>
         </el-table-column>
         <el-table-column

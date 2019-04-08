@@ -76,8 +76,8 @@
                     <div>&emsp;</div>
                   </el-col>
                   <el-col :span="2" v-if="index == musicIndex">
-                    <i class="iconfont lyd-bofang" v-if="!isPlay" @click=" musicPlay"></i>
-                    <i class="iconfont lyd-zanting1" v-if="isPlay" @click=" musicStop"></i>
+                    <i class="iconfont lyd-diantaibofangye_bofang" v-if="!isPlay" @click=" musicPlay"></i>
+                    <i class="iconfont lyd-diantaibofangye_zanting" v-if="isPlay" @click=" musicStop"></i>
                   </el-col>
                   <el-col :span="12">
                     {{item.name | hanziLimit(30)}}
@@ -218,7 +218,6 @@
         localStorage.setItem("musicplay", JSON.stringify(musicIfo));
       },
       cutMusic(index){
-        console.log( '1')
         localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[index]));
         this.changemusicPlay();
       },
@@ -550,5 +549,10 @@
     text-align: center;
     line-height: 20px;
     color: #fff;
+  }
+  i.iconfont.lyd-diantaibofangye_zanting, i.iconfont.lyd-diantaibofangye_bofang{
+    font-size: 28px;
+    margin-left: 10px;
+    color: #ee3c07f2;
   }
 </style>
