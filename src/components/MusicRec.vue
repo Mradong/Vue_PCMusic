@@ -4,7 +4,11 @@
       <el-tab-pane label="个性推荐" name="first">
         <rec-per></rec-per>
       </el-tab-pane>
-      <el-tab-pane label="歌单" name="second">歌单</el-tab-pane>
+      <el-tab-pane label="歌单" name="second">
+        <menus>
+
+        </menus>
+      </el-tab-pane>
       <el-tab-pane label="主播电台" name="third">主播电台</el-tab-pane>
       <el-tab-pane label="排行榜" name="fourth">排行榜</el-tab-pane>
     </el-tabs>
@@ -13,14 +17,19 @@
 
 <script>
   import recPer from './MusicRecPer'
+  import menus from './MusicMenus'
   export default {
     data() {
       return {
         activeName: 'first'
       };
     },
+    created(){
+
+    },
     components: {
-      recPer
+      recPer,
+      menus
     },
     methods: {
       handleClick(tab, event) {

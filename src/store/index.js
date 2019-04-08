@@ -6,13 +6,14 @@
 
 export default new Vuex.Store({
   state: {
-    musicTime:0,//储存当前播放时间
+    musicTime: 0,//储存当前播放时间
     isRouterAlive: true,//是否显示右侧导航栏
-    isPlayHtml:false,//是否显示音乐页面
-    isMvPlay:false,//是否显示MV页面
+    isPlayHtml: false,//是否显示音乐页面
+    isMvPlay: false,//是否显示MV页面
     isPlay: false,//播放状态
-    musicPlay:{},//存储当前播放歌曲信息
+    musicPlay: {},//存储当前播放歌曲信息
     musicList: [],//存储当前播放列表
+    isMenus: true,
   },
   // getters：派生状态。也就是set、get中的get，有两个可选参数：state、getters分别可以获取state中的变量和其他的getters。
   // 外部调用方式：store.getters.consoleCount()。就和vue的computed差不多；
@@ -34,23 +35,26 @@ export default new Vuex.Store({
   mutations: {
     // 改变state状态的方法，不建议直接通过
     // this.$store.state.? = ？的方式改变state中的状态
-    changemusicPlay:(state,n) =>{
+    changemusicPlay: (state, n) => {
       state.musicPlay = localStorage.getItem("musicplay");
     },
-    changeIsplay:(state,n) =>{
+    changeIsplay: (state, n) => {
       state.isPlay = n;
     },
-    changeIsRouterAlive:(state,n) =>{
+    changeIsRouterAlive: (state, n) => {
       state.isRouterAlive = n;
     },
-    changeIsPlayHtml:(state,n) =>{
+    changeIsPlayHtml: (state, n) => {
       state.isPlayHtml = n;
     },
-    changeMusicTime:(state,n) =>{
+    changeMusicTime: (state, n) => {
       state.musicTime = n;
     },
-    changeMvPlay:(state,n) =>{
+    changeMvPlay: (state, n) => {
       state.isMvPlay = n;
+    },
+    changeIsMenus: (state, n) => {
+      state.isMenus = n;
     },
   },
   // 和mutations类似。不过actions支持异步操作。第一个参数默认是和store具有相同参数属性的对象。外部调用方式：store.dispatch('addCount')。

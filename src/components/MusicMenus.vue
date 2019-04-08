@@ -1,47 +1,91 @@
 <template>
-  <div style="margin: 20px">
+  <div style="margin: 20px" ref="menusBox">
     <div class="song_menu">
-      <el-row type="flex" class="row-bg">
-        <el-col :span="22">
-          <div class="grid-content bg-purple fz20">推荐歌单</div>
-        </el-col>
-        <el-col :span="2">
-          <div class="grid-content bg-purple-light">更多></div>
-        </el-col>
-      </el-row>
+        <div class="hot-labels">
+          <ul>
+            <li><h2>热门标签:</h2></li>
+            <li><a href="javascript:;">华语</a>|</li>
+            <li><a href="javascript:;">流行</a>|</li>
+            <li><a href="javascript:;">摇滚</a>|</li>
+            <li><a href="javascript:;">民谣</a>|</li>
+            <li><a href="javascript:;">电子</a>|</li>
+            <li><a href="javascript:;">轻音乐</a>|</li>
+            <li><a href="javascript:;">影视原声</a> |</li>
+            <li><a href="javascript:;">ACG</a> |</li>
+            <li><a href="javascript:;">怀旧</a> |</li>
+            <li><a href="javascript:;">治愈</a></li>
+          </ul>
+        </div>
     </div>
     <div class="song_content">
-      <ul>
-        <li v-for="(item,index) in personalizedList" :key="index" v-if='index<10'>
-          <router-link :to="{name:'menu', query:{id: item.id}}"><img :src="item.picUrl+'?param=140y140'" alt=""
+      <ul style="overflow: hidden">
+        <li v-for="(item,index) in musicMenus" :key="index">
+          <router-link :to="{name:'menu', query:{id: item.id}}"><img :src="item.coverImgUrl+'?param=176y178'" alt=""
                                                                      style="width: 100%"></router-link>
           <router-link :to="{name:'menu', query:{id: item.id}}"><p> {{item.name}}</p></router-link>
         </li>
       </ul>
+      <div class="block">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :current-page.sync="currentPage"
+          @current-change="handleCurrentChange"
+          :total="100">
+        </el-pagination>
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
+  import {mapMutations} from 'vuex'
   export default {
     name: "MusicMenus",
     data() {
-      return {}
+      return {
+        musicMenus:[],
+        currentPage:1,
+        isMenus:true,
+      }
     },
     created: function () {
-      let musicMenusUrl = '/top/playlist?limit=20';
-      //轮播图
+      let musicMenusUrl = '/top/playlist?limit=52';
       this.$axios.get(musicMenusUrl).then((response) => {
-        console.log(response.data)
+        this.musicMenus = response.data.playlists;
       }).catch((error) => {
         console.log(error);
       });
+    },
+    methods:{
+      ...mapMutations({
+        changeIsMenus:'changeIsMenus'
+      }),
+      handleCurrentChange(val){
+
+        this.isMenus = false;
+        this.changeIsMenus(false);
+        this.$nextTick(() => {
+          this.isMenus = false;
+          this.changeIsMenus(true);
+        })
+
+        console.log( '12')
+        let musicMenusUrl = '/top/playlist?highquality&limit=52&offset='+ (val-1) * 52;
+        this.$axios.get(musicMenusUrl).then((response) => {
+          this.musicMenus = response.data.playlists;
+        }).catch((error) => {
+          console.log(error);
+        });
+      },
     }
   }
 </script>
 
 <style scoped>
   .song_menu {
+    height: 50px;
     border-bottom: 1px solid rgba(6, 12, 6, 0.22);
   }
 
@@ -51,9 +95,9 @@
 
   .song_content > ul > li {
     margin: 5px;
-    width: 140px;
+    width: 176px;
     float: left;
-    height: 195px;
+    height: 223px;
     font-size: 12px;
   }
 
@@ -64,5 +108,15 @@
     margin: 10px;
     background-color: rgba(226, 226, 226, 0.14);
   }
-
+  .block .el-pagination{
+    margin: 0 auto;
+    width: 70%;
+  }
+  .hot-labels ul li{
+    float: left;
+  }
+  .hot-labels ul li a{
+    float: left;
+    padding: 0 12px;
+  }
 </style>

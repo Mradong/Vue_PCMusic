@@ -9,7 +9,7 @@
         <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
           <music-left></music-left>
         </el-aside>
-        <el-main>
+        <el-main v-if=" this.$store.state.isMenus">
           <router-view v-if="this.$store.state.isRouterAlive"></router-view>
         </el-main>
       </el-container>
@@ -59,9 +59,10 @@
           localStorage.setItem("userStatus", 200);
         }
       }).catch((error) => {
-
         console.log(error);
       })
+
+      console.log( this.$refs)
     },
     watch: {
       $route(to, from) {
