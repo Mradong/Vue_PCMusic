@@ -12,7 +12,7 @@
             <div class="grid-content bg-purple fz20">推荐歌单</div>
           </el-col>
           <el-col :span="2">
-            <div class="grid-content bg-purple-light">更多></div>
+            <div class="grid-content bg-purple-light" style="cursor: pointer" @click="changeMore(1)">更多></div>
           </el-col>
         </el-row>
       </div>
@@ -116,7 +116,8 @@
     },
     methods:{
       ...mapMutations({
-        changemusicPlay: 'changemusicPlay'
+        changemusicPlay: 'changemusicPlay',
+        changeRecActiveName:'changeRecActiveName'
       }),
       cutMusic(index){
         let musicplay = {};
@@ -130,6 +131,9 @@
         musicplay.url = 'https://music.163.com/song/media/outer/url?id='+this.newSongList[index].song.id+'.mp3';
         localStorage.setItem("musicplay", JSON.stringify(musicplay));
         this.changemusicPlay();
+      },
+      changeMore( index ){
+        this.changeRecActiveName( index );
       }
     },
     created: function () {
@@ -159,7 +163,6 @@
       //最新音乐
       this.$axios.get(personalizedNewsongUrl).then((response) => {
         this.newSongList = response.data.result;
-        console.log( this.newSongList )
       }).catch((error) => {
         console.log(error);
       });

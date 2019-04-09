@@ -4,16 +4,16 @@
         <div class="hot-labels">
           <ul>
             <li><h2>热门标签:</h2></li>
-            <li><a href="javascript:;">华语</a>|</li>
-            <li><a href="javascript:;">流行</a>|</li>
-            <li><a href="javascript:;">摇滚</a>|</li>
-            <li><a href="javascript:;">民谣</a>|</li>
-            <li><a href="javascript:;">电子</a>|</li>
-            <li><a href="javascript:;">轻音乐</a>|</li>
-            <li><a href="javascript:;">影视原声</a> |</li>
-            <li><a href="javascript:;">ACG</a> |</li>
-            <li><a href="javascript:;">怀旧</a> |</li>
-            <li><a href="javascript:;">治愈</a></li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '华语' }" >华语</a>|</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '流行' }" >流行</a>|</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '摇滚' }" >摇滚</a>|</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '民谣' }" >民谣</a>|</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '电子' }" >电子</a>|</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '轻音乐' }" >轻音乐</a>|</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '影视原声' }" >影视原声</a> |</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == 'ACG' }" >ACG</a> |</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '怀旧' }" >怀旧</a> |</li>
+            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '治愈' }" >治愈</a></li>
           </ul>
         </div>
     </div>
@@ -29,7 +29,7 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :current-page.sync="currentPage"
+          :current-page.sync="musicMenusCurrentPage"
           @current-change="handleCurrentChange"
           :total="100">
         </el-pagination>
@@ -40,45 +40,53 @@
 </template>
 
 <script>
-  import {mapMutations} from 'vuex'
+  import {mapState,mapMutations} from 'vuex'
   export default {
     name: "MusicMenus",
     data() {
       return {
         musicMenus:[],
-        currentPage:1,
         isMenus:true,
       }
     },
+    computed: {
+      ...mapState([
+        'musicMenusCurrentPage',
+        'tag'
+      ]),
+    },
     created: function () {
-      let musicMenusUrl = '/top/playlist?limit=52';
-      this.$axios.get(musicMenusUrl).then((response) => {
-        this.musicMenus = response.data.playlists;
-      }).catch((error) => {
-        console.log(error);
-      });
+      let musicMenusUrl = '/top/playlist?highquality&limit=52&offset=' + (this.musicMenusCurrentPage -1) * 52 +'&cat='+this.tag;
+      this.MenusGet( musicMenusUrl );
     },
     methods:{
       ...mapMutations({
-        changeIsMenus:'changeIsMenus'
+        changeTag:'changeTag',
+        changeIsMenus:'changeIsMenus',
+        changeCurrentPage:'changeCurrentPage'
       }),
-      handleCurrentChange(val){
-
+      handleCurrentChange(index){
         this.isMenus = false;
         this.changeIsMenus(false);
         this.$nextTick(() => {
           this.isMenus = false;
           this.changeIsMenus(true);
         })
-
-        console.log( '12')
-        let musicMenusUrl = '/top/playlist?highquality&limit=52&offset='+ (val-1) * 52;
-        this.$axios.get(musicMenusUrl).then((response) => {
+        this.changeCurrentPage( index );
+      },
+      MenusGet( url ){
+        this.$axios.get(url).then((response) => {
           this.musicMenus = response.data.playlists;
         }).catch((error) => {
           console.log(error);
         });
       },
+      tagGet( e ){
+        let musicMenusUrl = '/top/playlist?highquality&limit=52&offset=0&cat=' + e.srcElement.innerHTML;
+        this.MenusGet( musicMenusUrl );
+        this.changeTag( e.srcElement.innerHTML );
+        this.changeCurrentPage( 1 );
+      }
     }
   }
 </script>

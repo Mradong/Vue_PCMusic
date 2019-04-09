@@ -24,7 +24,7 @@
               @click="handleIconClick">
             </i>
             <template slot-scope="{ item }">
-              <div v-if=" item[0] == 'songs' ">搜“<span style="color:#00b4e6">{{ searchMusic }}</span>”相关结果></div>
+              <div v-if=" item[0] == 'songs' " style="pointer-events: none;">搜“<span style="color:#00b4e6;">{{ searchMusic }}</span>”相关结果></div>
               <div class="item-name" v-if=" item[0] == 'artists' "><i class="iconfont lyd-geshou"></i> 歌手</div>
               <div class="item-name" v-if=" item[0] == 'songs' "><i class="iconfont lyd-yinle4"></i> 单曲</div>
               <div class="item-name" v-if=" item[0] == 'playlists' "><i class="iconfont lyd-gedan"></i> 歌单</div>
@@ -32,7 +32,7 @@
               <div class="item-name" v-if=" item[0] == 'albums' "><i class="iconfont lyd-zhuanji1"></i> 专辑</div>
               <span v-for=" val,index in item[1]" :key="index" class="item-content" v-if="val.name.length < 12 "
                     @click="getIndex(index)">
-                {{val.name}} <span v-for="item,index in val.artists" v-if=" val.artists != 'undefined'">- {{ item.name  | hanziLimit(6)}}</span>
+                {{val.name}} <span v-for="item,index in val.artists" v-if=" val.artists != 'undefined'">- {{ item.name  | hanziLimit(10)}}</span>
               </span>
               <span v-for=" val,index in item[1]" :key="index" class="item-content" v-if="val.name.length >= 12 "
                     @click="getIndex(index)">
@@ -388,6 +388,7 @@
   .item-name {
     background-color: #f5f7fa;
     padding-left: 5px;
+    pointer-events: none;
   }
 
   span.item-content {
@@ -395,6 +396,7 @@
     padding-left: 25px;
     font-size: 12px;
     color: #555;
+    cursor: pointer;
   }
 
   .el-autocomplete-suggestion li.highlighted, .el-autocomplete-suggestion li:hover {
@@ -532,5 +534,8 @@
   .login {
     height: 530px;
   }
-
+  .el-autocomplete-suggestion li {
+    cursor: auto;
+    padding: 0 10px;
+  }
 </style>

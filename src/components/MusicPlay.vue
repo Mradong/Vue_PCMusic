@@ -191,10 +191,6 @@
         }
         return lrcObj;
       },
-      changeSong(i) {
-        console.log(i)
-      },
-
     },
     watch: {
       musicTime(val) {

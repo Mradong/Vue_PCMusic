@@ -57,15 +57,6 @@ export default new VueRouter({
           }
         },
         {
-          path: 'menus',
-          name: 'menus',
-          component: loadView('MusicMenus'),
-          meta: {
-            keepAlive: true,
-            isBack: false
-          }
-        },
-        {
           path: 'menu',
           name: 'menu',
           component: loadView('MusicMenu'),

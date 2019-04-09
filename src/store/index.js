@@ -13,13 +13,15 @@ export default new Vuex.Store({
     isPlay: false,//播放状态
     musicPlay: {},//存储当前播放歌曲信息
     musicList: [],//存储当前播放列表
-    isMenus: true,
+    isMenus: true,//分页请求时，刷新页面
+    musicMenusCurrentPage:1,//推荐歌单的当前页
+    musicRecActiveName:'0',//rec的tab切换的状态
+    tag:'华语',
   },
-  // getters：派生状态。也就是set、get中的get，有两个可选参数：state、getters分别可以获取state中的变量和其他的getters。
-  // 外部调用方式：store.getters.consoleCount()。就和vue的computed差不多；
+  // 外部调用方式：store.getters.xxxx()。就和vue的computed差不多；
+  // 接受state作为参数，每次 count发生变化时 ， 都会被调用
+  //就是用来监听数据变化的方法。
   getters: {
-    // 接受state作为参数，每次 count发生变化时 ， 都会被调用
-    //就是用来监听数据变化的方法。
     watchmusicTime: state => {
       return state.musicTime;
     },
@@ -33,8 +35,6 @@ export default new Vuex.Store({
   // 提交状态修改。也就是set、get中的set，这是vuex中唯一修改state的方式，但不支持异步操作。
   // 第一个参数默认是state。外部调用方式：store.commit('addNumCount', 18)。和vue中的methods类似。
   mutations: {
-    // 改变state状态的方法，不建议直接通过
-    // this.$store.state.? = ？的方式改变state中的状态
     changemusicPlay: (state, n) => {
       state.musicPlay = localStorage.getItem("musicplay");
     },
@@ -56,6 +56,16 @@ export default new Vuex.Store({
     changeIsMenus: (state, n) => {
       state.isMenus = n;
     },
+    changeCurrentPage: (state, n) => {
+      state.musicMenusCurrentPage = n;
+    },
+    changeRecActiveName: (state, n) => {
+      state.musicRecActiveName = n.toString();
+    },
+    changeTag: (state, n) => {
+      state.tag = n;
+    },
+
   },
   // 和mutations类似。不过actions支持异步操作。第一个参数默认是和store具有相同参数属性的对象。外部调用方式：store.dispatch('addCount')。
   // 可以用来执行异步操作，可以跟踪异步数据状态变化
@@ -76,5 +86,5 @@ export default new Vuex.Store({
   // }
 
 })
-//这样我们就可以在任何一个 component中通过 this.$store.dispatch('addNumCount', 5); 或者 this.$store.dispatch('addCount'); 去触发actions操作来改变state中的值。
+
 

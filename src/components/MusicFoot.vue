@@ -35,10 +35,10 @@
         </div>
       </el-col>
       <div class="fr last-iconbox">
-        <i class="lyd-liebiaoxunhuan iconfont" v-if="playOrder == 0" @click="playOrder++"></i>
-        <i class="lyd-danquxunhuan iconfont" v-if="playOrder == 1" @click="playOrder++"></i>
-        <i class="lyd-suiji iconfont" v-if="playOrder == 2" @click="playOrder++"></i>
-        <i class="lyd-shunxubofang iconfont" v-if="playOrder == 3" @click="playOrder=0"></i>
+        <i class="lyd-liebiaoxunhuan iconfont" v-if="playOrder == 0" @click="changesPlayOrder"></i>
+        <i class="lyd-danquxunhuan iconfont" v-if="playOrder == 1" @click="changesPlayOrder"></i>
+        <i class="lyd-suiji iconfont" v-if="playOrder == 2" @click="changesPlayOrder"></i>
+        <i class="lyd-shunxubofang iconfont" v-if="playOrder == 3" @click="changesPlayOrder"></i>
 
         <i class="lyd-gecitiaozheng iconfont"></i>
         <div class="fr music-plist">
@@ -191,7 +191,7 @@
       },
       _durationTime: function () {
         this.timeDuration = parseInt(this.$refs.songPlayer.duration)
-        console.log( this.$refs.songPlayer.duration)
+
       },
       addEventListeners: function () {
         this.$refs.songPlayer.addEventListener('timeupdate', this._currentTime),
@@ -240,8 +240,6 @@
             localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex-1]));
             this.musicIndex = this.musicIndex -1;
           }
-          localStorage.setItem("playOrder", JSON.stringify(0));
-          localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
           this.changemusicPlay();
         }
       },
@@ -264,8 +262,7 @@
             localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
             this.musicIndex = this.musicIndex +1;
           }
-          localStorage.setItem("playOrder", JSON.stringify(0));
-          localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+
           this.changemusicPlay();
         }
       },
@@ -276,6 +273,14 @@
         this.$refs.songPlayer.src = '' ;
         this.timeDuration= 0;
         this.changemusicPlay();
+      },
+      changesPlayOrder( ){
+         if( this.playOrder < 3){
+           this.playOrder++;
+         }else {
+           this.playOrder = 0;
+         }
+        localStorage.setItem("playOrder", JSON.stringify( this.playOrder ));
       },
       //滑块点击控制音乐播放进度
       newNum: function (value) {
@@ -315,8 +320,6 @@
                   localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
                   this.musicIndex = this.musicIndex +1;
                 }
-                localStorage.setItem("playOrder", JSON.stringify(0));
-                localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
                 this.changemusicPlay();
               }
               break;
@@ -324,8 +327,7 @@
               setTimeout(() => {
                 this.musicPlay();
               }, 400)
-              localStorage.setItem("playOrder", JSON.stringify(1));
-              localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+
               break;
             case 2:
               if(this.musicPlayList.length == 1){
@@ -340,8 +342,7 @@
                 this.musicIndex = random;
               }
               this.changemusicPlay();
-              localStorage.setItem("playOrder", JSON.stringify(2));
-              localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+
               break;
             case 3:
               if( this.musicIndex == this.musicPlayList.length-1){
@@ -357,8 +358,7 @@
                 this.musicIndex = this.musicIndex +1;
 
               }
-              localStorage.setItem("playOrder", JSON.stringify(3));
-              localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+
               break;
             default:
               break;
@@ -392,6 +392,7 @@
           }
           this.musicIndex = this.musicPlayList.findIndex( fruit => fruit.id === musicifo.id );
         }
+        localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
       },
       musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
