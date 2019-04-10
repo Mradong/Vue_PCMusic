@@ -38,6 +38,9 @@ export default new Vuex.Store({
     changemusicPlay: (state, n) => {
       state.musicPlay = localStorage.getItem("musicplay");
     },
+    changeMusicList: (state, n) => {
+      state.musicList = JSON.parse(localStorage.getItem('musicPlayList'));
+    },
     changeIsplay: (state, n) => {
       state.isPlay = n;
     },

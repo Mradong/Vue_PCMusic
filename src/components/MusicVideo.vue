@@ -117,6 +117,11 @@
       };
     },
     created() {
+      // switch ( this.$route.query.type) {
+      //   case 'mv':
+      //     console.log( 'haha')
+      //     break;
+      // }
       let mvUrl = '/mv/detail?mvid=' + this.$route.query.id;
       let mvComment = '/comment/mv?id=' + this.$route.query.id;
       let mvSimi = '/simi/mv?mvid=' + this.$route.query.id;

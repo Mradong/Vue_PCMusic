@@ -1,5 +1,6 @@
 <template>
   <div class=" music-play-content">
+    <img :src="picUrl+'?param=102y102'" alt="">
     <div class="music-play-top">
       <div class="song-cd fl">
         <div class="song-cd-img"></div>
@@ -268,21 +269,19 @@
     width: 100%;
     padding: 20px;
   }
-
-  .music-play-content:before {
-    background: url(../assets/imges/smbj.png) repeat;
-    background-size: cover;
-    width: 1020px;
-    height: 580px;
-    content: "";
+  .music-play-content > img {
     position: absolute;
     top: 0;
     left: 0;
+    padding: 80px;
+    width: 850px;
+    height: 400px;
     z-index: -1; /*-1 可以当背景*/
-    -webkit-filter: blur(1px);
-    filter: blur(1px);
+    -webkit-filter: blur(60px); /* Chrome, Opera */
+    -moz-filter: blur(60px);
+    -ms-filter: blur(60px);
+    filter: blur(60px);
   }
-
   .song-cd-img {
     float: left;
     width: 210px;

@@ -140,12 +140,13 @@
         musicUrl: '',
         playOrder: 0,//0列表循环、1单曲循环、2随机播放、3、顺序播放
         musicPlayList:[],
-        musicIndex:0,
+        musicIndex:null,
       }
     },
     computed: {
       ...mapState([
-        'isPlay'
+        'isPlay',
+        'musicList'
       ]),
       ...mapGetters([
         'watchMusicPlay'
@@ -157,29 +158,31 @@
       } else {
         let musicIfo = JSON.parse(localStorage.getItem("musicplay"));
         this.musicUrl = musicIfo.url;
-
-        if (JSON.parse(localStorage.getItem("musicPlayList")) != null) {
-          this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
-        }
-        if(JSON.parse(localStorage.getItem('playOrder'))!=null ){
-          this.playOrder = JSON.parse(localStorage.getItem('playOrder'));
-        }
-
         if(JSON.parse(localStorage.getItem('musicIndex'))!=null ){
           this.musicIndex = JSON.parse(localStorage.getItem('musicIndex'));
         }
+      }
 
-        if (this.timeNow != 0) {
-          if (musicIfo.hasOwnProperty("volume")) {
-            this.$refs.songPlayer.volume = musicIfo.volume / 100;
-            this.musicVolume = musicIfo.volume;
-          } else {
-            this.$refs.songPlayer.volume = this.musicVolume / 100;
-          }
+      if (JSON.parse(localStorage.getItem("musicPlayList")) != null) {
+        this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
+        console.log( this.musicPlayList )
+      }
+      if(JSON.parse(localStorage.getItem('playOrder')) !=null ){
+        this.playOrder = JSON.parse(localStorage.getItem('playOrder'));
+        console.log( this.playOrder
+        )
+      }
+
+      if (this.timeNow != 0) {
+        if (musicIfo.hasOwnProperty("volume")) {
+          this.$refs.songPlayer.volume = musicIfo.volume / 100;
+          this.musicVolume = musicIfo.volume;
         } else {
-          if (musicIfo.hasOwnProperty("volume")) {
-            this.musicVolume = musicIfo.volume;
-          }
+          this.$refs.songPlayer.volume = this.musicVolume / 100;
+        }
+      } else {
+        if (musicIfo.hasOwnProperty("volume")) {
+          this.musicVolume = musicIfo.volume;
         }
       }
 
@@ -218,6 +221,7 @@
         localStorage.setItem("musicplay", JSON.stringify(musicIfo));
       },
       cutMusic(index){
+
         localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[index]));
         this.changemusicPlay();
       },
@@ -236,9 +240,17 @@
             this.musicIndex = this.musicPlayList.length-1;
           }
           else {
-            this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex-1].url ;
-            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex-1]));
-            this.musicIndex = this.musicIndex -1;
+            if( this.playOrder == 2){
+              let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
+              this.$refs.songPlayer.src = this.musicPlayList[random].url ;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
+              this.musicIndex = random;
+            }
+            else {
+              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex-1].url ;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex-1]));
+              this.musicIndex = this.musicIndex -1;
+            }
           }
           this.changemusicPlay();
         }
@@ -258,11 +270,19 @@
             this.musicIndex = 0;
           }
           else {
-            this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
-            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
-            this.musicIndex = this.musicIndex +1;
-          }
+            if( this.playOrder == 2){
+              let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
+              this.$refs.songPlayer.src = this.musicPlayList[random].url ;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
+              this.musicIndex = random;
+            }
+            else {
+              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
+              this.musicIndex = this.musicIndex +1;
+            }
 
+          }
           this.changemusicPlay();
         }
       },
@@ -286,11 +306,74 @@
       newNum: function (value) {
         this.$refs.songPlayer.currentTime = (value / 100) * this.timeDuration;
       },
+      playMode(){
+        switch (this.playOrder) {
+          case 0 :
+            if(this.musicPlayList.length == 1){
+              setTimeout(() => {
+                this.musicPlay();
+              }, 400)
+            }
+            else {
+              if( this.musicIndex == this.musicPlayList.length-1){
+                this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
+                this.musicIndex = 0;
+              }
+              else {
+                this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
+                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
+                this.musicIndex = this.musicIndex +1;
+              }
+              this.changemusicPlay();
+            }
+            break;
+          case 1:
+            setTimeout(() => {
+              this.musicPlay();
+            }, 400)
+
+            break;
+          case 2:
+            if(this.musicPlayList.length == 1){
+              setTimeout(() => {
+                this.musicPlay();
+              }, 400)
+            }
+            else {
+              let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
+              this.$refs.songPlayer.src = this.musicPlayList[random].url ;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
+              this.musicIndex = random;
+            }
+            this.changemusicPlay();
+
+            break;
+          case 3:
+            if( this.musicIndex == this.musicPlayList.length-1){
+              this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
+              this.musicIndex = 0;
+              this.changemusicPlay();
+              this.musicStop();
+            }
+            else {
+              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
+              this.musicIndex = this.musicIndex +1;
+            }
+
+            break;
+          default:
+            break;
+        }
+      },
       //vuex组件
       ...mapMutations({
         changeIsplay: 'changeIsplay',
         changeMusicTime: 'changeMusicTime',
-        changemusicPlay: 'changemusicPlay'
+        changemusicPlay: 'changemusicPlay',
+
       }),
       ...mapActions([
         // addCount
@@ -302,67 +385,7 @@
         if (newValue == this.timeDuration) {
           this.changeIsplay(false);
           this.timeNow = 0;
-          switch (this.playOrder) {
-            case 0 :
-              if(this.musicPlayList.length == 1){
-                setTimeout(() => {
-                  this.musicPlay();
-                }, 400)
-              }
-              else {
-                if( this.musicIndex == this.musicPlayList.length-1){
-                  this.$refs.songPlayer.src = this.musicPlayList[0].url ;
-                  localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
-                  this.musicIndex = 0;
-                }
-                else {
-                  this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
-                  localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
-                  this.musicIndex = this.musicIndex +1;
-                }
-                this.changemusicPlay();
-              }
-              break;
-            case 1:
-              setTimeout(() => {
-                this.musicPlay();
-              }, 400)
-
-              break;
-            case 2:
-              if(this.musicPlayList.length == 1){
-                setTimeout(() => {
-                  this.musicPlay();
-                }, 400)
-              }
-              else {
-                let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
-                this.$refs.songPlayer.src = this.musicPlayList[random].url ;
-                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
-                this.musicIndex = random;
-              }
-              this.changemusicPlay();
-
-              break;
-            case 3:
-              if( this.musicIndex == this.musicPlayList.length-1){
-                this.$refs.songPlayer.src = this.musicPlayList[0].url ;
-                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
-                this.musicIndex = 0;
-                this.changemusicPlay();
-                this.musicStop();
-              }
-              else {
-                this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
-                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
-                this.musicIndex = this.musicIndex +1;
-
-              }
-
-              break;
-            default:
-              break;
-          }
+          this.playMode();
         }
         this.musicValue = (newValue / this.timeDuration);
         this.musicValue = this.musicValue.toFixed(3) * 100;
@@ -396,6 +419,9 @@
       },
       musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
+      },
+      musicList( val ){
+        this.musicPlayList = val;
       }
     },
     mounted() {

@@ -35,7 +35,7 @@
         </div>
         <div style="clear:both;"></div>
         <div>
-          <el-button type="danger" size="mini" icon="iconfont lyd-bofang">播放全部</el-button>
+          <el-button type="danger" size="mini" icon="iconfont lyd-bofang" @click="playAll">播放全部</el-button>
           <el-button type="danger" size="mini" class="shizi_icon" icon="el-icon-plus"></el-button>
           <el-button size="mini" icon="el-icon-circle-plus-outline">收藏</el-button>
           <el-button size="mini" icon="el-icon-share">分享</el-button>
@@ -83,7 +83,7 @@
           sortable
           width="150"
           label="歌手"
-          prop="arname">
+          prop="singer">
         </el-table-column>
         <el-table-column
           sortable
@@ -128,35 +128,32 @@
     },
     methods: {
       ...mapMutations({
-        changemusicPlay: 'changemusicPlay'
+        changemusicPlay: 'changemusicPlay',
+        changeMusicList:'changeMusicList',
       }),
+      playAll(){
+        localStorage.removeItem( "musicplay");
+        localStorage.removeItem( "musicPlayList");
+        localStorage.setItem("musicPlayList", JSON.stringify(this.tracks));
+        localStorage.setItem("musicplay", JSON.stringify(this.tracks[0]));
+        this.changeMusicList();
+        this.changemusicPlay();
+      },
       dblclick(e) {
-        console.log(e )
-        let song = '/song/detail?ids='+ e.id ;
-        let musicplay ={};
-        this.$axios.get(song ).then((response) => {
-          musicplay.lrc='/lyric?id='+e.id,
-          musicplay.url='https://music.163.com/song/media/outer/url?id='+e.id+'.mp3',
-          musicplay.id = e.id ;
-          musicplay.time= e.time;
-          musicplay.name = e.name ;
-          musicplay.singer = e.arname ;
-          musicplay.pic = response.data.songs[0].al.picUrl ;
-          localStorage.setItem("musicplay", JSON.stringify(musicplay));
-          this.changemusicPlay();
-        }).catch((error) => {
-          console.log(error);
-        })
+
+        localStorage.setItem("musicplay", JSON.stringify(this.tracks[e.i-1]));
+        this.changemusicPlay();
       }
     },
     created() {
-      let playlistUrl = '/playlist/detail?id=' + this.$route.query.id;
+      let playlistUrl = '/playlist/detail?limit=100&id=' + this.$route.query.id;
       //获取歌单详
       this.$axios.get(playlistUrl).then((response) => {
         this.playlist = response.data.playlist;
         this.user = response.data.playlist.creator;
         this.description = this.playlist.description;
         this.hideDescription = this.playlist.description.slice(50);
+        console.log(this.playlist.tracks)
         const tracks = this.playlist.tracks.map((item, index) => {
           return {
             i: (index + 1).toString().padStart(2, '0'),
@@ -165,8 +162,11 @@
             id: item.id,
             alname: item.al.name.slice(0, 10).length >= 10 ? item.al.name.slice(0, 10) + '..' : item.al.name,
             alid: item.al.id,
-            arname: item.ar[0].name,
+            singer: item.ar[0].name,
             arid: item.ar[0].id,
+            lrc:'/lyric?id='+ item.id,
+            url:'https://music.163.com/song/media/outer/url?id='+item.id+'.mp3',
+            pic:item.al.picUrl,
           }
         });
         this.tracks = tracks;

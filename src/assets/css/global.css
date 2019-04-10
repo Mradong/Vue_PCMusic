@@ -39,3 +39,7 @@ html {overflow-y: scroll;}
 .on{
   color: red;
 }
+
+[v-cloak] {
+  display:none !important;
+}
