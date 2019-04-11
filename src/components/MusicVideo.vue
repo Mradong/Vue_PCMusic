@@ -2,19 +2,33 @@
   <div style="padding: 20px" class="musuc_mv">
     <div class="music_mv_l fl" style="width: 690px">
       <div class="music_mv_play">
-        <div style="margin-bottom: 5px">
+        <div style="margin-bottom: 5px" v-if="type =='mv'">
           <i class="el-icon-arrow-left" @click="$router.go(-1)"></i>
           <span class="span_mv">mv</span>
           <span style="font-size: 18px;">{{ mvdetails.name }}</span>
           <span>{{ mvdetails.artistName}}</span>
         </div>
+        <div style="margin-bottom: 5px" v-if="type =='djfs'">
+          <i class="el-icon-arrow-left" @click="$router.go(-1)"></i>
+          <span class="span_mv">视频</span>
+          <span style="font-size: 18px;">{{ mvdetails.title }}</span>
+          <span>{{ creator.nickname}}</span>
+        </div>
+
         <VueXgplayer :config="config" :rootStyle="rootStyle" @player="Player = $event"/>
-        <ul class="song-cd-iocn">
+        <ul class="song-cd-iocn" v-if="type =='mv'">
           <li><i class=" iconfont lyd-xihuan2"></i>喜欢({{ mvdetails.likeCount}})</li>
           <li><i class=" iconfont lyd-yinle2"></i>收藏({{ mvdetails.subCount}})</li>
           <li><i class=" iconfont lyd-pengyou1"></i>分享({{ mvdetails.shareCount}})</li>
           <li><i class=" iconfont lyd-xiazaiguanli-xiazai"></i>下载</li>
         </ul>
+        <ul class="song-cd-iocn" v-if="type =='djfs'">
+          <li><i class=" iconfont lyd-xihuan2"></i>喜欢({{ mvdetails.likeCount}})</li>
+          <li><i class=" iconfont lyd-yinle2"></i>收藏({{ mvdetails.subscribeCount}})</li>
+          <li><i class=" iconfont lyd-pengyou1"></i>分享({{ mvdetails.praisedCount}})</li>
+          <li><i class=" iconfont lyd-xiazaiguanli-xiazai"></i>下载</li>
+        </ul>
+
       </div>
       <div class="music-play-bottom" style="margin-top:110px;">
         <div class="Song-reviews">
@@ -26,7 +40,7 @@
             >
             </el-input>
           </div>
-          <ul class="brilliant">
+          <ul class="brilliant" v-if="type =='mv'">
             <h4>精彩评论</h4>
             <li class="fl" v-for="item,index in mvComment " :key="index">
               <div class="fl brilliant-img">
@@ -44,7 +58,8 @@
 
       </div>
     </div>
-    <div class="music_mv_r fl" style="width: 250px;margin-left: 20px;">
+
+    <div class="music_mv_r fl" style="width: 250px;margin-left: 20px;" v-if="type =='mv'">
       <div class="mv-detail" style="width: 250px">
         <div class="music-user">视频介绍</div>
         <div style="color: #9a6e3a;font-size: 12px; margin: 5px 0 15px">
@@ -56,17 +71,49 @@
           <p>{{ mvdetails.desc}}</p>
         </div>
       </div>
+
       <div class="hit-music" style="margin-top:30px ">
         <div class="music-user">相关推荐</div>
         <div class="sim-song" style="margin-top: 20px">
           <ul>
             <li v-for=" item,index in mvSimi" :key="index" @click="cutVideo(index)"
                 style="width: 240px; height: 80px; display: block;margin-bottom: 5px">
-              <!--<router-link :to="{ name:'blank', query: { id: item.id,type: 'mv' } }">-->
               <div class="fl">
                 <img :src="item.cover" alt="" style="width: 120px;height: 70px; cursor: pointer">
               </div>
-              <!--</router-link>-->
+              <div class="fr" style="margin:3px 0 010px;width: 110px">
+                <p style="font-size: 14px;line-height: 16px;">{{item.name| hanziLimit(14)}}</p>
+                <span style="font-size: 12px;color: #555555">{{ item.duration | mvDate}}</span>
+                <p style="font-size: 12px;color: #555555">by {{item.artistName | hanziLimit(12)}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="music_mv_r fl" style="width: 250px;margin-left: 20px;" v-if="type =='djfs'">
+      <div class="mv-detail" style="width: 250px">
+        <div class="music-user">视频介绍</div>
+        <div style="color: #9a6e3a;font-size: 12px; margin: 5px 0 15px">
+          <span style="padding-right: 15px">发布时间:{{mvdetails.publishTime | musicmenuDate}}</span>
+          <span>播放次数:{{ mvdetails.playTime}}</span>
+        </div>
+        <div style="font-size: 12px;">
+          <h2>{{ mvdetails.briefDesc}}</h2>
+          简介：
+          <p v-for=" item,index in viodDesc" :key="index"> {{item}}</p>
+        </div>
+      </div>
+
+      <div class="hit-music" style="margin-top:30px ">
+        <div class="music-user">相关推荐</div>
+        <div class="sim-song" style="margin-top: 20px">
+          <ul>
+            <li v-for=" item,index in mvSimi" :key="index" @click="cutVideo(index)"
+                style="width: 240px; height: 80px; display: block;margin-bottom: 5px">
+              <div class="fl">
+                <img :src="item.cover" alt="" style="width: 120px;height: 70px; cursor: pointer">
+              </div>
               <div class="fr" style="margin:3px 0 010px;width: 110px">
                 <p style="font-size: 14px;line-height: 16px;">{{item.name| hanziLimit(14)}}</p>
                 <span style="font-size: 12px;color: #555555">{{ item.duration | mvDate}}</span>
@@ -98,6 +145,7 @@
           autoplay: false,
           width: 690,
           height: 410,
+          type:'',
         },
         enterLogo: { //视频加载页logo
           url: hzw,
@@ -113,42 +161,66 @@
         mvdetails: [],
         mvComment: [],
         mvSimi: [],
-
+        creator:{},
+        viodDesc:[],
       };
     },
     created() {
-      // switch ( this.$route.query.type) {
-      //   case 'mv':
-      //     console.log( 'haha')
-      //     break;
-      // }
-      let mvUrl = '/mv/detail?mvid=' + this.$route.query.id;
-      let mvComment = '/comment/mv?id=' + this.$route.query.id;
-      let mvSimi = '/simi/mv?mvid=' + this.$route.query.id;
-      //MV详情获取
-      this.$axios.get(mvUrl).then((response) => {
-        this.mvdetails = response.data.data;
+      this.type = this.$route.query.type;
+      switch ( this.$route.query.type) {
+        case 'mv':
+          let mvUrl = '/mv/detail?mvid=' + this.$route.query.id;
+          let mvComment = '/comment/mv?id=' + this.$route.query.id;
+          let mvSimi = '/simi/mv?mvid=' + this.$route.query.id;
+          //MV详情获取
+          this.$axios.get(mvUrl).then((response) => {
+            this.mvdetails = response.data.data;
+            this.config.poster = response.data.data.cover;
+            for (let [key, val] of Object.entries(this.mvdetails.brs)) {
+              this.config.url.push({src: val, type: 'video/mp4'});
+              this.resourceReady.push({name: key + 'P', url: val})
+            }
+          }).catch((error) => {
+            console.log(error);
+          });
+          //MV评论获取
+          this.$axios.get(mvComment).then((response) => {
+            this.mvComment = response.data.comments;
+          }).catch((error) => {
+            console.log(error);
+          });
+          //相关MV获取
+          this.$axios.get(mvSimi).then((response) => {
+            this.mvSimi = response.data.mvs;
+          }).catch((error) => {
+            console.log(error);
+          });
+          break;
+        case 'djfs':
+          let djfsUrl = '/video/detail?id=' + this.$route.query.id;
+          let djfsPlayUrl = '/video/url?id=';
+          //MV详情获取
+          this.$axios.get(djfsUrl).then((response) => {
+            this.mvdetails = response.data.data;
+            this.creator = response.data.data.creator;
+            let viodDesc =  response.data.data.split("\n");
+            this.viodDesc = viodDesc;
+            return( response.data.data.vid )
+          }).then((vid) => {
+            this.$axios.get(djfsPlayUrl + vid).then((response) => {
+              console.log( response.data.urls )
+              this.config.url.push({src: response.data.urls[0].url, type: 'video/mp4'});
+            }).catch((error) => {
+              console.log(error);
+            });
 
-        this.config.poster = response.data.data.cover;
-        for (let [key, val] of Object.entries(this.mvdetails.brs)) {
-          this.config.url.push({src: val, type: 'video/mp4'});
-          this.resourceReady.push({name: key + 'P', url: val})
-        }
-      }).catch((error) => {
-        console.log(error);
-      });
-      //MV评论获取
-      this.$axios.get(mvComment).then((response) => {
-        this.mvComment = response.data.comments;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //相关MV获取
-      this.$axios.get(mvSimi).then((response) => {
-        this.mvSimi = response.data.mvs;
-      }).catch((error) => {
-        console.log(error);
-      });
+
+          }).catch((error) => {
+            console.log(error);
+          });
+
+          break;
+      }
     },
     methods: {
       ...mapMutations({

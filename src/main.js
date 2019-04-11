@@ -82,6 +82,7 @@ Vue.filter('toNum', function (value) {
   return parseInt(value);
 });
 
+
 Vue.filter('hanziLimit', function (value, num, type) {
   if (!value) return ''
   value = value.toString();

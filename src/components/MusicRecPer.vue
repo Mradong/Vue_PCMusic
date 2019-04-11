@@ -40,7 +40,7 @@
       <div class="song_content">
         <ul>
           <li v-for="(item,index) in personalizedMv" :key="index" style="width:230px; margin: 0 12px" v-if=" index < 3">
-            <router-link :to="{name:'mv', query: { id: item.id } }"><img :src="item.picUrl +'?param=230y130'" alt="" style="width: 100%">
+            <router-link :to="{name:'mv', query: { id: item.id ,type: 'mv'} }"><img :src="item.picUrl +'?param=230y130'" alt="" style="width: 100%">
             </router-link>
             <router-link to="/music/mv"><h2> {{item.name | hanziLimit(18) }}</h2></router-link>
             <p> {{item.artistName}}</p>
@@ -92,8 +92,8 @@
       <div class="song_content">
         <ul>
           <li v-for="(item,index) in personalizedPrivate" :key="index" style="width:230px; margin: 0 12px">
-            <router-link :to="{name:'mv', query: { id: item.id } }"><img :src="item.sPicUrl +'?param=230y130'" alt="" style="width: 100%"></router-link>
-            <router-link :to="{name:'mv', query: { id: item.id } }"><p> {{item.copywriter}}</p></router-link>
+            <router-link :to="{name:'mv', query: { id: item.videoId,type: 'djfs' } }"><img :src="item.sPicUrl +'?param=230y130'" alt="" style="width: 100%"></router-link>
+            <router-link :to="{name:'mv', query: { id: item.videoId,type: 'djfs'} }"><p> {{item.copywriter}}</p></router-link>
           </li>
         </ul>
       </div>
