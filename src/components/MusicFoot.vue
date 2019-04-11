@@ -39,7 +39,6 @@
         <i class="lyd-danquxunhuan iconfont" v-if="playOrder == 1" @click="changesPlayOrder"></i>
         <i class="lyd-suiji iconfont" v-if="playOrder == 2" @click="changesPlayOrder"></i>
         <i class="lyd-shunxubofang iconfont" v-if="playOrder == 3" @click="changesPlayOrder"></i>
-
         <i class="lyd-gecitiaozheng iconfont"></i>
         <div class="fr music-plist">
           <el-popover
@@ -80,10 +79,10 @@
                     <i class="iconfont lyd-diantaibofangye_zanting" v-if="isPlay" @click=" musicStop"></i>
                   </el-col>
                   <el-col :span="12">
-                    {{item.name | hanziLimit(30)}}
+                    {{item.name | hanziLimit(20)}}
                   </el-col>
                   <el-col :span="6">
-                    {{item.singer | hanziLimit(18)}}
+                    {{item.singer | hanziLimit(8)}}
                   </el-col>
                   <el-col :span="2">
                     {{item.time}}
@@ -475,6 +474,7 @@
 
   .el-row .last-iconbox div.music-plist .music-plist-button span {
     font-size: 14px;
+    margin: 0;
   }
   .music-plist-form .el-row{
     line-height: 28px;
@@ -537,7 +537,7 @@
   .el-row .last-iconbox div.music-plist .music-plist-button{
     padding: 0;
     margin: 0;
-    width: 40px;
+    width: 46px;
     height: 16px;
     position: relative;
     top: 4px;

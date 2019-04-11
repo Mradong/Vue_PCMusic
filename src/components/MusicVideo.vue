@@ -40,8 +40,23 @@
             >
             </el-input>
           </div>
-          <ul class="brilliant" v-if="type =='mv'">
+          <ul class="brilliant hot-comments">
             <h4>精彩评论</h4>
+            <li class="fl" v-for="item,index in hotComments " :key="index">
+              <div class="fl brilliant-img">
+                <img :src="item.user.avatarUrl" alt="">
+              </div>
+              <div class="fl brilliant-content">
+                <span style="color: skyblue">{{ item.user.nickname}} </span> <span
+                style="font-size: 18px;font-family: Arial">:</span> {{item.content }}
+                <div style="padding-top: 8px"><span
+                  style="font-size: 12px;color: #909399">{{ item.time | convertDate }}</span></div>
+              </div>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+          <ul class="brilliant" style="margin-top: 30px">
+            <h4>最新评论({{total}})</h4>
             <li class="fl" v-for="item,index in mvComment " :key="index">
               <div class="fl brilliant-img">
                 <img :src="item.user.avatarUrl" alt="">
@@ -54,6 +69,7 @@
               </div>
             </li>
           </ul>
+
         </div>
 
       </div>
@@ -71,26 +87,26 @@
           <p>{{ mvdetails.desc}}</p>
         </div>
       </div>
-
       <div class="hit-music" style="margin-top:30px ">
         <div class="music-user">相关推荐</div>
         <div class="sim-song" style="margin-top: 20px">
           <ul>
             <li v-for=" item,index in mvSimi" :key="index" @click="cutVideo(index)"
                 style="width: 240px; height: 80px; display: block;margin-bottom: 5px">
-              <div class="fl">
-                <img :src="item.cover" alt="" style="width: 120px;height: 70px; cursor: pointer">
+              <div class="fl" style="width: 120px;height: 70px; cursor: pointer">
+                <img :src="item.cover+'?param=120y70'" alt="" >
               </div>
               <div class="fr" style="margin:3px 0 010px;width: 110px">
-                <p style="font-size: 14px;line-height: 16px;">{{item.name| hanziLimit(14)}}</p>
+                <p style="font-size: 14px;line-height: 16px;">{{item.name| hanziLimit(12)}}</p>
                 <span style="font-size: 12px;color: #555555">{{ item.duration | mvDate}}</span>
-                <p style="font-size: 12px;color: #555555">by {{item.artistName | hanziLimit(12)}}</p>
+                <p style="font-size: 12px;color: #555555">by {{item.artistName | hanziLimit(10)}}</p>
               </div>
             </li>
           </ul>
         </div>
       </div>
     </div>
+
     <div class="music_mv_r fl" style="width: 250px;margin-left: 20px;" v-if="type =='djfs'">
       <div class="mv-detail" style="width: 250px">
         <div class="music-user">视频介绍</div>
@@ -111,13 +127,13 @@
           <ul>
             <li v-for=" item,index in mvSimi" :key="index" @click="cutVideo(index)"
                 style="width: 240px; height: 80px; display: block;margin-bottom: 5px">
-              <div class="fl">
-                <img :src="item.cover" alt="" style="width: 120px;height: 70px; cursor: pointer">
+              <div class="fl" style="width: 120px;height: 70px; cursor: pointer">
+                <img :src="item.coverUrl+'?param=120y70'" alt="" >
               </div>
               <div class="fr" style="margin:3px 0 010px;width: 110px">
-                <p style="font-size: 14px;line-height: 16px;">{{item.name| hanziLimit(14)}}</p>
+                <p style="font-size: 14px;line-height: 16px;">{{item.title| hanziLimit(12)}}</p>
                 <span style="font-size: 12px;color: #555555">{{ item.duration | mvDate}}</span>
-                <p style="font-size: 12px;color: #555555">by {{item.artistName | hanziLimit(12)}}</p>
+                <p style="font-size: 12px;color: #555555">by {{item.creator[0].userName | hanziLimit(8)}}</p>
               </div>
             </li>
           </ul>
@@ -128,8 +144,8 @@
 </template>
 
 <script>
-  import mrct from '@/assets/imges/timg2.jpg'
-  import hzw from '@/assets/imges/timg1.jpg'
+  import fmt from '@/assets/imges/fmt.jpg'
+  import loading from '@/assets/imges/loading.jpg'
   import {mapMutations} from 'vuex'
 
   export default {
@@ -141,14 +157,14 @@
           url: [],
           playbackRate: [0.5, 0.75, 1, 1.5, 2],
           keyShortcut: 'on',
-          poster: mrct,
+          poster: fmt,
           autoplay: false,
           width: 690,
           height: 410,
           type:'',
         },
         enterLogo: { //视频加载页logo
-          url: hzw,
+          url: loading,
           width: 231,
           height: 42
         },
@@ -163,6 +179,8 @@
         mvSimi: [],
         creator:{},
         viodDesc:[],
+        hotComments:[],
+        total:'',
       };
     },
     created() {
@@ -175,16 +193,18 @@
           //MV详情获取
           this.$axios.get(mvUrl).then((response) => {
             this.mvdetails = response.data.data;
-            this.config.poster = response.data.data.cover;
             for (let [key, val] of Object.entries(this.mvdetails.brs)) {
               this.config.url.push({src: val, type: 'video/mp4'});
               this.resourceReady.push({name: key + 'P', url: val})
             }
           }).catch((error) => {
             console.log(error);
+
           });
           //MV评论获取
           this.$axios.get(mvComment).then((response) => {
+            this.total = response.data.total;
+            this.hotComments = response.data.hotComments;
             this.mvComment = response.data.comments;
           }).catch((error) => {
             console.log(error);
@@ -199,21 +219,44 @@
         case 'djfs':
           let djfsUrl = '/video/detail?id=' + this.$route.query.id;
           let djfsPlayUrl = '/video/url?id=';
+          let relatedUrl = '/related/allvideo?id=';
+          let commentUrl = '/comment/video?id=';
           //MV详情获取
           this.$axios.get(djfsUrl).then((response) => {
             this.mvdetails = response.data.data;
+            console.log( response.data.data.vid)
             this.creator = response.data.data.creator;
-            let viodDesc =  response.data.data.split("\n");
-            this.viodDesc = viodDesc;
+            if( response.data.data.description == null ){
+              this.viodDesc = ['暂无详情']
+            }
+            else {
+              this.viodDesc = response.data.data.description.split("\n")
+            }
+
+            console.log( this.mvdetails )
+
             return( response.data.data.vid )
           }).then((vid) => {
+            //请求歌曲链接
             this.$axios.get(djfsPlayUrl + vid).then((response) => {
-              console.log( response.data.urls )
               this.config.url.push({src: response.data.urls[0].url, type: 'video/mp4'});
             }).catch((error) => {
               console.log(error);
             });
-
+            //请求相关视频
+            this.$axios.get(relatedUrl + vid).then((response) => {
+              this.mvSimi = response.data.data;
+              console.log( this.mvSimi )
+            }).catch((error) => {
+              console.log(error);
+            });
+            //评论详情
+            this.$axios.get(commentUrl + vid).then((response) => {
+              this.hotComments = response.data.hotComments;
+              this.mvComment = response.data.comments;
+            }).catch((error) => {
+              console.log(error);
+            });
 
           }).catch((error) => {
             console.log(error);
@@ -235,13 +278,30 @@
         })
       },
       cutVideo(index) {
-        this.$router.push({
-            name: 'mv',
-            query: {
-              id: this.mvSimi[index].id,
-            }
-          }
-        );
+        switch ( this.$route.query.type) {
+          case 'mv':
+            this.$router.push({
+                name: 'mv',
+                query: {
+                  id: this.mvSimi[index].id,
+                  type:'mv'
+                }
+              }
+            );
+            break;
+          case 'djfs':
+            this.$router.push({
+                name: 'mv',
+                query: {
+                  id: this.mvSimi[index].vid,
+                  type:'djfs'
+                }
+              }
+            );
+            break;
+        }
+
+
         this.clickVideoMusic();
       }
 
@@ -300,6 +360,9 @@
     margin-bottom: 10px;
     padding-bottom: 10px;
     width: 100%;
+  }
+  .hot-comments li:last-child{
+    border-bottom:0;
   }
 
   .brilliant .brilliant-img {

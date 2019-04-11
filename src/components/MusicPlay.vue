@@ -59,13 +59,13 @@
           <ul>
             <li v-for=" item,index in similaritySong" :key="index"
                 style="width: 200px; height: 70px; display: block;margin-bottom: 5px">
-              <div class="fl" @click="$router.go(0)">
-                <img :src="item.album.picUrl+'?param=60y60'" alt="" style="width: 60px;height: 60px; cursor: pointer">
+              <div class="fl" @click="$router.go(0)" style="width: 60px;height: 60px; cursor: pointer">
+                <img :src="item.album.picUrl+'?param=60y60'" alt="" >
               </div>
               <div class="fl" style="margin: 10px 0 0 10px;line-height: 28px">
                 <h3>{{item.name | hanziLimit(8)}}</h3>
                 <span v-for="artist,i in item.artists" :key="i">
-                  {{artist.name}}
+                  {{artist.name | hanziLimit(8)}}
                 </span>
               </div>
             </li>
