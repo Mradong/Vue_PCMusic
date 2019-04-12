@@ -94,7 +94,7 @@
             <li v-for=" item,index in mvSimi" :key="index" @click="cutVideo(index)"
                 style="width: 240px; height: 80px; display: block;margin-bottom: 5px">
               <div class="fl" style="width: 120px;height: 70px; cursor: pointer">
-                <img :src="item.cover+'?param=120y70'" alt="" >
+                <img :src="item.cover+'?param=120y70'" alt="">
               </div>
               <div class="fr" style="margin:3px 0 010px;width: 110px">
                 <p style="font-size: 14px;line-height: 16px;">{{item.name| hanziLimit(12)}}</p>
@@ -128,7 +128,7 @@
             <li v-for=" item,index in mvSimi" :key="index" @click="cutVideo(index)"
                 style="width: 240px; height: 80px; display: block;margin-bottom: 5px">
               <div class="fl" style="width: 120px;height: 70px; cursor: pointer">
-                <img :src="item.coverUrl+'?param=120y70'" alt="" >
+                <img :src="item.coverUrl+'?param=120y70'" alt="">
               </div>
               <div class="fr" style="margin:3px 0 010px;width: 110px">
                 <p style="font-size: 14px;line-height: 16px;">{{item.title| hanziLimit(12)}}</p>
@@ -161,7 +161,7 @@
           autoplay: false,
           width: 690,
           height: 410,
-          type:'',
+          type: '',
         },
         enterLogo: { //视频加载页logo
           url: loading,
@@ -177,15 +177,15 @@
         mvdetails: [],
         mvComment: [],
         mvSimi: [],
-        creator:{},
-        viodDesc:[],
-        hotComments:[],
-        total:'',
+        creator: {},
+        viodDesc: [],
+        hotComments: [],
+        total: '',
       };
     },
     created() {
       this.type = this.$route.query.type;
-      switch ( this.$route.query.type) {
+      switch (this.$route.query.type) {
         case 'mv':
           let mvUrl = '/mv/detail?mvid=' + this.$route.query.id;
           let mvComment = '/comment/mv?id=' + this.$route.query.id;
@@ -224,18 +224,17 @@
           //MV详情获取
           this.$axios.get(djfsUrl).then((response) => {
             this.mvdetails = response.data.data;
-            console.log( response.data.data.vid)
+            console.log(response.data.data.vid)
             this.creator = response.data.data.creator;
-            if( response.data.data.description == null ){
+            if (response.data.data.description == null) {
               this.viodDesc = ['暂无详情']
-            }
-            else {
+            } else {
               this.viodDesc = response.data.data.description.split("\n")
             }
 
-            console.log( this.mvdetails )
+            console.log(this.mvdetails)
 
-            return( response.data.data.vid )
+            return (response.data.data.vid)
           }).then((vid) => {
             //请求歌曲链接
             this.$axios.get(djfsPlayUrl + vid).then((response) => {
@@ -246,7 +245,7 @@
             //请求相关视频
             this.$axios.get(relatedUrl + vid).then((response) => {
               this.mvSimi = response.data.data;
-              console.log( this.mvSimi )
+              console.log(this.mvSimi)
             }).catch((error) => {
               console.log(error);
             });
@@ -267,7 +266,7 @@
     },
     methods: {
       ...mapMutations({
-        changeIsPlayHtml:'changeIsPlayHtml'
+        changeIsPlayHtml: 'changeIsPlayHtml'
       }),
       clickVideoMusic() {
         this.isPlayer = false;
@@ -278,13 +277,13 @@
         })
       },
       cutVideo(index) {
-        switch ( this.$route.query.type) {
+        switch (this.$route.query.type) {
           case 'mv':
             this.$router.push({
                 name: 'mv',
                 query: {
                   id: this.mvSimi[index].id,
-                  type:'mv'
+                  type: 'mv'
                 }
               }
             );
@@ -294,7 +293,7 @@
                 name: 'mv',
                 query: {
                   id: this.mvSimi[index].vid,
-                  type:'djfs'
+                  type: 'djfs'
                 }
               }
             );
@@ -311,7 +310,7 @@
     },
     watch: {
       $route(to, from) {
-        if( to.query.id != from.query.id){
+        if (to.query.id != from.query.id) {
           this.clickVideoMusic();
         }
       },
@@ -361,8 +360,9 @@
     padding-bottom: 10px;
     width: 100%;
   }
-  .hot-comments li:last-child{
-    border-bottom:0;
+
+  .hot-comments li:last-child {
+    border-bottom: 0;
   }
 
   .brilliant .brilliant-img {

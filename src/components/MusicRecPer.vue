@@ -26,6 +26,7 @@
       </div>
     </div>
     <div style="clear:both;"></div>
+
     <div class="personalizedPrivate" style="margin-top: 30px">
       <div class="song_menu">
         <el-row type="flex" class="row-bg">
@@ -85,7 +86,7 @@
             <div class="grid-content bg-purple fz20">独家放送</div>
           </el-col>
           <el-col :span="2">
-            <div class="grid-content bg-purple-light">更多></div>
+           <router-link :to="{name:'djfs'}"> <div class="grid-content bg-purple-light">更多></div> </router-link>
           </el-col>
         </el-row>
       </div>
@@ -102,7 +103,7 @@
 </template>
 
 <script>
-  import {mapState,mapGetters, mapMutations,} from 'vuex'
+  import { mapMutations} from 'vuex'
   export default {
     name: "MusicRecPer",
     data() {

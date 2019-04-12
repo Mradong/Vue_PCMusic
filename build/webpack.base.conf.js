@@ -35,6 +35,7 @@ module.exports = {
     'moment': 'moment',
     'element-ui': 'ELEMENT',
     'velocity-animate':'Velocity'
+
   },
   module: {
     rules: [

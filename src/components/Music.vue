@@ -9,8 +9,9 @@
         <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
           <music-left></music-left>
         </el-aside>
-        <el-main v-if=" this.$store.state.isMenus">
-          <router-view v-if="this.$store.state.isRouterAlive"></router-view>
+
+        <el-main v-if=" this.$store.state.isMenus" ref="mainWrapper">
+          <router-view v-if="this.$store.state.isRouterAlive" ref="viewWrapper"></router-view>
         </el-main>
       </el-container>
 
@@ -35,10 +36,12 @@
   import musicFoot from './MusicFoot.vue'
   import musicRec from './MusicRec.vue'
   import musicNav from './MusicNav'
-
+  import {mapMutations} from 'vuex'
   export default {
     data() {
-      return {};
+      return {
+        scrollNum:1,
+      };
     },
     components: {
       musicLeft,
@@ -46,13 +49,38 @@
       musicRec,
       musicNav
     },
-    methods: {},
+    methods: {
+      ...mapMutations({
+        changeNewMvs:'changeNewMvs'
+      })
+    },
+
     mounted() {
+      this.box = this.$refs.mainWrapper;
+      console.log( this.$refs.viewWrapper)
+      this.box.$el.addEventListener('scroll', () => {
+        let scrollTop = parseInt(this.$refs.mainWrapper.$el.scrollTop) -41;
+        let scrollNum = 2050 *( this.scrollNum) - 580;
+        if( scrollTop == scrollNum ){
+          this.scrollNum ++;
+          let newMvUrl = '/mv/first?limit='+ 20 * this.scrollNum;
+          this.$axios.get(newMvUrl).then((response) => {
+            let newMvs = [];
+            newMvs.push( response.data.data);
+            this.changeNewMvs( newMvs )
+          }).catch((error) => {
+            console.log(error);
+          });
+        }
+
+      }, false)
+
     },
     beforeRouteLeave(to, from, next) {
 
     },
     created: function () {
+
       let userStatus = '/user/subcount';
       this.$axios.get( userStatus).then((response) => {
         if(response.data.code == 200){
@@ -61,7 +89,6 @@
       }).catch((error) => {
         console.log(error);
       })
-
       console.log( this.$refs)
     },
     watch: {

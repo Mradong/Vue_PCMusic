@@ -17,6 +17,7 @@ export default new Vuex.Store({
     musicMenusCurrentPage:1,//推荐歌单的当前页
     musicRecActiveName:'0',//rec的tab切换的状态
     tag:'华语',
+    newMvs:[],
   },
   // 外部调用方式：store.getters.xxxx()。就和vue的computed差不多；
   // 接受state作为参数，每次 count发生变化时 ， 都会被调用
@@ -68,7 +69,9 @@ export default new Vuex.Store({
     changeTag: (state, n) => {
       state.tag = n;
     },
-
+    changeNewMvs: (state, n) => {
+      state.newMvs = n;
+    },
   },
   // 和mutations类似。不过actions支持异步操作。第一个参数默认是和store具有相同参数属性的对象。外部调用方式：store.dispatch('addCount')。
   // 可以用来执行异步操作，可以跟踪异步数据状态变化

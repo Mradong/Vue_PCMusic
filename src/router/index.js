@@ -57,6 +57,15 @@ export default new VueRouter({
           }
         },
         {
+          path: 'djfs',
+          name: 'djfs',
+          component: loadView('MusicDjfs'),
+          meta: {
+            keepAlive: false,
+            isBack: false
+          }
+        },
+        {
           path: 'menu',
           name: 'menu',
           component: loadView('MusicMenu'),
