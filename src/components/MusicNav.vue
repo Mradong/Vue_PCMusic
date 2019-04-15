@@ -52,12 +52,23 @@
             placement="bottom"
             width="350"
             :visible-arrow="false"
-            offset="10"
+
             trigger="click">
             <div class="login">
-              <div style="margin-top: 15px;">
+              <div class="login-ewm">
+                <div class="login-sao-ewm">
+                  <img src="@/assets/imges/ewm_1.jpg" alt="">
+                  <span>扫码登录更安全</span>
+                </div>
+                <div class="login-shouji">
+                  <i class="iconfont lyd-shouji"></i>
+                </div>
+
+
+              </div>
+              <div class="login-message">
                 <el-input placeholder="请输入手机号" v-model="loginId" class="input-with-select">
-                  <el-select v-model="country" slot="prepend" placeholder="请选择">
+                  <el-select v-model="selectWord" slot="prepend" placeholder="+86">
                     <el-option label="中国" value="86"></el-option>
                     <el-option label="中国香港" value="852"></el-option>
                     <el-option label="美国" value="1"></el-option>
@@ -65,11 +76,35 @@
                 </el-input>
                 <el-input
                   placeholder="请输入密码"
-                  prefix-icon="el-icon-search"
+                  type="password"
+                  prefix-icon="iconfont lyd-icon-"
                   v-model="password">
+                  <template slot="append">重设密码</template>
                 </el-input>
-                <el-button type="danger" @click="login">登录</el-button>
-                <el-button type="danger" @click="logout">退出</el-button>
+                <el-checkbox v-model="autoLogon">自动登录</el-checkbox>
+                <div>
+                  <el-button type="danger" @click="login">登录</el-button>
+                </div>
+                <div style="margin: 5px auto;width: 50px;">
+                  <a href="/">注册</a>
+                </div>
+                <div class="else-login">
+                  <h3>其他登录方式</h3>
+                  <div>
+                    <ul class="else-logins-icon">
+                      <li><i class="iconfont lyd-changyonglogo28"></i></li>
+                      <li><i class="iconfont lyd-shouji"></i></li>
+                      <li><i class="iconfont lyd-weibo1"></i></li>
+                      <li><i class="iconfont lyd-shouji"></i></li>
+                    </ul>
+                    <ul class="else-logins-text">
+                      <li>微信</li>
+                      <li>微信</li>
+                      <li>微信</li>
+                      <li>微信</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
             <span slot="reference">未登录 <i class="el-icon-caret-bottom"></i></span>
@@ -215,6 +250,8 @@
         typeNum: 1,
         isRedirect: true,
         userInfo: null,
+        autoLogon:true,
+        selectWord:'',
       };
     },
     created: function () {
@@ -342,6 +379,9 @@
 </script>
 
 <style>
+  .el-select .el-input {
+    width: 80px;
+  }
   .user-info .circle {
     width: 40px;
     height: 40px;
@@ -534,9 +574,89 @@
 
   .login {
     height: 530px;
+    margin: 3px;
   }
   .el-autocomplete-suggestion li {
     cursor: auto;
     padding: 0 10px;
+  }
+  .login-sao-ewm{
+    height: 50px;
+  }
+  .login-sao-ewm img{
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+  }
+  .login-sao-ewm span{
+    position: relative;
+    top: -25px;
+    left: -5px;
+    background: rgba(158, 158, 158, 0.63);
+    color: #FFF;
+    padding: 5px;
+  }
+  .login-shouji{
+    width: 90px;
+    margin: 0 auto;
+  }
+  .login-shouji i{
+    font-size: 90px;
+    color: red;
+  }
+  .login-message{
+    margin:10px 40px ;
+  }
+  .login-message .el-checkbox{
+    margin-top: 5px;
+  }
+  .login-message .el-button{
+    width: 100%;
+    margin-top: 10px;
+  }
+  .else-login {
+    margin-top:80px;
+  }
+  .else-login h3{
+
+    background-color: #fff;
+    display: block;
+    width: 100px;
+    height: 10px;
+    margin:0 auto ;
+    text-align: center;
+  }
+  .else-login::before{
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: #222222;
+    position: relative;
+    top:10px ;
+    z-index: -1;
+  }
+  .else-login ul.else-logins-icon li{
+    float: left;
+    width: 35px;
+    height: 35px;
+    padding: 3px;
+    margin: 15px 10px 5px;
+    border: 1px solid rgba(162, 162, 162, 0.49);
+    border-radius: 50%;
+
+  }
+  .else-login ul.else-logins-text li{
+    float: left;
+    width: 35px;
+    padding: 3px;
+    margin: 0 11px;
+    text-align: center;
+  }
+  .else-login ul.else-logins-icon li i{
+    font-size: 26px;
+    margin: 0 4px ;
+    color: red;
+
   }
 </style>

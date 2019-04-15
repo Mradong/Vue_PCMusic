@@ -72,6 +72,7 @@
           </ul>
         </div>
       </div>
+
       <div class="hit-music fr" style="  width:30%;margin-top: 20px">
         <div class="music-user">喜欢这首歌的人</div>
         <div class="sim-song" style="margin-top: 20px">
@@ -237,8 +238,8 @@
   .user-ratings > .el-input > .el-input__inner {
     height: 30px;
     line-height: 30px;
-
   }
+
 </style>
 <style scoped>
   .sim-song .sim-user{
