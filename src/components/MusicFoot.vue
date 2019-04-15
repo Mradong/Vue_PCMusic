@@ -160,6 +160,18 @@
         if(JSON.parse(localStorage.getItem('musicIndex'))!=null ){
           this.musicIndex = JSON.parse(localStorage.getItem('musicIndex'));
         }
+        if (this.timeNow != 0) {
+          if (musicIfo.hasOwnProperty("volume")) {
+            this.$refs.songPlayer.volume = musicIfo.volume / 100;
+            this.musicVolume = musicIfo.volume;
+          } else {
+            this.$refs.songPlayer.volume = this.musicVolume / 100;
+          }
+        } else {
+          if (musicIfo.hasOwnProperty("volume")) {
+            this.musicVolume = musicIfo.volume;
+          }
+        }
       }
 
       if (JSON.parse(localStorage.getItem("musicPlayList")) != null) {
@@ -172,18 +184,7 @@
         )
       }
 
-      if (this.timeNow != 0) {
-        if (musicIfo.hasOwnProperty("volume")) {
-          this.$refs.songPlayer.volume = musicIfo.volume / 100;
-          this.musicVolume = musicIfo.volume;
-        } else {
-          this.$refs.songPlayer.volume = this.musicVolume / 100;
-        }
-      } else {
-        if (musicIfo.hasOwnProperty("volume")) {
-          this.musicVolume = musicIfo.volume;
-        }
-      }
+
 
     },
     methods: {

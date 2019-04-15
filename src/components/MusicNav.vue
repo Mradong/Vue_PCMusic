@@ -285,7 +285,8 @@
             this.$router.push({
                 name: 'mv',
                 query: {
-                  id: items[itemNum].id
+                  id: items[itemNum].id,
+                  type:'mv'
                 }
               }
             );

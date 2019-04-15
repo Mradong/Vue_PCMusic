@@ -56,40 +56,39 @@
     },
 
     mounted() {
-      this.box = this.$refs.mainWrapper;
-      console.log( this.$refs.viewWrapper)
-      this.box.$el.addEventListener('scroll', () => {
-        let scrollTop = parseInt(this.$refs.mainWrapper.$el.scrollTop) -41;
-        let scrollNum = 2050 *( this.scrollNum) - 580;
-        if( scrollTop == scrollNum ){
-          this.scrollNum ++;
-          let newMvUrl = '/mv/first?limit='+ 20 * this.scrollNum;
-          this.$axios.get(newMvUrl).then((response) => {
-            let newMvs = [];
-            newMvs.push( response.data.data);
-            this.changeNewMvs( newMvs )
-          }).catch((error) => {
-            console.log(error);
-          });
-        }
+      if( this.$route.name == 'djfs'){
+        this.$refs.mainWrapper.$el.addEventListener('scroll', () => {
+          let scrollTop = parseInt(this.$refs.mainWrapper.$el.scrollTop) -41;
+          let scrollNum = 2050 *( this.scrollNum) - 580;
+          if( scrollTop == scrollNum ){
+            this.scrollNum ++;
+            let newMvUrl = '/mv/first?limit='+ 20 * this.scrollNum;
+            this.$axios.get(newMvUrl).then((response) => {
+              let newMvs = [];
+              newMvs.push( response.data.data);
+              this.changeNewMvs( newMvs )
+            }).catch((error) => {
+              console.log(error);
+            });
+          }
 
-      }, false)
+        }, false)
+      }
+
 
     },
     beforeRouteLeave(to, from, next) {
 
     },
     created: function () {
-
-      let userStatus = '/user/subcount';
-      this.$axios.get( userStatus).then((response) => {
-        if(response.data.code == 200){
-          localStorage.setItem("userStatus", 200);
-        }
-      }).catch((error) => {
-        console.log(error);
-      })
-      console.log( this.$refs)
+      // let userStatus = '/user/subcount';
+      // this.$axios.get( userStatus).then((response) => {
+      //   if(response.data.code == 200){
+      //     localStorage.setItem("userStatus", 200);
+      //   }
+      // }).catch((error) => {
+      //   console.log(error);
+      // })
     },
     watch: {
       $route(to, from) {

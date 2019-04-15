@@ -57,7 +57,7 @@
       <el-table
         stripe
         @row-dblclick="dblclick"
-        :data="tracks.filter(data => !search || data.arname.toLowerCase().includes(search.toLowerCase()) || data.name.toLowerCase().includes(search.toLowerCase())|| data.alname.toLowerCase().includes(search.toLowerCase()) )"
+        :data="tracks.filter(data => !search || data.singer.toLowerCase().includes(search.toLowerCase()) || data.name.toLowerCase().includes(search.toLowerCase())|| data.alname.toLowerCase().includes(search.toLowerCase()) )"
         header-cell-class-name="header_cell"
         :default-sort="{prop: 'date', order: 'descending'}"
         style="width: 100%">
