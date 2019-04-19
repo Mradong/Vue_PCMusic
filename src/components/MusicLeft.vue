@@ -28,8 +28,17 @@
         </template>
         <el-menu-item-group>
           <span slot="title"><i class="iconfont lyd-xihuan1"></i>我喜欢的音乐</span>
-          <!--<el-menu-item index="1-1">选项1</el-menu-item>-->
-          <!--<el-menu-item index="1-2">选项2</el-menu-item>-->
+        </el-menu-item-group>
+      </el-submenu>
+    </el-menu>
+    <el-menu :default-openeds="['1']" class="el-menu-vertical-demo" background-color="transparent" @open="handleOpen"
+             @close="handleClose" :collapse="isCollapse">
+      <el-submenu index="1"  v-if="status == 200">
+        <template slot="title">
+          <span slot="title">收藏的歌单</span>
+        </template>
+        <el-menu-item-group>
+          <span slot="title"><i class="iconfont lyd-xihuan1"></i>我喜欢的音乐</span>
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
@@ -55,14 +64,16 @@
 </template>
 
 <script>
-
+  import {mapState} from 'vuex'
   export default {
+
     name: "MusicLeft",
     data() {
       return {
         isCollapse: false,
         current: 1,
-        musicPlay: null
+        musicPlay: null,
+        status:null,
       };
     },
     methods: {
@@ -74,12 +85,17 @@
       }
     },
     computed: {
+      ...mapState([
+        'loginStatus',
+      ]),
       getMusicPlay() {
         return this.$store.state.musicPlay;
       }
+
     },
     created: function () {
       this.musicPlay = JSON.parse( localStorage.getItem("musicplay"));
+      this.status = sessionStorage.getItem('userStatus') ;
     },
     watch: {
       $route(to, from) {
@@ -93,6 +109,9 @@
             this.current = 0;
 
         }
+      },
+      loginStatus( status ){
+        this.status = status ;
       },
       getMusicPlay(val) {
         this.musicPlay = JSON.parse(val);

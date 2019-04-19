@@ -51,7 +51,8 @@
     },
     methods: {
       ...mapMutations({
-        changeNewMvs:'changeNewMvs'
+        changeNewMvs:'changeNewMvs',
+        changeLoginStatus:'changeLoginStatus'
       })
     },
 
@@ -81,14 +82,17 @@
 
     },
     created: function () {
-      // let userStatus = '/user/subcount';
-      // this.$axios.get( userStatus).then((response) => {
-      //   if(response.data.code == 200){
-      //     localStorage.setItem("userStatus", 200);
-      //   }
-      // }).catch((error) => {
-      //   console.log(error);
-      // })
+      let userStatus = '/login/status';
+      this.$axios.get( userStatus).then((response) => {
+        if(response.data.code == 200){
+          sessionStorage.setItem("userStatus", 200);
+          this.changeLoginStatus();
+        }
+      }).catch((error) => {
+        sessionStorage.setItem("userStatus", 301);
+        localStorage.removeItem("userInfo");
+        this.changeLoginStatus();
+      })
     },
     watch: {
       $route(to, from) {

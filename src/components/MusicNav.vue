@@ -255,7 +255,7 @@
       };
     },
     created: function () {
-      if(localStorage.getItem("userStatus") == 200){
+      if(sessionStorage.getItem("userStatus") == 200){
         this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
       }
     },
@@ -363,7 +363,8 @@
         let loginUrl = "/login/cellphone?phone=" + this.country + this.loginId + "&password=" + this.password;
         this.$axios.get(loginUrl).then((response) => {
           localStorage.setItem("userInfo", JSON.stringify(response.data.profile));
-          this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
+          this.userInfo = response.data.profile;
+          sessionStorage.setItem("userStatus", 200);
         })
           .catch((error) => {
             console.log(error);
@@ -371,8 +372,14 @@
       }
       ,
       logout() {
-        this.userInfo = null;
-        localStorage.removeItem("userInfo");
+        let logoutUrl = "/logout";
+        this.$axios.get(logoutUrl).then((response) => {
+          this.userInfo = null;
+          localStorage.removeItem("userInfo");
+        }).catch((error) => {
+            console.log(error);
+          })
+
       }
     }
   }
