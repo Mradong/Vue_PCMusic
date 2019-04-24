@@ -20,8 +20,8 @@
       </el-container>
 
 
-      <el-footer  v-if="!this.$store.state.isMvPlay">
-        <music-foot ></music-foot>
+      <el-footer v-if="!this.$store.state.isMvPlay">
+        <music-foot></music-foot>
       </el-footer>
 
       <el-footer v-if="this.$store.state.isMvPlay" style="display: none">
@@ -37,10 +37,11 @@
   import musicRec from './MusicRec.vue'
   import musicNav from './MusicNav'
   import {mapMutations} from 'vuex'
+
   export default {
     data() {
       return {
-        scrollNum:1,
+        scrollNum: 1,
       };
     },
     components: {
@@ -51,54 +52,54 @@
     },
     methods: {
       ...mapMutations({
-        changeNewMvs:'changeNewMvs',
-        changeLoginStatus:'changeLoginStatus'
-      })
+        changeNewMvs: 'changeNewMvs',
+        changeLoginStatus: 'changeLoginStatus'
+      }),
     },
-
     mounted() {
-      if( this.$route.name == 'djfs'){
+      let that = this;
+      if (this.$route.name == 'djfs') {
         this.$refs.mainWrapper.$el.addEventListener('scroll', () => {
-          let scrollTop = parseInt(this.$refs.mainWrapper.$el.scrollTop) -41;
-          let scrollNum = 2050 *( this.scrollNum) - 580;
-          if( scrollTop == scrollNum ){
-            this.scrollNum ++;
-            let newMvUrl = '/mv/first?limit='+ 20 * this.scrollNum;
-            this.$axios.get(newMvUrl).then((response) => {
-              let newMvs = [];
-              newMvs.push( response.data.data);
-              this.changeNewMvs( newMvs )
-            }).catch((error) => {
-              console.log(error);
-            });
+          let scrollTop = parseInt(this.$refs.mainWrapper.$el.scrollTop) - 41;
+          let scrollNum = 2050 * (this.scrollNum) - 580;
+          if (scrollTop == scrollNum) {
+            this.scrollNum++;
+            let newMvUrl = '/mv/first?limit=' + 20 * this.scrollNum;
+            async function getNewMv() {
+              try {
+                let newMvData = await that.$http.get(newMvUrl);
+                let newMvs = [];
+                newMvs.push(newMvData.data);
+                that.changeNewMvs(newMvs)
+              } catch (e) {
+                console.log(e)
+              }
+            }
+            getNewMv();
           }
 
         }, false)
       }
-
-
-    },
-    beforeRouteLeave(to, from, next) {
-
     },
     created: function () {
-      let userStatus = '/login/status';
-      this.$axios.get( userStatus).then((response) => {
-        if(response.data.code == 200){
-          sessionStorage.setItem("userStatus", 200);
+      const getuserStatus = async () => {
+        try {
+          let time = new Date();
+          let userStatusUrl = '/login/status?timestamp=' + this.$moment(time).valueOf();
+          let userStatusData = await this.$http.get(userStatusUrl);
+          if (userStatusData.code == 200) {
+            sessionStorage.setItem("userStatus", 200);
+            this.changeLoginStatus();
+          }
+        } catch (e) {
+          console.log(e)
+          sessionStorage.setItem("userStatus", 301);
+          localStorage.removeItem("userInfo");
           this.changeLoginStatus();
         }
-      }).catch((error) => {
-        sessionStorage.setItem("userStatus", 301);
-        localStorage.removeItem("userInfo");
-        this.changeLoginStatus();
-      })
-    },
-    watch: {
-      $route(to, from) {
       }
+      getuserStatus();
     },
-
   };
 </script>
 

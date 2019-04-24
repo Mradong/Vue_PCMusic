@@ -27,6 +27,24 @@ html {overflow-y: scroll;}
 	width: 1200px;
 	margin: 0 auto;
 }
+.inline-block{
+  display: inline-block;
+}
+.wb30{
+  width: 30%;
+}
+.wb40{
+  width: 40%;
+}
+.wb50{
+  width: 40%;
+}
+.wb60{
+  width: 60%;
+}
+.wb70{
+  width: 70%;
+}
 .mt20{
 	margin-top:20px; 
 }
@@ -42,4 +60,19 @@ html {overflow-y: scroll;}
 
 [v-cloak] {
   display:none !important;
+}
+/*element-ui 全局修改样式*/
+.el-menu-item-group__title {
+  padding-left: 20px !important;
+  cursor: pointer;
+}
+.el-menu-item-group__title span {
+  color: #4e5056;
+}
+.el-menu-item-group__title:hover span {
+  color: #e32b11;
+}
+
+.el-menu-item-group__title span i{
+  padding-right: 5px;
 }

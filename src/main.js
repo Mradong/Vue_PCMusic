@@ -5,6 +5,9 @@
 import router from './router'
 import store from './store'
 import '@/assets/icon/iconfont.css'
+import http from './http';
+
+
 
 //npm 引入方式
 // import Vue from 'vue'
@@ -20,17 +23,15 @@ import '@/assets/icon/iconfont.css'
 //引入axios
 // import Axios from 'axios';
 
+
 //取消vue警告提示
 Vue.config.productionTip = false
-//Axios:挂载原型
 
+//Axios:挂载原型
 Vue.prototype.$moment = moment;
 Vue.prototype.$Velocity = Velocity;
 Vue.prototype.$axios = axios;
-// Axios:默认配置
-axios.defaults.baseURL = 'http://music.rexinshimin.cn:3000';
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-axios.defaults.withCredentials = true;//跨域请求是否携带cooike
+Vue.prototype.$http = http;
 
 //全局路由,
 router.beforeEach((to, from, next) => {
@@ -81,8 +82,6 @@ Vue.filter('completion', function (value, num, string) {
 Vue.filter('toNum', function (value) {
   return parseInt(value);
 });
-
-
 Vue.filter('hanziLimit', function (value, num, type) {
   if (!value) return ''
   value = value.toString();

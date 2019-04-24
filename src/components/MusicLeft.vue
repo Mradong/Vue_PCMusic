@@ -22,23 +22,39 @@
     </div>
     <el-menu :default-openeds="['1']" class="el-menu-vertical-demo" background-color="transparent" @open="handleOpen"
              @close="handleClose" :collapse="isCollapse">
-      <el-submenu index="1">
+      <el-submenu index="1" v-if="status == 200">
         <template slot="title">
-          <span slot="title">创建歌单</span>
+          <span slot="title">创建的歌单</span>
         </template>
-        <el-menu-item-group>
-          <span slot="title"><i class="iconfont lyd-xihuan1"></i>我喜欢的音乐</span>
+        <el-menu-item-group v-for=" plays in userplayList ">
+          <span slot="title">
+            <div class="inline-block wb30">
+              <img :src="plays.coverImgUrl+'?param=40y40'" alt="">
+            </div>
+            <div class="inline-block wb60">
+              <p>{{plays.name | hanziLimit(15)}} </p>
+              <p>{{plays.trackCount}}首 </p>
+            </div>
+          </span>
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
     <el-menu :default-openeds="['1']" class="el-menu-vertical-demo" background-color="transparent" @open="handleOpen"
              @close="handleClose" :collapse="isCollapse">
-      <el-submenu index="1"  v-if="status == 200">
+      <el-submenu index="1" v-if="status == 200">
         <template slot="title">
           <span slot="title">收藏的歌单</span>
         </template>
-        <el-menu-item-group>
-          <span slot="title"><i class="iconfont lyd-xihuan1"></i>我喜欢的音乐</span>
+        <el-menu-item-group v-for=" plays in userSubCount ">
+          <span slot="title">
+            <div class="inline-block wb30">
+              <img :src="plays.coverImgUrl+'?param=40y40'" alt="">
+            </div>
+            <div class="inline-block wb60">
+              <p>{{plays.name | hanziLimit(15)}} </p>
+              <p>{{plays.trackCount}}首 </p>
+            </div>
+          </span>
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
@@ -65,6 +81,7 @@
 
 <script>
   import {mapState} from 'vuex'
+
   export default {
 
     name: "MusicLeft",
@@ -73,7 +90,9 @@
         isCollapse: false,
         current: 1,
         musicPlay: null,
-        status:null,
+        status: null,
+        userSubCount: [],
+        userplayList: [],
       };
     },
     methods: {
@@ -82,6 +101,17 @@
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+      },
+      async getUserCount() {
+        let userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        let userSubCountUrl = '/user/subcount';
+        let userplayListUrl = "/user/playlist?uid=" + userInfo.userId;
+        let userSubCountDatas = await this.$http.get(userSubCountUrl);
+        let userplayListDatas = await this.$http.get(userplayListUrl);
+        let userSubCountData = userSubCountDatas;
+        let userplayListData = userplayListDatas.playlist;
+        this.userplayList = userplayListData.slice(0, userSubCountData.createdPlaylistCount)
+        this.userSubCount = userplayListData.slice(userSubCountData.createdPlaylistCount, userplayListData.length)
       }
     },
     computed: {
@@ -91,11 +121,13 @@
       getMusicPlay() {
         return this.$store.state.musicPlay;
       }
-
     },
     created: function () {
-      this.musicPlay = JSON.parse( localStorage.getItem("musicplay"));
-      this.status = sessionStorage.getItem('userStatus') ;
+      this.musicPlay = JSON.parse(localStorage.getItem("musicplay"));
+      this.status = sessionStorage.getItem('userStatus');
+      if (this.status == '200') {
+        this.getUserCount();
+      }
     },
     watch: {
       $route(to, from) {
@@ -110,9 +142,11 @@
 
         }
       },
-      loginStatus( status ){
-        this.status = status ;
-
+      loginStatus(status) {
+        this.status = status;
+        if (this.status == 200) {
+          this.getUserCount();
+        }
       },
       getMusicPlay(val) {
         this.musicPlay = JSON.parse(val);
@@ -197,4 +231,5 @@
   .box-music-card .best-fit-ico {
     margin: 8px 5px 0;
   }
+
 </style>

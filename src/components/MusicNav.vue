@@ -24,7 +24,8 @@
               @click="handleIconClick">
             </i>
             <template slot-scope="{ item }">
-              <div v-if=" item[0] == 'songs' " style="pointer-events: none;">搜“<span style="color:#00b4e6;">{{ searchMusic }}</span>”相关结果></div>
+              <div v-if=" item[0] == 'songs' " style="pointer-events: none;">搜“<span style="color:#00b4e6;">{{ searchMusic }}</span>”相关结果>
+              </div>
               <div class="item-name" v-if=" item[0] == 'artists' "><i class="iconfont lyd-geshou"></i> 歌手</div>
               <div class="item-name" v-if=" item[0] == 'songs' "><i class="iconfont lyd-yinle4"></i> 单曲</div>
               <div class="item-name" v-if=" item[0] == 'playlists' "><i class="iconfont lyd-gedan"></i> 歌单</div>
@@ -250,19 +251,19 @@
         typeNum: 1,
         isRedirect: true,
         userInfo: null,
-        autoLogon:true,
-        selectWord:'',
+        autoLogon: true,
+        selectWord: '',
       };
     },
     created: function () {
-      if(sessionStorage.getItem("userStatus") == 200){
+      if (sessionStorage.getItem("userStatus") == 200) {
         this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
       }
     },
     methods: {
       ...mapMutations({
         changeIsRouterAlive: 'changeIsRouterAlive',
-        changeLoginStatus:'changeLoginStatus'
+        changeLoginStatus: 'changeLoginStatus'
       }),
       clickSearchMusic() {
         //利用if判断，进行页面的重新刷新
@@ -276,24 +277,28 @@
       //搜索框下拉搜索
       querySearchAsync(queryString, cb) {
         this.searchMusic = queryString;
-        let url = '/search/suggest?keywords=' + queryString;
-        this.$axios.get(url).then((response) => {
-          this.restaurants = response.data.result;
-          let searchResult = Object.entries(this.restaurants);
-          let searchResultLen = searchResult.length;
-          let orderlen = searchResult[searchResultLen - 1][1];
-          let orderSearchResult = [];
-          searchResult.map(item => {
-            for (let i = 0; i < orderlen.length; i++) {
-              if (item[0] == orderlen[i]) {
-                orderSearchResult[i] = item;
+        const getSearchKeywords = async () => {
+          try {
+            let searchKeywordsurl = '/search/suggest?keywords=' + queryString;
+            let searchKeywordsData = await this.$http.get(searchKeywordsurl);
+            this.restaurants = searchKeywordsData.result;
+            let searchResult = Object.entries(this.restaurants);
+            let searchResultLen = searchResult.length;
+            let orderlen = searchResult[searchResultLen - 1][1];
+            let orderSearchResult = [];
+            searchResult.map(item => {
+              for (let i = 0; i < orderlen.length; i++) {
+                if (item[0] == orderlen[i]) {
+                  orderSearchResult[i] = item;
+                }
               }
-            }
-          })
-          cb(orderSearchResult); //回调函数 指向 => handleSelect();
-        }).catch((error) => {
-          console.log(error);
-        })
+            })
+            cb(orderSearchResult); //回调函数 指向 => handleSelect();
+          } catch (e) {
+            console.log(e)
+          }
+        }
+        getSearchKeywords();
       },
       getIndex(i) {
         this.typeNum = i;
@@ -324,7 +329,7 @@
                 name: 'mv',
                 query: {
                   id: items[itemNum].id,
-                  type:'mv'
+                  type: 'mv'
                 }
               }
             );
@@ -361,29 +366,40 @@
         this.clickSearchMusic();
       },
       login() {
-        let loginUrl = "/login/cellphone?phone=" + this.country + this.loginId + "&password=" + this.password;
-        this.$axios.get(loginUrl).then((response) => {
-          localStorage.setItem("userInfo", JSON.stringify(response.data.profile));
-          this.userInfo = response.data.profile;
-          sessionStorage.setItem("userStatus", 200);
-          this.changeLoginStatus();
-        })
-          .catch((error) => {
-            console.log(error);
-          })
+        const getLogin = async () => {
+          try {
+            let loginUrl = "/login/cellphone?phone=" + this.country + this.loginId + "&password=" + this.password;
+            let loginData = await this.$http.get(loginUrl);
+            localStorage.setItem("userInfo", JSON.stringify(loginData.profile));
+            sessionStorage.setItem("userStatus", 200);
+            this.userInfo = loginData.profile;
+            this.changeLoginStatus();
+          } catch (e) {
+            console.log(e)
+          }
+        }
+        getLogin();
       }
       ,
       logout() {
-        let logoutUrl = "/logout";
-        this.$axios.get(logoutUrl).then((response) => {
-          this.userInfo = null;
-          localStorage.removeItem("userInfo");
-          sessionStorage.setItem("userStatus", 301);
-          this.changeLoginStatus();
-        }).catch((error) => {
-            console.log(error);
-          })
-
+        const getLogout = async () => {
+          try {
+            let logoutUrl = "/logout";
+            let logoutData = await this.$http.get(logoutUrl);
+            if (logoutData.code == 200) {
+              this.userInfo = null;
+              localStorage.removeItem("userInfo");
+              sessionStorage.setItem("userStatus", 301);
+              this.changeLoginStatus();
+            }
+            else {
+              alert('退出失败，请重试')
+            }
+          } catch (e) {
+            console.log(e)
+          }
+        }
+        getLogout();
       }
     }
   }
@@ -393,6 +409,7 @@
   .el-select .el-input {
     width: 80px;
   }
+
   .user-info .circle {
     width: 40px;
     height: 40px;
@@ -587,19 +604,23 @@
     height: 530px;
     margin: 3px;
   }
+
   .el-autocomplete-suggestion li {
     cursor: auto;
     padding: 0 10px;
   }
-  .login-sao-ewm{
+
+  .login-sao-ewm {
     height: 50px;
   }
-  .login-sao-ewm img{
+
+  .login-sao-ewm img {
     width: 60px;
     height: 60px;
     cursor: pointer;
   }
-  .login-sao-ewm span{
+
+  .login-sao-ewm span {
     position: relative;
     top: -25px;
     left: -5px;
@@ -607,47 +628,56 @@
     color: #FFF;
     padding: 5px;
   }
-  .login-shouji{
+
+  .login-shouji {
     width: 90px;
     margin: 0 auto;
   }
-  .login-shouji i{
+
+  .login-shouji i {
     font-size: 90px;
     color: red;
   }
-  .login-message{
-    margin:10px 40px ;
+
+  .login-message {
+    margin: 10px 40px;
   }
-  .login-message .el-checkbox{
+
+  .login-message .el-checkbox {
     margin-top: 5px;
   }
-  .login-message .el-button{
+
+  .login-message .el-button {
     width: 100%;
     margin-top: 10px;
   }
+
   .else-login {
-    margin-top:80px;
+    margin-top: 80px;
   }
-  .else-login h3{
+
+  .else-login h3 {
 
     background-color: #fff;
     display: block;
     width: 100px;
     height: 10px;
-    margin:0 auto ;
+    margin: 0 auto;
     text-align: center;
   }
-  .else-login::before{
+
+  .else-login::before {
     content: '';
     display: block;
     width: 100%;
     height: 1px;
     background-color: #222222;
     position: relative;
-    top:10px ;
+    top: 10px;
     z-index: -1;
   }
-  .else-login ul.else-logins-icon li{
+
+  .else-login ul.else-logins-icon li {
     float: left;
     width: 35px;
     height: 35px;
@@ -657,16 +687,18 @@
     border-radius: 50%;
 
   }
-  .else-login ul.else-logins-text li{
+
+  .else-login ul.else-logins-text li {
     float: left;
     width: 35px;
     padding: 3px;
     margin: 0 11px;
     text-align: center;
   }
-  .else-login ul.else-logins-icon li i{
+
+  .else-login ul.else-logins-icon li i {
     font-size: 26px;
-    margin: 0 4px ;
+    margin: 0 4px;
     color: red;
 
   }
