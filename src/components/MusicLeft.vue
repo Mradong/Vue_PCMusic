@@ -112,6 +112,7 @@
       },
       loginStatus( status ){
         this.status = status ;
+
       },
       getMusicPlay(val) {
         this.musicPlay = JSON.parse(val);

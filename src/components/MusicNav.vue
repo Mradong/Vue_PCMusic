@@ -261,7 +261,8 @@
     },
     methods: {
       ...mapMutations({
-        changeIsRouterAlive: 'changeIsRouterAlive'
+        changeIsRouterAlive: 'changeIsRouterAlive',
+        changeLoginStatus:'changeLoginStatus'
       }),
       clickSearchMusic() {
         //利用if判断，进行页面的重新刷新
@@ -365,6 +366,7 @@
           localStorage.setItem("userInfo", JSON.stringify(response.data.profile));
           this.userInfo = response.data.profile;
           sessionStorage.setItem("userStatus", 200);
+          this.changeLoginStatus();
         })
           .catch((error) => {
             console.log(error);
@@ -376,6 +378,8 @@
         this.$axios.get(logoutUrl).then((response) => {
           this.userInfo = null;
           localStorage.removeItem("userInfo");
+          sessionStorage.setItem("userStatus", 301);
+          this.changeLoginStatus();
         }).catch((error) => {
             console.log(error);
           })
