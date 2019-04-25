@@ -60,7 +60,7 @@
             <li v-for=" item,index in similaritySong" :key="index"
                 style="width: 200px; height: 70px; display: block;margin-bottom: 5px">
               <div class="fl" @click="$router.go(0)" style="width: 60px;height: 60px; cursor: pointer">
-                <img :src="item.album.picUrl+'?param=60y60'" alt="" >
+                <img :src="item.album.picUrl+'?param=60y60'" alt="">
               </div>
               <div class="fl" style="margin: 10px 0 0 10px;line-height: 28px">
                 <h3>{{item.name | hanziLimit(8)}}</h3>
@@ -81,7 +81,7 @@
               <div class="sim-user">
                 <img :src="item.avatarUrl+'?param=40y40'" alt="" class="fl">
                 <span class="sim-user-nickname fl" style="padding-right: 15px"> {{item.nickname }}</span>
-                <span class="sim-user-nickname fr" > {{item.recommendReason }}</span>
+                <span class="sim-user-nickname fr"> {{item.recommendReason }}</span>
               </div>
             </li>
           </ul>
@@ -93,6 +93,7 @@
 
 <script>
   import {mapState, mapGetters, mapMutations} from 'vuex'
+
   export default {
     name: "MusicPlay",
     data() {
@@ -106,59 +107,22 @@
         currentLrc: 0,
         SongReviews: [],
         similaritySong: [],
-        SongUser:[],
-        time:0,
-        isOver:true,
+        SongUser: [],
+        time: 0,
+        isOver: true,
       };
     },
     created: function () {
       let musicPlay = JSON.parse(localStorage.getItem("musicplay"));
-      //歌词api
-      let lrcUrl = musicPlay.lrc;
-      //评论api
-      let SongReviews = '/comment/music?id= ' + musicPlay.id + '&limit=1';
-      //相似歌曲api
-      let similaritySong = '/simi/song?id=' + musicPlay.id;
-      let recommendUser = '/simi/user?id=' + musicPlay.id;
-
       this.picUrl = musicPlay.pic;
       this.musicTitle = musicPlay.name;
       this.singer = musicPlay.singer;
       let times = musicPlay.time.toString().split('：');
-      this.time = parseFloat(times[0])*60 + parseFloat(times[1]);
-
-      //获取歌词
-      this.$axios.get(lrcUrl).then((response) => {
-        this.lyric = this.parseLyric(response.data.lrc.lyric);
-        var lrcTime = [];
-        var lrcList = [];
-        for (let [index, value] of Object.entries(this.lyric)) {
-          lrcTime.push(index)
-          lrcList.push(value)
-        }
-        this.lyricTime = lrcTime;
-        this.lyricList = lrcList;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //获取歌曲评论
-      this.$axios.get(SongReviews).then((response) => {
-        this.SongReviews = response.data.hotComments;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //获取相似歌曲
-      this.$axios.get(similaritySong).then((response) => {
-        this.similaritySong = response.data.songs;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //获取最近 5 个听了这首歌的用户
-      this.$axios.get(recommendUser).then((response) => {
-        this.SongUser = response.data.userprofiles;
-      }).catch((error) => {
-        console.log(error);
-      });
+      this.time = parseFloat(times[0]) * 60 + parseFloat(times[1]);
+      this.getLrc( musicPlay );
+      this.getSongReviews( musicPlay );
+      this.getSimilaritySong( musicPlay );
+      this.getRecommendUser(musicPlay );
     },
     computed: {
       ...mapState([
@@ -173,6 +137,54 @@
       ...mapMutations({
         changeIsPlayHtml: 'changeIsPlayHtml'
       }),
+      //获取歌词
+      async getLrc( musicPlay ) {
+        try {
+          let lrcUrl = musicPlay.lrc;
+          let lrcData = await this.$http.get(lrcUrl);
+          this.lyric = this.parseLyric(lrcData.lrc.lyric);
+          var lrcTime = [];
+          var lrcList = [];
+          for (let [index, value] of Object.entries(this.lyric)) {
+            lrcTime.push(index)
+            lrcList.push(value)
+          }
+          this.lyricTime = lrcTime;
+          this.lyricList = lrcList;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      //获取歌曲评论
+      async getSongReviews( musicPlay ) {
+        try {
+          let songReviewsUrl = '/comment/music?id= ' + musicPlay.id + '&limit=1';
+          let songReviewsData = await this.$http.get(songReviewsUrl);
+          this.SongReviews = songReviewsData.hotComments;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      //获取相似歌曲
+      async getSimilaritySong( musicPlay ) {
+        try {
+          let similaritySongUrl = '/simi/song?id=' + musicPlay.id;
+          let similaritySongData = await this.$http.get(similaritySongUrl);
+          this.similaritySong = similaritySongData.songs;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      //登录后，获取最近 5 个听了这首歌的用户
+      async getRecommendUser( musicPlay ) {
+        try {
+          let recommendUserUrl = '/simi/user?id=' + musicPlay.id;
+          let recommendUserData = await this.$http.get(recommendUserUrl);
+          this.SongUser = recommendUserData.userprofiles;
+        } catch (e) {
+          console.log(e)
+        }
+      },
       //歌词解析
       parseLyric(lrc) {
         var lyrics = lrc.split("\n");
@@ -207,21 +219,21 @@
             this.currentLrc = i
           }
         }
-        if( val == this.time ){
+        if (val == this.time) {
           this.isOver = false;
-          this.changeIsPlayHtml( false );
-          this.$nextTick(function (){
+          this.changeIsPlayHtml(false);
+          this.$nextTick(function () {
             this.isOver = false;
-            this.changeIsPlayHtml( true);
+            this.changeIsPlayHtml(true);
           })
         }
       },
-      musicPlay(){
+      musicPlay() {
         this.isOver = false;
-        this.changeIsPlayHtml( false );
-        this.$nextTick(function (){
+        this.changeIsPlayHtml(false);
+        this.$nextTick(function () {
           this.isOver = false;
-          this.changeIsPlayHtml( true);
+          this.changeIsPlayHtml(true);
         })
       }
     }
@@ -242,24 +254,28 @@
 
 </style>
 <style scoped>
-  .sim-song .sim-user{
+  .sim-song .sim-user {
     height: 40px;
     margin-bottom: 20px;
   }
-  .sim-song .sim-user img{
+
+  .sim-song .sim-user img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     overflow: hidden;
 
   }
-  .sim-song .sim-user-nickname{
+
+  .sim-song .sim-user-nickname {
     padding: 10px;
     font-size: 12px;
   }
+
   .on {
     color: red;
   }
+
   .music-play-content {
     position: relative;
     color: #333;
@@ -270,6 +286,7 @@
     width: 100%;
     padding: 20px;
   }
+
   .music-play-content > img {
     position: absolute;
     top: 0;
@@ -283,6 +300,7 @@
     -ms-filter: blur(60px);
     filter: blur(60px);
   }
+
   .song-cd-img {
     float: left;
     width: 210px;

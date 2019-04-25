@@ -187,80 +187,73 @@
       this.type = this.$route.query.type;
       switch (this.$route.query.type) {
         case 'mv':
-          let mvUrl = '/mv/detail?mvid=' + this.$route.query.id;
-          let mvComment = '/comment/mv?id=' + this.$route.query.id;
-          let mvSimi = '/simi/mv?mvid=' + this.$route.query.id;
-          //MV详情获取
-          this.$axios.get(mvUrl).then((response) => {
-            this.mvdetails = response.data.data;
-            for (let [key, val] of Object.entries(this.mvdetails.brs)) {
-              this.config.url.push({src: val, type: 'video/mp4'});
-              this.resourceReady.push({name: key + 'P', url: val})
-            }
-          }).catch((error) => {
-            console.log(error);
+          const getMvDetails = async () => {
+            try {
+              let mvUrl = '/mv/detail?mvid=' + this.$route.query.id;
+              let mvCommentUrl = '/comment/mv?id=' + this.$route.query.id;
+              let mvSimiUrl = '/simi/mv?mvid=' + this.$route.query.id;
 
-          });
-          //MV评论获取
-          this.$axios.get(mvComment).then((response) => {
-            this.total = response.data.total;
-            this.hotComments = response.data.hotComments;
-            this.mvComment = response.data.comments;
-          }).catch((error) => {
-            console.log(error);
-          });
-          //相关MV获取
-          this.$axios.get(mvSimi).then((response) => {
-            this.mvSimi = response.data.mvs;
-          }).catch((error) => {
-            console.log(error);
-          });
+              //获取视频链接
+              let mvData = await this.$http.get(mvUrl);
+              this.mvdetails = mvData.data;
+              for (let [key, val] of Object.entries(this.mvdetails.brs)) {
+                this.config.url.push({src: val, type: 'video/mp4'});
+                this.resourceReady.push({name: key + 'P', url: val})
+              }
+
+              //MV评论获取
+              let mvCommentData = await this.$http.get(mvCommentUrl);
+              this.total = mvCommentData.total;
+              this.hotComments = mvCommentData.hotComments;
+              this.mvComment = mvCommentData.comments;
+
+              //相关MV获取
+              let mvSimiData = await this.$http.get(mvSimiUrl);
+              this.mvSimi = mvSimiData.mvs;
+            } catch (e) {
+              console.log(e)
+            }
+          }
+          getMvDetails();
           break;
         case 'djfs':
-          let djfsUrl = '/video/detail?id=' + this.$route.query.id;
-          let djfsPlayUrl = '/video/url?id=';
-          let relatedUrl = '/related/allvideo?id=';
-          let commentUrl = '/comment/video?id=';
-          //MV详情获取
-          this.$axios.get(djfsUrl).then((response) => {
-            this.mvdetails = response.data.data;
-            console.log(response.data.data.vid)
-            this.creator = response.data.data.creator;
-            if (response.data.data.description == null) {
-              this.viodDesc = ['暂无详情']
-            } else {
-              this.viodDesc = response.data.data.description.split("\n")
+          const getDjfsDetails = async () => {
+            try {
+              let djfsUrl = '/video/detail?id=' + this.$route.query.id;
+              let djfsPlayUrl = '/video/url?id=';
+              let relatedUrl = '/related/allvideo?id=';
+              let commentUrl = '/comment/video?id=';
+
+              //MV详情获取
+              let djfsData = await this.$http.get(djfsUrl);
+              this.mvdetails = djfsData.data;
+              this.creator = djfsData.data.creator;
+              if ( djfsData.data.description == null) {
+                this.viodDesc = ['暂无详情']
+              } else {
+                this.viodDesc = djfsData.data.description.split("\n")
+              }
+
+              //获取视频链接
+              let djfsPlayData = await this.$http.get(djfsPlayUrl + djfsData.data.vid);
+
+              this.config.url.push({src: djfsPlayData.urls[0].url, type: 'video/mp4'});
+
+              //请求相关视频
+              let relatedData = await this.$http.get(relatedUrl + djfsData.data.vid);
+              this.mvSimi = relatedData.data;
+
+              //获取评论详情
+              let commentData = await this.$http.get(commentUrl + djfsData.data.vid);
+              console.log( commentData)
+              this.total =commentData.total;
+              this.hotComments = commentData.hotComments;
+              this.mvComment = commentData.comments;
+            } catch (e) {
+              console.log(e)
             }
-
-            console.log(this.mvdetails)
-
-            return (response.data.data.vid)
-          }).then((vid) => {
-            //请求歌曲链接
-            this.$axios.get(djfsPlayUrl + vid).then((response) => {
-              this.config.url.push({src: response.data.urls[0].url, type: 'video/mp4'});
-            }).catch((error) => {
-              console.log(error);
-            });
-            //请求相关视频
-            this.$axios.get(relatedUrl + vid).then((response) => {
-              this.mvSimi = response.data.data;
-              console.log(this.mvSimi)
-            }).catch((error) => {
-              console.log(error);
-            });
-            //评论详情
-            this.$axios.get(commentUrl + vid).then((response) => {
-              this.hotComments = response.data.hotComments;
-              this.mvComment = response.data.comments;
-            }).catch((error) => {
-              console.log(error);
-            });
-
-          }).catch((error) => {
-            console.log(error);
-          });
-
+          }
+          getDjfsDetails();
           break;
       }
     },
@@ -299,8 +292,6 @@
             );
             break;
         }
-
-
         this.clickVideoMusic();
       }
 

@@ -135,45 +135,59 @@
       },
       changeMore( index ){
         this.changeRecActiveName( index );
-      }
+      },
+      async getBanner(){
+        try {
+          let bannerUrl = '/banner';
+          let bannerData = await this.$http.get(bannerUrl);
+          this.bannerList = bannerData.banners;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      async getPersonalized(){
+        try {
+          let personalizedUrl = '/personalized?limit=10';
+          let personalizedData = await this.$http.get(personalizedUrl);
+          this.personalizedList = personalizedData.result;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      async getPersonalizedPrivate(){
+        try {
+          let personalizedPrivateUrl = '/personalized/privatecontent';
+          let personalizedPrivateData = await this.$http.get(personalizedPrivateUrl);
+          this.personalizedPrivate = personalizedPrivateData.result;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      async getPersonalizedNewSong(){
+        try {
+          let personalizedNewSongUrl = '/personalized/newsong';
+          let personalizedNewSongData = await this.$http.get(personalizedNewSongUrl);
+          this.newSongList = personalizedNewSongData.result;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      async getPersonalizedMv(){
+        try {
+          let personalizedMvUrl = '/personalized/mv';
+          let personalizedMvData = await this.$http.get(personalizedMvUrl);
+          this.personalizedMv = personalizedMvData.result;
+        } catch (e) {
+          console.log(e)
+        }
+      },
     },
     created: function () {
-      let bannerUrl = '/banner';
-      let personalizedUrl = '/personalized?limit=10';
-      let personalizedprivateUrl = '/personalized/privatecontent';
-      let personalizedNewsongUrl = '/personalized/newsong';
-      let personalizedMvUrl = '/personalized/mv';
-      //轮播图
-      this.$axios.get(bannerUrl).then((response) => {
-        this.bannerList = response.data.banners;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //推荐歌单
-      this.$axios.get(personalizedUrl).then((response) => {
-        this.personalizedList = response.data.result;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //独家放送
-      this.$axios.get(personalizedprivateUrl).then((response) => {
-        this.personalizedPrivate = response.data.result;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //最新音乐
-      this.$axios.get(personalizedNewsongUrl).then((response) => {
-        this.newSongList = response.data.result;
-      }).catch((error) => {
-        console.log(error);
-      });
-      //推荐MV
-      this.$axios.get(personalizedMvUrl).then((response) => {
-        this.personalizedMv = response.data.result;
-
-      }).catch((error) => {
-        console.log(error);
-      })
+      this.getBanner();
+      this.getPersonalized();
+      this.getPersonalizedPrivate();
+      this.getPersonalizedNewSong();
+      this.getPersonalizedMv();
     }
   }
 </script>

@@ -118,32 +118,12 @@
         }).catch((error) => {
           console.log(error);
         })
-
-      }
-
-    },
-    created: function () {
-      let songs = '/search?keywords=' + this.name + '&type=1';
-      let songDetail = '/search/multimatch?keywords=' + this.name;
-      this.$axios.get(songDetail).then((response) => {
-        this.restaurants = response.data.result;
-        let searchResult = Object.entries(this.restaurants);
-        let searchResultLen = searchResult.length;
-        let orderlen = searchResult[searchResultLen - 1][1];
-        let orderSearchResult = [];
-        searchResult.map(item => {
-          for (let i = 0; i < orderlen.length; i++) {
-            if (item[0] == orderlen[i]) {
-              orderSearchResult[i] = item;
-            }
-          }
-        })
-        this.bestFit = searchResult;
-      }).catch((error) => {
-        console.log(error);
-      }),
-        this.$axios.get(songs).then((response) => {
-          let musicSearchList = response.data.result.songs.map((item, index) => {
+      },
+      async getKeyWordsSongs() {
+        try {
+          let keyWordsSongsUrl = '/search?keywords=' + this.name + '&type=1';
+          let keyWordsSongsData = await this.$http.get(keyWordsSongsUrl);
+          let musicSearchList = keyWordsSongsData.result.songs.map((item, index) => {
             return {
               id: item.id,
               name: item.name,
@@ -166,13 +146,38 @@
 
             }
             value.singer = singers;
-          }
-          ;
+          };
           this.musicSearchList = musicSearchList;
           this.musicNum = musicSearchList.length;
-        }).catch((error) => {
-          console.log(error);
-        })
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      async getSongDetail () {
+        try {
+          let songDetailUrl = '/search/multimatch?keywords=' + this.name;
+          let songDetailData = await this.$http.get(songDetailUrl);
+          this.restaurants = songDetailData.result;
+          let searchResult = Object.entries(this.restaurants);
+          let searchResultLen = searchResult.length;
+          let orderlen = searchResult[searchResultLen - 1][1];
+          let orderSearchResult = [];
+          searchResult.map(item => {
+            for (let i = 0; i < orderlen.length; i++) {
+              if (item[0] == orderlen[i]) {
+                orderSearchResult[i] = item;
+              }
+            }
+          })
+          this.bestFit = searchResult;
+        } catch (e) {
+          console.log(e)
+        }
+      },
+    },
+    created: function () {
+      this.getKeyWordsSongs();
+      this.getSongDetail();
     },
     watch: {
       $route(to, from) {

@@ -53,7 +53,7 @@
               <div class="music-plist-header">
                 <el-row>
                   <el-col :span="24" class="music-plist-header-title">
-                    <div >播放列表</div>
+                    <div>播放列表</div>
                   </el-col>
                   <el-col :span="2">
                     <div>&emsp;&emsp;&emsp;</div>
@@ -64,8 +64,8 @@
                   <el-col :span="4">
                     <i class="el-icon-circle-plus-outline" style="margin-right: 5px"></i>收藏全部
                   </el-col>
-                  <el-col :span="3" style="margin-left: 22px" >
-                    <span @click="clearPlayList"><i class="el-icon-delete" style="margin-right: 3px" ></i>清空</span>
+                  <el-col :span="3" style="margin-left: 22px">
+                    <span @click="clearPlayList"><i class="el-icon-delete" style="margin-right: 3px"></i>清空</span>
                   </el-col>
                 </el-row>
               </div>
@@ -94,7 +94,7 @@
               <div class="music-plist-header">
                 <el-row>
                   <el-col :span="24" class="music-plist-header-title">
-                    <div >播放列表</div>
+                    <div>播放列表</div>
                   </el-col>
                   <el-col :span="2">
                     <div>&emsp;&emsp;&emsp;</div>
@@ -111,10 +111,12 @@
                 </el-row>
               </div>
               <div class="music-plist-form">
-                <div style="margin: 150px  250px"> 请添加歌曲 </div>
+                <div style="margin: 150px  250px"> 请添加歌曲</div>
               </div>
             </div>
-            <el-button class="music-plist-button" icon="lyd-plist iconfont" slot="reference">{{ musicPlayList.length }}</el-button>
+            <el-button class="music-plist-button" icon="lyd-plist iconfont" slot="reference">{{ musicPlayList.length
+              }}
+            </el-button>
           </el-popover>
 
         </div>
@@ -138,8 +140,8 @@
         currentVolume: 0,
         musicUrl: '',
         playOrder: 0,//0列表循环、1单曲循环、2随机播放、3、顺序播放
-        musicPlayList:[],
-        musicIndex:null,
+        musicPlayList: [],
+        musicIndex: null,
       }
     },
     computed: {
@@ -157,7 +159,7 @@
       } else {
         let musicIfo = JSON.parse(localStorage.getItem("musicplay"));
         this.musicUrl = musicIfo.url;
-        if(JSON.parse(localStorage.getItem('musicIndex'))!=null ){
+        if (JSON.parse(localStorage.getItem('musicIndex')) != null) {
           this.musicIndex = JSON.parse(localStorage.getItem('musicIndex'));
         }
         if (this.timeNow != 0) {
@@ -173,19 +175,12 @@
           }
         }
       }
-
       if (JSON.parse(localStorage.getItem("musicPlayList")) != null) {
         this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
-        console.log( this.musicPlayList )
       }
-      if(JSON.parse(localStorage.getItem('playOrder')) !=null ){
+      if (JSON.parse(localStorage.getItem('playOrder')) != null) {
         this.playOrder = JSON.parse(localStorage.getItem('playOrder'));
-        console.log( this.playOrder
-        )
       }
-
-
-
     },
     methods: {
       _currentTime: function () {
@@ -220,110 +215,102 @@
         musicIfo.volume = val;
         localStorage.setItem("musicplay", JSON.stringify(musicIfo));
       },
-      cutMusic(index){
+      cutMusic(index) {
 
         localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[index]));
         this.changemusicPlay();
       },
-      cutUpMusic(){
+      cutUpMusic() {
         this.changeIsplay(false);
         this.timeNow = 0;
-        if(this.musicPlayList.length == 1){
+        if (this.musicPlayList.length == 1) {
           setTimeout(() => {
             this.musicPlay();
           }, 400)
-        }
-        else {
-          if( this.musicIndex == 0){
-            this.$refs.songPlayer.src = this.musicPlayList[this.musicPlayList.length-1].url ;
-            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicPlayList.length-1]));
-            this.musicIndex = this.musicPlayList.length-1;
-          }
-          else {
-            if( this.playOrder == 2){
-              let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
-              this.$refs.songPlayer.src = this.musicPlayList[random].url ;
+        } else {
+          if (this.musicIndex == 0) {
+            this.$refs.songPlayer.src = this.musicPlayList[this.musicPlayList.length - 1].url;
+            localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicPlayList.length - 1]));
+            this.musicIndex = this.musicPlayList.length - 1;
+          } else {
+            if (this.playOrder == 2) {
+              let random = Math.floor(Math.random() * (this.musicPlayList.length - 1));
+              this.$refs.songPlayer.src = this.musicPlayList[random].url;
               localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
               this.musicIndex = random;
-            }
-            else {
-              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex-1].url ;
-              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex-1]));
-              this.musicIndex = this.musicIndex -1;
+            } else {
+              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex - 1].url;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex - 1]));
+              this.musicIndex = this.musicIndex - 1;
             }
           }
           this.changemusicPlay();
         }
       },
-      cutDownMusic(){
+      cutDownMusic() {
         this.changeIsplay(false);
         this.timeNow = 0;
-        if(this.musicPlayList.length == 1){
+        if (this.musicPlayList.length == 1) {
           setTimeout(() => {
             this.musicPlay();
           }, 400)
-        }
-        else {
-          if( this.musicIndex == this.musicPlayList.length-1){
-            this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+        } else {
+          if (this.musicIndex == this.musicPlayList.length - 1) {
+            this.$refs.songPlayer.src = this.musicPlayList[0].url;
             localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
             this.musicIndex = 0;
-          }
-          else {
-            if( this.playOrder == 2){
-              let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
-              this.$refs.songPlayer.src = this.musicPlayList[random].url ;
+          } else {
+            if (this.playOrder == 2) {
+              let random = Math.floor(Math.random() * (this.musicPlayList.length - 1));
+              this.$refs.songPlayer.src = this.musicPlayList[random].url;
               localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
               this.musicIndex = random;
-            }
-            else {
-              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
-              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
-              this.musicIndex = this.musicIndex +1;
+            } else {
+              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex + 1].url;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex + 1]));
+              this.musicIndex = this.musicIndex + 1;
             }
 
           }
           this.changemusicPlay();
         }
       },
-      clearPlayList(){
-        this.musicPlayList=[];
-        localStorage.removeItem( "musicplay");
-        localStorage.removeItem( "musicPlayList");
-        this.$refs.songPlayer.src = '' ;
-        this.timeDuration= 0;
+      clearPlayList() {
+        this.musicPlayList = [];
+        localStorage.removeItem("musicplay");
+        localStorage.removeItem("musicPlayList");
+        this.$refs.songPlayer.src = '';
+        this.timeDuration = 0;
         this.changemusicPlay();
       },
-      changesPlayOrder( ){
-         if( this.playOrder < 3){
-           this.playOrder++;
-         }else {
-           this.playOrder = 0;
-         }
-        localStorage.setItem("playOrder", JSON.stringify( this.playOrder ));
+      changesPlayOrder() {
+        if (this.playOrder < 3) {
+          this.playOrder++;
+        } else {
+          this.playOrder = 0;
+        }
+        localStorage.setItem("playOrder", JSON.stringify(this.playOrder));
       },
       //滑块点击控制音乐播放进度
       newNum: function (value) {
         this.$refs.songPlayer.currentTime = (value / 100) * this.timeDuration;
       },
-      playMode(){
+      playMode() {
         switch (this.playOrder) {
           case 0 :
-            if(this.musicPlayList.length == 1){
+            if (this.musicPlayList.length == 1) {
               setTimeout(() => {
                 this.musicPlay();
               }, 400)
-            }
-            else {
-              if( this.musicIndex == this.musicPlayList.length-1){
-                this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+            } else {
+              if (this.musicIndex == this.musicPlayList.length - 1) {
+                this.$refs.songPlayer.src = this.musicPlayList[0].url;
                 localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
                 this.musicIndex = 0;
-              }
-              else {
-                this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
-                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
-                this.musicIndex = this.musicIndex +1;
+              } else {
+                this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex + 1].url;
+                localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex + 1]));
+                this.musicIndex = this.musicIndex + 1;
               }
               this.changemusicPlay();
             }
@@ -335,14 +322,13 @@
 
             break;
           case 2:
-            if(this.musicPlayList.length == 1){
+            if (this.musicPlayList.length == 1) {
               setTimeout(() => {
                 this.musicPlay();
               }, 400)
-            }
-            else {
-              let random = Math.floor(Math.random()*(this.musicPlayList.length-1));
-              this.$refs.songPlayer.src = this.musicPlayList[random].url ;
+            } else {
+              let random = Math.floor(Math.random() * (this.musicPlayList.length - 1));
+              this.$refs.songPlayer.src = this.musicPlayList[random].url;
               localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[random]));
               this.musicIndex = random;
             }
@@ -350,17 +336,16 @@
 
             break;
           case 3:
-            if( this.musicIndex == this.musicPlayList.length-1){
-              this.$refs.songPlayer.src = this.musicPlayList[0].url ;
+            if (this.musicIndex == this.musicPlayList.length - 1) {
+              this.$refs.songPlayer.src = this.musicPlayList[0].url;
               localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[0]));
               this.musicIndex = 0;
               this.changemusicPlay();
               this.musicStop();
-            }
-            else {
-              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex+1].url ;
-              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex+1]));
-              this.musicIndex = this.musicIndex +1;
+            } else {
+              this.$refs.songPlayer.src = this.musicPlayList[this.musicIndex + 1].url;
+              localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[this.musicIndex + 1]));
+              this.musicIndex = this.musicIndex + 1;
             }
 
             break;
@@ -368,7 +353,6 @@
             break;
         }
       },
-      //vuex组件
       ...mapMutations({
         changeIsplay: 'changeIsplay',
         changeMusicTime: 'changeMusicTime',
@@ -396,31 +380,30 @@
         let musicifo = JSON.parse(musicIfo);
         this.$refs.songPlayer.src = musicifo.url;
         this.musicPlay();
-        if( JSON.parse(localStorage.getItem("musicPlayList")) == null){
+        if (JSON.parse(localStorage.getItem("musicPlayList")) == null) {
           this.musicPlayList.push(musicifo);
           localStorage.setItem("musicPlayList", JSON.stringify(this.musicPlayList));
-        }
-        else{
+        } else {
           this.musicPlayList = JSON.parse(localStorage.getItem('musicPlayList'));
-          let musicPlayListLen =  this.musicPlayList.length;
+          let musicPlayListLen = this.musicPlayList.length;
           let status = true;
-          for( let i= 0; i< musicPlayListLen;i++ ){
-              if( this.musicPlayList[i].id == musicifo.id ){
-                status = false ;
-              }
+          for (let i = 0; i < musicPlayListLen; i++) {
+            if (this.musicPlayList[i].id == musicifo.id) {
+              status = false;
+            }
           }
-          if(status == true){
+          if (status == true) {
             this.musicPlayList.push(musicifo);
             localStorage.setItem("musicPlayList", JSON.stringify(this.musicPlayList));
           }
-          this.musicIndex = this.musicPlayList.findIndex( fruit => fruit.id === musicifo.id );
+          this.musicIndex = this.musicPlayList.findIndex(fruit => fruit.id === musicifo.id);
         }
         localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
       },
       musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
       },
-      musicList( val ){
+      musicList(val) {
         this.musicPlayList = val;
       }
     },
@@ -461,6 +444,7 @@
     border-color: rgba(201, 201, 201, 0.25);
     outline: 0;
   }
+
   .music-play-plist {
     top: 203px !important;
     left: 870px !important;
@@ -468,7 +452,8 @@
     height: 430px;
     padding: 0 !important;
   }
-  .el-row .last-iconbox div.music-plist .music-plist-button i.lyd-plist{
+
+  .el-row .last-iconbox div.music-plist .music-plist-button i.lyd-plist {
     position: relative;
     left: -4px;
   }
@@ -477,19 +462,22 @@
     font-size: 14px;
     margin: 0;
   }
-  .music-plist-form .el-row{
+
+  .music-plist-form .el-row {
     line-height: 28px;
     height: 32px;
     margin-top: 4px;
   }
-   div.music-plist-form >div:nth-child(odd) {
+
+  div.music-plist-form > div:nth-child(odd) {
     background-color: #fff;
   }
 
-  div.music-plist-form >div:nth-child(even) {
+  div.music-plist-form > div:nth-child(even) {
     background-color: rgba(212, 212, 212, 0.28);
   }
-  .music-plist-header .el-row .el-col{
+
+  .music-plist-header .el-row .el-col {
     height: 35px;
     line-height: 35px;
   }
@@ -535,7 +523,8 @@
     padding: 0 2px;
     font-size: 18px;
   }
-  .el-row .last-iconbox div.music-plist .music-plist-button{
+
+  .el-row .last-iconbox div.music-plist .music-plist-button {
     padding: 0;
     margin: 0;
     width: 46px;
@@ -544,13 +533,16 @@
     top: 4px;
     background-color: rgba(201, 201, 201, 0.25);
   }
-  .music-plist-header{
+
+  .music-plist-header {
     border-bottom: 1px solid rgba(6, 12, 6, 0.12);
   }
-  .music-plist-form{
+
+  .music-plist-form {
     overflow: auto;
     height: 345px;
   }
+
   .music-plist-form::-webkit-scrollbar { /*滚动条整体样式*/
     width: 10px; /*高宽分别对应横竖滚动条的尺寸*/
     height: 1px;
@@ -564,13 +556,15 @@
   .music-plist-form::-webkit-scrollbar-track { /*滚动条里面轨道*/
     background: #EDEDED;
   }
-  .music-plist-header .el-row .music-plist-header-title{
+
+  .music-plist-header .el-row .music-plist-header-title {
     height: 50px;
     background: rgba(197, 197, 197, 0.29);
     border-bottom: 1px solid rgba(6, 12, 6, 0.12);
   }
-  .music-plist-header-title div{
-    margin:12.5px auto;
+
+  .music-plist-header-title div {
+    margin: 12.5px auto;
     width: 100px;
     height: 20px;
     background-color: #0086b3;
@@ -578,7 +572,8 @@
     line-height: 20px;
     color: #fff;
   }
-  i.iconfont.lyd-diantaibofangye_zanting, i.iconfont.lyd-diantaibofangye_bofang{
+
+  i.iconfont.lyd-diantaibofangye_zanting, i.iconfont.lyd-diantaibofangye_bofang {
     font-size: 28px;
     margin-left: 10px;
     color: #ee3c07f2;

@@ -1,21 +1,21 @@
 <template>
   <div style="margin: 20px" ref="menusBox">
     <div class="song_menu">
-        <div class="hot-labels">
-          <ul>
-            <li><h2>热门标签:</h2></li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '华语' }" >华语</a>|</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '流行' }" >流行</a>|</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '摇滚' }" >摇滚</a>|</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '民谣' }" >民谣</a>|</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '电子' }" >电子</a>|</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '轻音乐' }" >轻音乐</a>|</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '影视原声' }" >影视原声</a> |</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == 'ACG' }" >ACG</a> |</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '怀旧' }" >怀旧</a> |</li>
-            <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '治愈' }" >治愈</a></li>
-          </ul>
-        </div>
+      <div class="hot-labels">
+        <ul>
+          <li><h2>热门标签:</h2></li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '华语' }">华语</a>|</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '流行' }">流行</a>|</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '摇滚' }">摇滚</a>|</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '民谣' }">民谣</a>|</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '电子' }">电子</a>|</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '轻音乐' }">轻音乐</a>|</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '影视原声' }">影视原声</a> |</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == 'ACG' }">ACG</a> |</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '怀旧' }">怀旧</a> |</li>
+          <li><a href="javascript:;" @click="tagGet($event)" :class="{ on:tag == '治愈' }">治愈</a></li>
+        </ul>
+      </div>
     </div>
     <div class="song_content">
       <ul style="overflow: hidden">
@@ -40,13 +40,14 @@
 </template>
 
 <script>
-  import {mapState,mapMutations} from 'vuex'
+  import {mapState, mapMutations} from 'vuex'
+
   export default {
     name: "MusicMenus",
     data() {
       return {
-        musicMenus:[],
-        isMenus:true,
+        musicMenus: [],
+        isMenus: true,
       }
     },
     computed: {
@@ -56,36 +57,37 @@
       ]),
     },
     created: function () {
-      let musicMenusUrl = '/top/playlist?highquality&limit=52&offset=' + (this.musicMenusCurrentPage -1) * 52 +'&cat='+this.tag;
-      this.MenusGet( musicMenusUrl );
+      let musicMenusUrl = '/top/playlist?highquality&limit=52&offset=' + (this.musicMenusCurrentPage - 1) * 52 + '&cat=' + this.tag;
+      this.getMenus(musicMenusUrl);
     },
-    methods:{
+    methods: {
       ...mapMutations({
-        changeTag:'changeTag',
-        changeIsMenus:'changeIsMenus',
-        changeCurrentPage:'changeCurrentPage'
+        changeTag: 'changeTag',
+        changeIsMenus: 'changeIsMenus',
+        changeCurrentPage: 'changeCurrentPage'
       }),
-      handleCurrentChange(index){
+      handleCurrentChange(index) {
         this.isMenus = false;
         this.changeIsMenus(false);
         this.$nextTick(() => {
           this.isMenus = false;
           this.changeIsMenus(true);
         })
-        this.changeCurrentPage( index );
+        this.changeCurrentPage(index);
       },
-      MenusGet( url ){
-        this.$axios.get(url).then((response) => {
-          this.musicMenus = response.data.playlists;
-        }).catch((error) => {
-          console.log(error);
-        });
+      async getMenus(menusUrl) {
+        try {
+          let menusDatas = await this.$http.get(menusUrl);
+          this.musicMenus = menusDatas.playlists;
+        } catch (e) {
+          console.log(e)
+        }
       },
-      tagGet( e ){
+      tagGet(e) {
         let musicMenusUrl = '/top/playlist?highquality&limit=52&offset=0&cat=' + e.srcElement.innerHTML;
-        this.MenusGet( musicMenusUrl );
-        this.changeTag( e.srcElement.innerHTML );
-        this.changeCurrentPage( 1 );
+        this.getMenus(musicMenusUrl);
+        this.changeTag(e.srcElement.innerHTML);
+        this.changeCurrentPage(1);
       }
     }
   }
@@ -116,14 +118,17 @@
     margin: 10px;
     background-color: rgba(226, 226, 226, 0.14);
   }
-  .block .el-pagination{
+
+  .block .el-pagination {
     margin: 0 auto;
     width: 70%;
   }
-  .hot-labels ul li{
+
+  .hot-labels ul li {
     float: left;
   }
-  .hot-labels ul li a{
+
+  .hot-labels ul li a {
     float: left;
     padding: 0 12px;
   }

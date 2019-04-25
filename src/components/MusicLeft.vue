@@ -26,7 +26,7 @@
         <template slot="title">
           <span slot="title">创建的歌单</span>
         </template>
-        <el-menu-item-group v-for=" plays in userplayList ">
+        <el-menu-item-group v-for=" plays,index in userplayList "  :key=" index">
           <span slot="title">
             <div class="inline-block wb30">
               <img :src="plays.coverImgUrl+'?param=40y40'" alt="">
@@ -45,13 +45,13 @@
         <template slot="title">
           <span slot="title">收藏的歌单</span>
         </template>
-        <el-menu-item-group v-for=" plays in userSubCount ">
+        <el-menu-item-group v-for=" plays,index in userSubCount " :key=" index">
           <span slot="title">
             <div class="inline-block wb30">
               <img :src="plays.coverImgUrl+'?param=40y40'" alt="">
             </div>
             <div class="inline-block wb60">
-              <p>{{plays.name | hanziLimit(15)}} </p>
+              <p>{{plays.name | hanziLimit(13)}} </p>
               <p>{{plays.trackCount}}首 </p>
             </div>
           </span>

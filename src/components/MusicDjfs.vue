@@ -33,24 +33,24 @@
         ...mapState([
           'newMvs',
         ]),
-
       },
       methods:{
 
       },
       created(){
-        // this.loadData()
-        let newMvUrl = '/mv/first?limit=20';
-        //独家放送
-        this.$axios.get(newMvUrl).then((response) => {
-          this.initNewMvs = response.data.data;
-        }).catch((error) => {
-          console.log(error);
-        });
+        const getNewMv = async () => {
+          try {
+            let newMvUrl = '/mv/first?limit=20';
+            let newMvData = await this.$http.get(newMvUrl);
+            this.initNewMvs = newMvData.data;
+          } catch (e) {
+            console.log(e)
+          }
+        }
+        getNewMv();
       },
       watch:{
         newMvs( val ){
-
           this.initNewMvs = val[0]  ;
         }
       }

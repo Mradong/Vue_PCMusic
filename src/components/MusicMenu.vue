@@ -140,41 +140,40 @@
         this.changemusicPlay();
       },
       dblclick(e) {
-
         localStorage.setItem("musicplay", JSON.stringify(this.tracks[e.i-1]));
         this.changemusicPlay();
       }
     },
     created() {
-      let playlistUrl = '/playlist/detail?limit=100&id=' + this.$route.query.id;
-      //获取歌单详
-      this.$axios.get(playlistUrl).then((response) => {
-        this.playlist = response.data.playlist;
-        this.user = response.data.playlist.creator;
-        this.description = this.playlist.description;
-        this.hideDescription = this.playlist.description.slice(50);
-        console.log(this.playlist.tracks)
-        const tracks = this.playlist.tracks.map((item, index) => {
-          return {
-            i: (index + 1).toString().padStart(2, '0'),
-            name: item.name,
-            time: this.$moment(item.dt).format('mm：ss'),
-            id: item.id,
-            alname: item.al.name.slice(0, 10).length >= 10 ? item.al.name.slice(0, 10) + '..' : item.al.name,
-            alid: item.al.id,
-            singer: item.ar[0].name,
-            arid: item.ar[0].id,
-            lrc:'/lyric?id='+ item.id,
-            url:'https://music.163.com/song/media/outer/url?id='+item.id+'.mp3',
-            pic:item.al.picUrl,
-          }
-        });
-        this.tracks = tracks;
-
-      }).catch((error) => {
-        console.log(error);
-      });
-
+      const getPlayListDetail = async () => {
+        try {
+          let playlistUrl = '/playlist/detail?limit=100&id=' + this.$route.query.id;
+          let playListDetailData = await this.$http.get(playlistUrl);
+          this.playlist = playListDetailData.playlist;
+          this.user = playListDetailData.playlist.creator;
+          this.description = this.playlist.description;
+          this.hideDescription = this.playlist.description.slice(50);
+          const tracks = this.playlist.tracks.map((item, index) => {
+            return {
+              i: (index + 1).toString().padStart(2, '0'),
+              name: item.name,
+              time: this.$moment(item.dt).format('mm：ss'),
+              id: item.id,
+              alname: item.al.name.slice(0, 10).length >= 10 ? item.al.name.slice(0, 10) + '..' : item.al.name,
+              alid: item.al.id,
+              singer: item.ar[0].name,
+              arid: item.ar[0].id,
+              lrc:'/lyric?id='+ item.id,
+              url:'https://music.163.com/song/media/outer/url?id='+item.id+'.mp3',
+              pic:item.al.picUrl,
+            }
+          });
+          this.tracks = tracks;
+        } catch (e) {
+          console.log(e)
+        }
+      }
+      getPlayListDetail();
     },
   }
 </script>
