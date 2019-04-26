@@ -50,6 +50,7 @@
       musicRec,
       musicNav
     },
+
     methods: {
       ...mapMutations({
         changeNewMvs: 'changeNewMvs',
@@ -81,7 +82,7 @@
         }, false)
       }
     },
-    created: function () {
+    beforeCreate: function () {
       const getuserStatus = async () => {
         try {
           let time = new Date();

@@ -235,7 +235,7 @@
 </template>
 
 <script>
-  import {mapMutations} from 'vuex'
+  import {mapState,mapMutations} from 'vuex'
 
   export default {
     name: "MusicNav",
@@ -256,9 +256,11 @@
       };
     },
     created: function () {
-      if (sessionStorage.getItem("userStatus") == 200) {
-        this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      }
+    },
+    computed:{
+      ...mapState([
+        'loginStatus',
+      ]),
     },
     methods: {
       ...mapMutations({
@@ -401,6 +403,13 @@
         }
         getLogout();
       }
+    },
+    watch:{
+      loginStatus(status) {
+        if ( status == 200) {
+          this.userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        }
+      },
     }
   }
 </script>

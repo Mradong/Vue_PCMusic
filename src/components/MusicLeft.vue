@@ -29,7 +29,7 @@
         <el-menu-item-group v-for=" plays,index in userplayList "  :key=" index">
           <span slot="title">
             <div class="inline-block wb30">
-              <img :src="plays.coverImgUrl+'?param=40y40'" alt="">
+              <img :src="plays.coverImgUrl+'?param=45y45'" alt="">
             </div>
             <div class="inline-block wb60">
               <p>{{plays.name | hanziLimit(15)}} </p>
