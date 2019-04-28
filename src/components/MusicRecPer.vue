@@ -2,7 +2,7 @@
   <div style="margin: 20px">
     <el-carousel :interval="4000" type="card" height="200px" class="new-nav">
       <el-carousel-item v-for="(item,index) in bannerList" :key="index">
-        <img :src="item.imageUrl+'?param=400y200'" alt="">
+        <img :src="item.imageUrl+'?param=400y200'" alt="" @click="cutBanner(item.targetId,item.targetType )">
       </el-carousel-item>
     </el-carousel>
     <div>
@@ -19,8 +19,9 @@
       <div class="song_content">
         <ul>
           <li v-for="(item,index) in personalizedList" :key="index" v-if='index<10'>
-            <router-link :to="{name:'menu', query:{id: item.id}}"><img :src="item.picUrl+'?param=140y140'" alt="" style="width: 100%"></router-link>
-            <router-link :to="{name:'menu', query:{id: item.id}}"> <p> {{item.name}}</p></router-link>
+            <router-link :to="{name:'menu', query:{id: item.id}}"><img :src="item.picUrl+'?param=140y140'" alt=""
+                                                                       style="width: 100%"></router-link>
+            <router-link :to="{name:'menu', query:{id: item.id}}"><p> {{item.name}}</p></router-link>
           </li>
         </ul>
       </div>
@@ -41,7 +42,8 @@
       <div class="song_content">
         <ul>
           <li v-for="(item,index) in personalizedMv" :key="index" style="width:230px; margin: 0 12px" v-if=" index < 3">
-            <router-link :to="{name:'mv', query: { id: item.id ,type: 'mv'} }"><img :src="item.picUrl +'?param=230y130'" alt="" style="width: 100%">
+            <router-link :to="{name:'mv', query: { id: item.id ,type: 'mv'} }"><img :src="item.picUrl +'?param=230y130'"
+                                                                                    alt="" style="width: 100%">
             </router-link>
             <router-link to="/music/mv"><h2> {{item.name | hanziLimit(18) }}</h2></router-link>
             <p> {{item.artistName}}</p>
@@ -70,8 +72,10 @@
                                                          style="width: 40px;height: 40px">
             </div>
             <div class="fl">
-              <p v-if="item.song.name.length >10">{{item.song.name}}<span v-if="item.song.alias[0]">({{item.song.alias[0] | hanziLimit(4) }} </span></p>
-              <p v-if="item.song.name.length <= 10">{{item.song.name}}<span v-if="item.song.alias[0]">({{item.song.alias[0] }}) </span></p>
+              <p v-if="item.song.name.length >10">{{item.song.name}}<span v-if="item.song.alias[0]">({{item.song.alias[0] | hanziLimit(4) }} </span>
+              </p>
+              <p v-if="item.song.name.length <= 10">{{item.song.name}}<span v-if="item.song.alias[0]">({{item.song.alias[0] }}) </span>
+              </p>
 
               <span>{{item.song.artists[0].name }}</span></div>
           </li>
@@ -86,15 +90,19 @@
             <div class="grid-content bg-purple fz20">独家放送</div>
           </el-col>
           <el-col :span="2">
-           <router-link :to="{name:'djfs'}"> <div class="grid-content bg-purple-light">更多></div> </router-link>
+            <router-link :to="{name:'djfs'}">
+              <div class="grid-content bg-purple-light">更多></div>
+            </router-link>
           </el-col>
         </el-row>
       </div>
       <div class="song_content">
         <ul>
           <li v-for="(item,index) in personalizedPrivate" :key="index" style="width:230px; margin: 0 12px">
-            <router-link :to="{name:'mv', query: { id: item.videoId,type: 'djfs' } }"><img :src="item.sPicUrl +'?param=230y130'" alt="" style="width: 100%"></router-link>
-            <router-link :to="{name:'mv', query: { id: item.videoId,type: 'djfs'} }"><p> {{item.copywriter}}</p></router-link>
+            <router-link :to="{name:'mv', query: { id: item.videoId,type: 'djfs' } }"><img
+              :src="item.sPicUrl +'?param=230y130'" alt="" style="width: 100%"></router-link>
+            <router-link :to="{name:'mv', query: { id: item.videoId,type: 'djfs'} }"><p> {{item.copywriter}}</p>
+            </router-link>
           </li>
         </ul>
       </div>
@@ -103,7 +111,8 @@
 </template>
 
 <script>
-  import { mapMutations} from 'vuex'
+  import {mapMutations} from 'vuex'
+
   export default {
     name: "MusicRecPer",
     data() {
@@ -115,37 +124,99 @@
         personalizedMv: [],
       };
     },
-    methods:{
+    methods: {
       ...mapMutations({
         changemusicPlay: 'changemusicPlay',
-        changeRecActiveName:'changeRecActiveName'
+        changeRecActiveName: 'changeRecActiveName'
       }),
-      cutMusic(index){
-        let musicplay = {};
-        musicplay.id = this.newSongList[index].song.id ;
-        musicplay.name = this.newSongList[index].song.name;
-        musicplay.time = this.$moment(this.newSongList[index].song.duration).format('mm：ss');
-        musicplay.singer = this.newSongList[index].song.artists[0].name;
-        musicplay.album = this.newSongList[index].song.alias[0];
-        musicplay.pic = this.newSongList[index].song.album.picUrl ;
-        musicplay.lrc = '/lyric?id='+this.newSongList[index].song.id;
-        musicplay.url = 'https://music.163.com/song/media/outer/url?id='+this.newSongList[index].song.id+'.mp3';
-        localStorage.setItem("musicplay", JSON.stringify(musicplay));
-        this.changemusicPlay();
+      cutBanner(id, type) {
+        console.log(type)
+        switch (type) {
+          case 1:
+            this.getBannerMusic(id);
+            break;
+          case 3000:
+            alert('商店功能，支持正版')
+            break;
+          case 10 :
+            alert('专辑功能开发ing。。。')
+            break;
+          case 1004:
+            this.$router.push({
+                name: 'mv',
+                query: {
+                  id: id,
+                  type: 'mv'
+                }
+              }
+            );
+            break;
+          case 1000:
+            this.$router.push({
+                name: 'menu',
+                query: {
+                  id: id
+                }
+              }
+            );
+            break;
+          default:
+            console.log('默认的')
+            break;
+        }
       },
-      changeMore( index ){
-        this.changeRecActiveName( index );
-      },
-      async getBanner(){
+      async getBannerMusic(id) {
         try {
-          let bannerUrl = '/banner';
-          let bannerData = await this.$http.get(bannerUrl);
-          this.bannerList = bannerData.banners;
+          this.$router.push({
+              name: 'play',
+            }
+          );
+          let bannerMusicUrl = '/song/detail?ids=' + id;
+          let bannerMusicData = await this.$http.get(bannerMusicUrl);
+          let musicInfo = {
+            id: bannerMusicData.songs[0].id,
+            name: bannerMusicData.songs[0].name,
+            time: this.$moment(bannerMusicData.songs[0].dt).format('mm：ss'),
+            singer: bannerMusicData.songs[0].ar[0].name,
+            album: bannerMusicData.songs[0].al.name,
+            pic: bannerMusicData.songs[0].al.picUrl,
+            lrc: '/lyric?id=' + bannerMusicData.songs[0].id,
+            url: 'https://music.163.com/song/media/outer/url?id=' + bannerMusicData.songs[0].id + '.mp3',
+          };
+          localStorage.setItem("musicplay", JSON.stringify(musicInfo));
+          this.changemusicPlay();
         } catch (e) {
           console.log(e)
         }
       },
-      async getPersonalized(){
+      cutMusic(index) {
+        let musicInfo = {
+          id: this.newSongList[index].song.id,
+          name: this.newSongList[index].song.name,
+          time: this.$moment(this.newSongList[index].song.duration).format('mm：ss'),
+          singer: this.newSongList[index].song.artists[0].name,
+          album: this.newSongList[index].song.alias[0],
+          pic: this.newSongList[index].song.album.picUrl,
+          lrc: '/lyric?id=' + this.newSongList[index].song.id,
+          url: 'https://music.163.com/song/media/outer/url?id=' + this.newSongList[index].song.id + '.mp3',
+        };
+        localStorage.setItem("musicplay", JSON.stringify(musicInfo));
+        this.changemusicPlay();
+      },
+      changeMore(index) {
+        this.changeRecActiveName(index);
+      },
+      async getBanner() {
+        try {
+          let bannerUrl = '/banner';
+          let bannerData = await this.$http.get(bannerUrl);
+          this.bannerList = bannerData.banners;
+          console.log(this.bannerList)
+        } catch (e) {
+          console.log(e)
+        }
+      },
+      async getPersonalized() {
         try {
           let personalizedUrl = '/personalized?limit=10';
           let personalizedData = await this.$http.get(personalizedUrl);
@@ -154,7 +225,7 @@
           console.log(e)
         }
       },
-      async getPersonalizedPrivate(){
+      async getPersonalizedPrivate() {
         try {
           let personalizedPrivateUrl = '/personalized/privatecontent';
           let personalizedPrivateData = await this.$http.get(personalizedPrivateUrl);
@@ -163,7 +234,7 @@
           console.log(e)
         }
       },
-      async getPersonalizedNewSong(){
+      async getPersonalizedNewSong() {
         try {
           let personalizedNewSongUrl = '/personalized/newsong';
           let personalizedNewSongData = await this.$http.get(personalizedNewSongUrl);
@@ -172,7 +243,7 @@
           console.log(e)
         }
       },
-      async getPersonalizedMv(){
+      async getPersonalizedMv() {
         try {
           let personalizedMvUrl = '/personalized/mv';
           let personalizedMvData = await this.$http.get(personalizedMvUrl);

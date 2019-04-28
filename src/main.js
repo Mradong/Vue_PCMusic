@@ -33,6 +33,7 @@ Vue.prototype.$Velocity = Velocity;
 Vue.prototype.$axios = axios;
 Vue.prototype.$http = http;
 
+
 //全局路由,
 router.beforeEach((to, from, next) => {
   switch (to.name) {

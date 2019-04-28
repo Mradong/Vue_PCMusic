@@ -146,8 +146,6 @@
       }
     },
     created: function () {
-      console.log( this.$route )
-
       switch (this.$route.name ) {
         case 'recommend':
           this.current = 1;

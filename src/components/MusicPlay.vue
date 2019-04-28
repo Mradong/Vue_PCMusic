@@ -59,7 +59,7 @@
           <ul>
             <li v-for=" item,index in similaritySong" :key="index"
                 style="width: 200px; height: 70px; display: block;margin-bottom: 5px" @click="cutMusic(item)">
-              <div class="fl"  style="width: 60px;height: 60px; cursor: pointer">
+              <div class="fl" style="width: 60px;height: 60px; cursor: pointer">
                 <img :src="item.album.picUrl+'?param=60y60'" alt="">
               </div>
               <div class="fl" style="margin: 10px 0 0 10px;line-height: 28px">
@@ -119,10 +119,10 @@
       this.singer = musicPlay.singer;
       let times = musicPlay.time.toString().split('：');
       this.time = parseFloat(times[0]) * 60 + parseFloat(times[1]);
-      this.getLrc( musicPlay );
-      this.getSongReviews( musicPlay );
-      this.getSimilaritySong( musicPlay );
-      this.getRecommendUser(musicPlay );
+      this.getLrc(musicPlay);
+      this.getSongReviews(musicPlay);
+      this.getSimilaritySong(musicPlay);
+      this.getRecommendUser(musicPlay);
     },
     computed: {
       ...mapState([
@@ -136,37 +136,25 @@
     methods: {
       ...mapMutations({
         changeIsPlayHtml: 'changeIsPlayHtml',
-        changemusicPlay:'changemusicPlay'
+        changemusicPlay: 'changemusicPlay'
       }),
-      cutMusic( item ){
-        // this.$router.push({
-        //     name: 'play',
-        //     query: {
-        //       id: id,
-        //     }
-        //   }
-        // );
-        let musicplay = {};
-        musicplay.id = item.id ;
-        musicplay.name = item.name;
-        musicplay.time = this.$moment(item.duration).format('mm：ss');
-        musicplay.singer = item.artists[0].name;
-        musicplay.album = item.album.name;
-        musicplay.pic = item.album.picUrl ;
-        musicplay.lrc = '/lyric?id='+item.id;
-        musicplay.url = 'https://music.163.com/song/media/outer/url?id='+item.id+'.mp3';
+
+      cutMusic(item) {
+        let musicplay = {
+          id: item.id,
+          name: item.name,
+          time: this.$moment(item.duration).format('mm：ss'),
+          singer: item.artists[0].name,
+          album: item.album.name,
+          pic: item.album.picUrl,
+          lrc: '/lyric?id=' + item.id,
+          url: 'https://music.163.com/song/media/outer/url?id=' + item.id + '.mp3',
+        };
         localStorage.setItem("musicplay", JSON.stringify(musicplay));
         this.changemusicPlay();
-
-        this.isMenuShow = false;
-        this.changeIsMenus(false);
-        this.$nextTick(() => {
-          this.isMenuShow = false;
-          this.changeIsMenus(true);
-        })
       },
       //获取歌词
-      async getLrc( musicPlay ) {
+      async getLrc(musicPlay) {
         try {
           let lrcUrl = musicPlay.lrc;
           let lrcData = await this.$http.get(lrcUrl);
@@ -184,7 +172,7 @@
         }
       },
       //获取歌曲评论
-      async getSongReviews( musicPlay ) {
+      async getSongReviews(musicPlay) {
         try {
           let songReviewsUrl = '/comment/music?id= ' + musicPlay.id + '&limit=1';
           let songReviewsData = await this.$http.get(songReviewsUrl);
@@ -194,7 +182,7 @@
         }
       },
       //获取相似歌曲
-      async getSimilaritySong( musicPlay ) {
+      async getSimilaritySong(musicPlay) {
         try {
           let similaritySongUrl = '/simi/song?id=' + musicPlay.id;
           let similaritySongData = await this.$http.get(similaritySongUrl);
@@ -204,7 +192,7 @@
         }
       },
       //登录后，获取最近 5 个听了这首歌的用户
-      async getRecommendUser( musicPlay ) {
+      async getRecommendUser(musicPlay) {
         try {
           let recommendUserUrl = '/simi/user?id=' + musicPlay.id;
           let recommendUserData = await this.$http.get(recommendUserUrl);

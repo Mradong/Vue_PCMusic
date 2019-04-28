@@ -66,6 +66,7 @@
           if (scrollTop == scrollNum) {
             this.scrollNum++;
             let newMvUrl = '/mv/first?limit=' + 20 * this.scrollNum;
+
             async function getNewMv() {
               try {
                 let newMvData = await that.$http.get(newMvUrl);
@@ -76,6 +77,7 @@
                 console.log(e)
               }
             }
+
             getNewMv();
           }
         }, false)
@@ -86,12 +88,11 @@
         try {
           let time = new Date();
           let userStatusUrl = '/login/status?timestamp=' + this.$moment(time).valueOf();
-
           let userStatusData = await this.$http.get(userStatusUrl);
           if (userStatusData.code == 200) {
             sessionStorage.setItem("userStatus", 200);
-            let userInfoUrl   = '/user/detail?uid='+ userStatusData.profile.userId;
-            let userInfoData = await this.$http.get( userInfoUrl );
+            let userInfoUrl = '/user/detail?uid=' + userStatusData.profile.userId;
+            let userInfoData = await this.$http.get(userInfoUrl);
             localStorage.setItem("userInfo", JSON.stringify(userInfoData.profile));
             this.changeLoginStatus();
           }
