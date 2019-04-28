@@ -151,8 +151,8 @@
           let playListDetailData = await this.$http.get(playlistUrl);
           this.playlist = playListDetailData.playlist;
           this.user = playListDetailData.playlist.creator;
-          this.description = this.playlist.description;
-          this.hideDescription = this.playlist.description.slice(50);
+          this.description = this.playlist.description == null ? " 暂无简介 ": this.playlist.description;
+          this.hideDescription = this.playlist.description == null ? "": this.playlist.description.slice(50);
           const tracks = this.playlist.tracks.map((item, index) => {
             return {
               i: (index + 1).toString().padStart(2, '0'),

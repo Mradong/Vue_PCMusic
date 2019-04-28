@@ -58,8 +58,8 @@
         <div class="sim-song" style="margin-top: 20px">
           <ul>
             <li v-for=" item,index in similaritySong" :key="index"
-                style="width: 200px; height: 70px; display: block;margin-bottom: 5px">
-              <div class="fl" @click="$router.go(0)" style="width: 60px;height: 60px; cursor: pointer">
+                style="width: 200px; height: 70px; display: block;margin-bottom: 5px" @click="cutMusic(item)">
+              <div class="fl"  style="width: 60px;height: 60px; cursor: pointer">
                 <img :src="item.album.picUrl+'?param=60y60'" alt="">
               </div>
               <div class="fl" style="margin: 10px 0 0 10px;line-height: 28px">
@@ -135,8 +135,36 @@
     },
     methods: {
       ...mapMutations({
-        changeIsPlayHtml: 'changeIsPlayHtml'
+        changeIsPlayHtml: 'changeIsPlayHtml',
+        changemusicPlay:'changemusicPlay'
       }),
+      cutMusic( item ){
+        // this.$router.push({
+        //     name: 'play',
+        //     query: {
+        //       id: id,
+        //     }
+        //   }
+        // );
+        let musicplay = {};
+        musicplay.id = item.id ;
+        musicplay.name = item.name;
+        musicplay.time = this.$moment(item.duration).format('mm：ss');
+        musicplay.singer = item.artists[0].name;
+        musicplay.album = item.album.name;
+        musicplay.pic = item.album.picUrl ;
+        musicplay.lrc = '/lyric?id='+item.id;
+        musicplay.url = 'https://music.163.com/song/media/outer/url?id='+item.id+'.mp3';
+        localStorage.setItem("musicplay", JSON.stringify(musicplay));
+        this.changemusicPlay();
+
+        this.isMenuShow = false;
+        this.changeIsMenus(false);
+        this.$nextTick(() => {
+          this.isMenuShow = false;
+          this.changeIsMenus(true);
+        })
+      },
       //获取歌词
       async getLrc( musicPlay ) {
         try {

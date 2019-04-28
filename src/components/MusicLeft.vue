@@ -7,7 +7,9 @@
           <li v-bind:class="{on:1== current}"><i class="iconfont lyd-yinle"></i>发现音乐</li>
         </router-link>
         <li><i class="iconfont lyd-diantai"></i>私人FM</li>
-        <li><i class="iconfont lyd-shipin"></i>视频</li>
+        <router-link to="/djfs">
+        <li  v-bind:class="{on:3== current}"><i class="iconfont lyd-shipin"></i>视频</li>
+        </router-link>
         <li><i class="iconfont lyd-pengyou"></i>朋友</li>
       </ul>
     </div>
@@ -26,13 +28,13 @@
         <template slot="title">
           <span slot="title">创建的歌单</span>
         </template>
-        <el-menu-item-group v-for=" plays,index in userplayList "  :key=" index">
-          <span slot="title">
+        <el-menu-item-group v-for=" plays,index in userplayList " :key=" index">
+          <span slot="title" @click="clickMenu(plays.id) ">
             <div class="inline-block wb30">
               <img :src="plays.coverImgUrl+'?param=45y45'" alt="">
             </div>
-            <div class="inline-block wb60">
-              <p>{{plays.name | hanziLimit(15)}} </p>
+            <div class="inline-block wb60" >
+              <p>{{plays.name | hanziLimit(15)}}</p>
               <p>{{plays.trackCount}}首 </p>
             </div>
           </span>
@@ -46,7 +48,7 @@
           <span slot="title">收藏的歌单</span>
         </template>
         <el-menu-item-group v-for=" plays,index in userSubCount " :key=" index">
-          <span slot="title">
+          <span slot="title" @click="clickMenu(plays.id) ">
             <div class="inline-block wb30">
               <img :src="plays.coverImgUrl+'?param=40y40'" alt="">
             </div>
@@ -80,7 +82,7 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+  import {mapState,mapMutations} from 'vuex'
 
   export default {
 
@@ -93,14 +95,35 @@
         status: null,
         userSubCount: [],
         userplayList: [],
+        isMenuShow:false,
       };
     },
     methods: {
+      ...mapMutations({
+        changeIsMenus:'changeIsMenus'
+      }),
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
+      },
+      clickMenu( id ){
+        this.$router.push({
+            name: 'menu',
+            query: {
+              id: id,
+            }
+          }
+        );
+
+        this.isMenuShow = false;
+        this.changeIsMenus(false);
+        this.$nextTick(() => {
+          this.isMenuShow = false;
+          this.changeIsMenus(true);
+        })
+
       },
       async getUserCount() {
         let userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -123,6 +146,22 @@
       }
     },
     created: function () {
+      console.log( this.$route )
+
+      switch (this.$route.name ) {
+        case 'recommend':
+          this.current = 1;
+          break;
+        case 2:
+          break;
+        case 'djfs':
+          this.current = 3;
+          break;
+        default:
+          this.current = 0;
+
+      }
+
       this.musicPlay = JSON.parse(localStorage.getItem("musicplay"));
       this.status = sessionStorage.getItem('userStatus');
       if (this.status == '200') {
@@ -130,18 +169,6 @@
       }
     },
     watch: {
-      $route(to, from) {
-        switch (this.$route.path) {
-          case '/recommend':
-            this.current = 1;
-            break;
-          case 2:
-            break;
-          default:
-            this.current = 0;
-
-        }
-      },
       loginStatus(status) {
         this.status = status;
         if (this.status == 200) {
