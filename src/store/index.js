@@ -19,6 +19,7 @@ export default new Vuex.Store({
     tag:'华语',
     newMvs:[],
     loginStatus:null,
+    mainScrollTop:0,
   },
   // 外部调用方式：store.getters.xxxx()。就和vue的computed差不多；
   // 接受state作为参数，每次 count发生变化时 ， 都会被调用
@@ -75,6 +76,9 @@ export default new Vuex.Store({
     },
     changeLoginStatus: (state) => {
       state.loginStatus = sessionStorage.getItem('userStatus');
+    },
+    changeMainScrollTop: (state, n) => {
+      state.mainScrollTop = n;
     },
   },
   // 和mutations类似。不过actions支持异步操作。第一个参数默认是和store具有相同参数属性的对象。外部调用方式：store.dispatch('addCount')。

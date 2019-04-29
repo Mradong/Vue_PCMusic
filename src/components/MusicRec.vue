@@ -18,14 +18,14 @@
   import menus from './MusicMenus'
   import {mapState, mapMutations} from 'vuex'
 
-  export default {
-    data() {
-      return {};
-    },
-    computed: {
-      ...mapState([
-        'musicRecActiveName'
-      ]),
+      export default {
+        data() {
+          return {};
+        },
+        computed: {
+          ...mapState([
+            'musicRecActiveName'
+          ]),
     },
     created() {
     },

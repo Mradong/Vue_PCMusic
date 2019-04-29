@@ -53,84 +53,70 @@
         </div>
       </div>
     </div>
-    <div class="musicmenu_list">
-      <el-table
-        stripe
-        @row-dblclick="dblclick"
-        :data="tracks.filter(data => !search || data.singer.toLowerCase().includes(search.toLowerCase()) || data.name.toLowerCase().includes(search.toLowerCase())|| data.alname.toLowerCase().includes(search.toLowerCase()) )"
-        header-cell-class-name="header_cell"
-        :default-sort="{prop: 'date', order: 'descending'}"
-        style="width: 100%">
-        <el-table-column
-          width="50"
-          label=""
-          prop="i">
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          width="80">
-          <template slot-scope="scope">
-            <i class="lyd-xihuan1 iconfont"></i> <i class="lyd-xiazaiguanli-xiazai iconfont" style="font-size: 18px"></i>
-          </template>
-        </el-table-column>
-        <el-table-column
-          sortable
-          width="250"
-          label="音乐标题"
-          prop="name">
-        </el-table-column>
-        <el-table-column
-          sortable
-          width="150"
-          label="歌手"
-          prop="singer">
-        </el-table-column>
-        <el-table-column
-          sortable
-          width="200"
-          label="专辑"
-          prop="alname">
-        </el-table-column>
-        <el-table-column
-          sortable
-          label="时长"
-          prop="time">
-        </el-table-column>
-        <el-table-column
-          align="right">
-          <template slot="header" slot-scope="scope">
-            <el-input
-              v-model="search"
-              size="small "
-              placeholder="输入关键字搜索"/>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+    <template>
+      <el-tabs v-model="activeName" @tab-click="handleClick" class="">
+        <el-tab-pane label="歌曲列表" name="first">
+          <menu-list :menu-data="tracks"></menu-list>
+        </el-tab-pane>
+        <el-tab-pane label="评论" name="second">
+          <menu-comment :comment-data="comments" :total="total">
+          </menu-comment>
+          <div class="clearfix"></div>
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            @current-change="commentsCurrent"
+            :total="total">
+          </el-pagination>
+        </el-tab-pane>
+        <el-tab-pane label="收藏者" name="third">
+          <menu-collect>
+
+          </menu-collect>
+        </el-tab-pane>
+      </el-tabs>
+    </template>
+
+
   </div>
 </template>
 
 <script>
+
   import {mapMutations} from 'vuex'
+  import menuList from './MusicMenuList'
+  import menuComment from './MusicMenuComment'
+  import menuCollect from './MusicMenuCollect'
 
   export default {
     name: "MusicMenu",
     data() {
       return {
         tracks: [],
-        search: '',
+        comments:[],
+        total:'',
         playlist: [],
         user: '',
         description: '',
         hideDescription: '',
         isShow: true,
+        activeName: 'first',
       }
+    },
+    components: {
+      menuList,
+      menuComment,
+      menuCollect
     },
     methods: {
       ...mapMutations({
         changemusicPlay: 'changemusicPlay',
         changeMusicList:'changeMusicList',
+        changeMainScrollTop:'changeMainScrollTop',
       }),
+      handleClick(tab, event) {
+        console.log(tab, event);
+      },
       playAll(){
         localStorage.removeItem( "musicplay");
         localStorage.removeItem( "musicPlayList");
@@ -139,15 +125,24 @@
         this.changeMusicList();
         this.changemusicPlay();
       },
-      dblclick(e) {
-        localStorage.setItem("musicplay", JSON.stringify(this.tracks[e.i-1]));
-        this.changemusicPlay();
+      async getPlaylistComments( url ){
+        let playlistCommentData = await this.$http.get( url );
+        this.total = playlistCommentData.total;
+        this.comments =playlistCommentData.comments;
+      },
+      commentsCurrent( index){
+        this.changeMainScrollTop(300 +( index/10));
+        let playlistCommentUrl = '/comment/playlist?id=' + this.$route.query.id +'&limit=20&offset='+ index;
+        this.getPlaylistComments( playlistCommentUrl )
+
       }
     },
     created() {
       const getPlayListDetail = async () => {
         try {
           let playlistUrl = '/playlist/detail?limit=100&id=' + this.$route.query.id;
+          let playlistCommentUrl = '/comment/playlist?id=' + this.$route.query.id;
+
           let playListDetailData = await this.$http.get(playlistUrl);
           this.playlist = playListDetailData.playlist;
           this.user = playListDetailData.playlist.creator;
@@ -169,6 +164,7 @@
             }
           });
           this.tracks = tracks;
+          this.getPlaylistComments( playlistCommentUrl )
         } catch (e) {
           console.log(e)
         }
@@ -195,48 +191,8 @@
     margin-left: 5px;
   }
 
-  .header_cell {
-    border: 1px solid #ebeef5;
-    padding: 0 !important;
-    .cell {
-      line-height: 34px;
-      .caret-wrapper {
-        float: right;
-      }
-    }
-  }
 
-  .has-gutter tr th:nth-child(7) {
-    position: relative;
-    top: -54px;
-    right: 163px;
-    border: 0 !important;
-  }
-
-  .el-table--scrollable-x .el-table__body-wrapper {
-    overflow-x: hidden !important;
-  }
-
-  .el-table, .el-table__header-wrapper, .el-table th div, .el-table th, .el-table .cell, .el-table th div {
-    overflow: inherit !important;
-
-  }
-
-  .el-table th div {
-    width: 150px;
-  }
 </style>
 <style scoped lang="less">
-  span.musicmenu_span {
-    display: inline-block;
-    width: 30px;
-    height: 20px;
-    border: 1px solid rgba(162, 0, 0, 0.69);
-    text-align: center;
-    color: rgba(162, 0, 0, 0.69);
-    position: relative;
-    top: -2px;
-    padding: 1px;
-  }
 
 </style>

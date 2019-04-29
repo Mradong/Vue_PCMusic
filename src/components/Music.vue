@@ -36,7 +36,7 @@
   import musicFoot from './MusicFoot.vue'
   import musicRec from './MusicRec.vue'
   import musicNav from './MusicNav'
-  import {mapMutations} from 'vuex'
+  import {mapMutations,mapState} from 'vuex'
 
   export default {
     data() {
@@ -50,7 +50,11 @@
       musicRec,
       musicNav
     },
-
+    computed: {
+      ...mapState([
+        'mainScrollTop',
+      ]),
+    },
     methods: {
       ...mapMutations({
         changeNewMvs: 'changeNewMvs',
@@ -66,7 +70,6 @@
           if (scrollTop == scrollNum) {
             this.scrollNum++;
             let newMvUrl = '/mv/first?limit=' + 20 * this.scrollNum;
-
             async function getNewMv() {
               try {
                 let newMvData = await that.$http.get(newMvUrl);
@@ -82,6 +85,7 @@
           }
         }, false)
       }
+
     },
     beforeCreate: function () {
       const getuserStatus = async () => {
@@ -105,6 +109,17 @@
       }
       getuserStatus();
     },
+    watch:{
+      mainScrollTop( val ){
+        if (this.$route.name == 'menu') {
+          this.$refs.mainWrapper.$el.scrollTop = val ;
+          // this.$refs.mainWrapper.$el.addEventListener('scroll', () => {
+          //   console.log( this.$refs.mainWrapper.$el.scrollTop )
+          //
+          // }, false)
+        }
+      }
+    }
   };
 </script>
 
