@@ -111,7 +111,7 @@
     },
     watch:{
       mainScrollTop( val ){
-        if (this.$route.name == 'menu') {
+        if (this.$route.name == 'menu' || this.$route.name == 'album') {
           this.$refs.mainWrapper.$el.scrollTop = val ;
           // this.$refs.mainWrapper.$el.addEventListener('scroll', () => {
           //   console.log( this.$refs.mainWrapper.$el.scrollTop )

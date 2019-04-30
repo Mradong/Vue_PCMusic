@@ -296,6 +296,7 @@
               }
             })
             cb(orderSearchResult); //回调函数 指向 => handleSelect();
+            console.log( orderSearchResult )
           } catch (e) {
             console.log(e)
           }
@@ -324,7 +325,13 @@
             console.log(2)
             break;
           case "albums":
-            console.log(3)
+            this.$router.push({
+                name: 'album',
+                query: {
+                  id: items[itemNum].id,
+                }
+              }
+            );
             break;
           case "mvs":
             this.$router.push({

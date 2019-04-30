@@ -78,11 +78,11 @@
                     <i class="iconfont lyd-diantaibofangye_bofang" v-if="!isPlay" @click=" musicPlay"></i>
                     <i class="iconfont lyd-diantaibofangye_zanting" v-if="isPlay" @click=" musicStop"></i>
                   </el-col>
-                  <el-col :span="12">
-                    {{item.name | hanziLimit(20)}}
+                  <el-col :span="11">
+                    {{item.name | hanziLimit(18)}}
                   </el-col>
-                  <el-col :span="6">
-                    {{item.singer | hanziLimit(8)}}
+                  <el-col :span="7">
+                    {{item.singer | hanziLimit(10)}}
                   </el-col>
                   <el-col :span="2">
                     {{item.time}}

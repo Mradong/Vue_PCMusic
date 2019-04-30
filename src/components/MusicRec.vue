@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 1000px">
+  <div class="music-rec">
     <el-tabs v-model="musicRecActiveName" @tab-click="handleClick">
       <el-tab-pane label="个性推荐" name="0">
         <rec-per></rec-per>
@@ -18,14 +18,14 @@
   import menus from './MusicMenus'
   import {mapState, mapMutations} from 'vuex'
 
-      export default {
-        data() {
-          return {};
-        },
-        computed: {
-          ...mapState([
-            'musicRecActiveName'
-          ]),
+  export default {
+    data() {
+      return {};
+    },
+    computed: {
+      ...mapState([
+        'musicRecActiveName'
+      ]),
     },
     created() {
     },
@@ -41,23 +41,23 @@
         this.changeRecActiveName(tab.index)
       }
     },
-    watch:{
-
-    }
+    watch: {}
   };
 </script>
 
-<style>
-  .el-tabs__nav {
-    left: 25%;
+<style lang="less">
+  .music-rec {
+    .el-tabs__nav {
+      left: 25%;
+    }
+
+    .el-tabs__item.is-active, .el-tabs__item:hover {
+      color: #ff101a;
+    }
+
+    .el-tabs__active-bar {
+      background-color: #ff3c44;
+    }
   }
 
-  .el-tabs__item.is-active {
-    color: #ff3c44;
-
-  }
-
-  .el-tabs__active-bar {
-    background-color: #ff3c44;
-  }
 </style>

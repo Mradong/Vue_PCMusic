@@ -139,7 +139,13 @@
             alert('商店功能，支持正版')
             break;
           case 10 :
-            alert('专辑功能开发ing。。。')
+            this.$router.push({
+                name: 'album',
+                query: {
+                  id: id,
+                }
+              }
+            );
             break;
           case 1004:
             this.$router.push({
@@ -211,7 +217,6 @@
           let bannerUrl = '/banner';
           let bannerData = await this.$http.get(bannerUrl);
           this.bannerList = bannerData.banners;
-          console.log(this.bannerList)
         } catch (e) {
           console.log(e)
         }

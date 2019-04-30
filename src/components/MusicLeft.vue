@@ -8,7 +8,7 @@
         </router-link>
         <li><i class="iconfont lyd-diantai"></i>私人FM</li>
         <router-link to="/djfs">
-        <li  v-bind:class="{on:3== current}"><i class="iconfont lyd-shipin"></i>视频</li>
+        <li  v-bind:class="{on:3== current}"><i class="iconfont lyd-shipin"></i>最新MV</li>
         </router-link>
         <li><i class="iconfont lyd-pengyou"></i>朋友</li>
       </ul>

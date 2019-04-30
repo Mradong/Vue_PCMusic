@@ -75,6 +75,15 @@ export default new VueRouter({
           }
         },
         {
+          path: 'album',
+          name: 'album',
+          component: loadView('MusicAlbums'),
+          meta: {
+            keepAlive: true,
+            isBack: false
+          }
+        },
+        {
           path: 'blank',
           name: 'blank',
           component: loadView('blankVue'),

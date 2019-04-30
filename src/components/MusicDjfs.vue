@@ -3,7 +3,7 @@
     <div class="song_menu">
       <el-row type="flex" class="row-bg">
         <el-col :span="22">
-          <div class="grid-content bg-purple fz20">最新MV（因为没有独家放送的API，用最新MV的api替代）</div>
+          <div class="grid-content bg-purple fz20">最新MV</div>
         </el-col>
       </el-row>
     </div>
