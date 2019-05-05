@@ -3,7 +3,6 @@
     <div class="fm-details">
       <div class="fm-cover">
         <img :src="FM.pic+'?param=300y300'" alt="">
-        <i @click="Fmplay" class="lyd-bofang2 iconfont"></i>
         <div class="fm-operate">
           <i class="lyd-qunfengcainixihuanxian iconfont"></i>
           <i class="lyd-tubiaolunkuo- iconfont"></i>
@@ -75,7 +74,8 @@
       ...mapState([
         'musicTime',
         'musicPlay',
-        'FMIndex'
+        'FMIndex',
+        'FMsLength'
       ]),
 
     },
@@ -84,23 +84,22 @@
         changeIsMenus: 'changeIsMenus',
         changemusicPlay: 'changemusicPlay',
         changeFMIndex:'changeFMIndex',
+        changeFMsLength:'changeFMsLength',
       }),
-      Fmplay(){
-        localStorage.removeItem("musicplay");
-        localStorage.removeItem("musicPlayList");
-        localStorage.setItem("musicPlayList", JSON.stringify(this.FMs));
-        localStorage.setItem("musicplay", JSON.stringify(this.FM));
-        this.changemusicPlay();
-      },
+
       cutFM(){
-        let FMsLength = this.FMs.length;
-        console.log( FMsLength )
-        this.changeFMIndex( FMsLength);
+        this.changeFMIndex( this.FMsLength -1);
+        this.isOver = false;
+        this.changeIsMenus(false);
+        this.$nextTick(function () {
+          this.isOver = false;
+          this.changeIsMenus(true);
+        })
+
       },
       async getComments(url) {
         try {
           let songReviewsData = await this.$http.get(url);
-          console.log( songReviewsData )
           this.hotComments = songReviewsData.hotComments;
         } catch (e) {
           console.log(e)
@@ -109,7 +108,6 @@
       async getPersonalFM(url) {
         let personalFMData = await this.$http.get(url);
         let FMDetails = personalFMData.data;
-
         this.FMs = FMDetails.map((item, index) => {
           return {
             id: item.id,
@@ -123,15 +121,22 @@
             type: 'fm'
           }
         });
-
-        this.FM = this.FMs[this.FMIndex];
+        localStorage.removeItem("musicPlayList");
+        localStorage.setItem("musicPlayList", JSON.stringify(this.FMs));
+        this.changeFMsLength( this.FMs.length)//储存数组长度
+        this.initFM();
+      },
+      initFM(){
+        this.FM = this.FMs[this.FMIndex];//初始化当前页面信息
         let times = this.FM.time.toString().split('：');
         this.endTime = parseFloat(times[0]) * 60 + parseFloat(times[1]);
         let commentsUrl = '/comment/music?id= ' + this.FM.id + '&limit=1';
         this.getFMLrc(this.FM.lrc)
         this.getComments(commentsUrl )
 
-
+        localStorage.removeItem("musicplay");
+        localStorage.setItem("musicplay", JSON.stringify(this.FM));
+        this.changemusicPlay();//更改当前播放音乐
       },
       async getFMLrc(url) {
         let FMLrcData = await this.$http.get(url);
@@ -170,11 +175,18 @@
     created() {
       if( this.FMIndex == 0 ){
         let time = new Date();
-        // let personalFMUrl = '/personal_fm?timestamp='+ this.$moment(time).valueOf();
-        let personalFMUrl = '/personal_fm';
+        let personalFMUrl = '/personal_fm?timestamp='+ this.$moment(time).valueOf();
         this.getPersonalFM(personalFMUrl);
+        console.log( '我重新请求了')
       }
-      this.FMs = JSON.parse(localStorage.getItem('musicPlayList'))
+      else {
+        this.FMs = JSON.parse(localStorage.getItem('musicPlayList'));
+        this.initFM();
+        console.log( '我还没有重新请求')
+      }
+    },
+    destroyed(){
+      localStorage.removeItem("musicplay");
     },
     watch: {
       musicTime(val) {
@@ -189,17 +201,6 @@
             this.currentLrc = i
           }
         }
-      },
-      FMIndex(){
-        localStorage.setItem("musicplay", JSON.stringify(this.FM));
-        this.changemusicPlay();
-
-        this.isOver = false;
-        this.changeIsMenus(false);
-        this.$nextTick(function () {
-          this.isOver = false;
-          this.changeIsMenus(true);
-        })
       }
     }
   }

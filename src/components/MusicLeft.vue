@@ -6,7 +6,9 @@
         <router-link to="/recommend">
           <li v-bind:class="{on:1== current}"><i class="iconfont lyd-yinle"></i>发现音乐</li>
         </router-link>
+        <router-link to="/fm">
         <li><i class="iconfont lyd-diantai"></i>私人FM</li>
+        </router-link>
         <router-link to="/djfs">
         <li  v-bind:class="{on:3== current}"><i class="iconfont lyd-shipin"></i>最新MV</li>
         </router-link>
@@ -60,7 +62,7 @@
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
-    <div class="box-music-card" v-if=" musicPlay != null ">
+    <div class="box-music-card" v-if=" musicPlay != null && isFM ">
       <div class="best-fit">
         <router-link to="/play">
           <div class="best-fit-content">
@@ -100,7 +102,8 @@
     },
     methods: {
       ...mapMutations({
-        changeIsMenus:'changeIsMenus'
+        changeIsMenus:'changeIsMenus',
+        changeIsFM:'changeIsFM',
       }),
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
@@ -116,7 +119,6 @@
             }
           }
         );
-
         this.isMenuShow = false;
         this.changeIsMenus(false);
         this.$nextTick(() => {
@@ -140,6 +142,7 @@
     computed: {
       ...mapState([
         'loginStatus',
+        'isFM',
       ]),
       getMusicPlay() {
         return this.$store.state.musicPlay;
@@ -159,7 +162,9 @@
           this.current = 0;
 
       }
-
+      console.log(this.isFM )
+      this.changeIsFM();
+      console.log(this.isFM )
       this.musicPlay = JSON.parse(localStorage.getItem("musicplay"));
       this.status = sessionStorage.getItem('userStatus');
       if (this.status == '200') {
