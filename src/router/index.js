@@ -48,6 +48,16 @@ export default new VueRouter({
           }
         },
         {
+          path: 'fm',
+          name: 'fm',
+          component: loadView('MUsicPersonalFM'),
+          meta: {
+            keepAlive: false,
+            isBack: false
+          }
+        },
+
+        {
           path: 'mv',
           name: 'mv',
           component: loadView('MusicVideo'),
