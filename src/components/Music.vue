@@ -34,7 +34,6 @@
 <script>
   import musicLeft from './MusicLeft.vue'
   import musicFoot from './MusicFoot.vue'
-  import musicRec from './MusicRec.vue'
   import musicNav from './MusicNav'
   import {mapMutations,mapState} from 'vuex'
 
@@ -47,7 +46,7 @@
     components: {
       musicLeft,
       musicFoot,
-      musicRec,
+
       musicNav
     },
     computed: {

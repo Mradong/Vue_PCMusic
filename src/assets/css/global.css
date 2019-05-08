@@ -30,6 +30,9 @@ html {overflow-y: scroll;}
 .inline-block{
   display: inline-block;
 }
+.none{
+  display: none;
+}
 .wb30{
   width: 30%;
 }

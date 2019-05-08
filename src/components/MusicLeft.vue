@@ -4,13 +4,13 @@
       <h3>推荐</h3>
       <ul class="music-nav">
         <router-link to="/recommend">
-          <li v-bind:class="{on:1== current}"><i class="iconfont lyd-yinle"></i>发现音乐</li>
+          <li v-bind:class="{on:1== current}" @click=" current = 1 "><i class="iconfont lyd-yinle"></i>发现音乐</li>
         </router-link>
         <router-link to="/fm">
-        <li><i class="iconfont lyd-diantai"></i>私人FM</li>
+        <li v-bind:class="{on:2== current}" @click=" current = 2 "><i class="iconfont lyd-diantai"></i>私人FM</li>
         </router-link>
         <router-link to="/djfs">
-        <li  v-bind:class="{on:3== current}"><i class="iconfont lyd-shipin"></i>最新MV</li>
+        <li  v-bind:class="{on:3== current}" @click=" current = 3 "><i class="iconfont lyd-shipin"></i>最新MV</li>
         </router-link>
         <li><i class="iconfont lyd-pengyou"></i>朋友</li>
       </ul>
@@ -62,8 +62,8 @@
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
-    <div class="box-music-card" v-if=" musicPlay != null && isFM ">
-      <div class="best-fit">
+    <div class="box-music-card" v-if=" musicPlay != null && musicType == 'mp3' " >
+      <div class="best-fit" >
         <router-link to="/play">
           <div class="best-fit-content">
             <div class="best-fit-img fl"><img
@@ -80,7 +80,28 @@
         </router-link>
       </div>
     </div>
-  </div>
+
+    <div class="box-music-card" v-if=" musicPlay != null && musicType == 'fm'  && isFM" >
+      <div class="best-fit" @click="current = 2">
+        <router-link to="/fm">
+          <div class="best-fit-content">
+            <div class="best-fit-img fl"><img
+              :src="musicPlay.pic+'?param=52y52'" alt=""></div>
+            <div class="best-fit-zi fl">
+              <p>{{ musicPlay.name | hanziLimit(7)}}</p>
+              <span>{{ musicPlay.singer | hanziLimit(7) }}</span>
+            </div>
+            <div class="best-fit-ico fr">
+              <p><i class="iconfont lyd-xihuan1"></i></p>
+              <span><i class="iconfont lyd-yinle1"></i> </span>
+            </div>
+          </div>
+        </router-link>
+      </div>
+    </div>
+    </div>
+
+
 </template>
 
 <script>
@@ -143,6 +164,7 @@
       ...mapState([
         'loginStatus',
         'isFM',
+        'musicType'
       ]),
       getMusicPlay() {
         return this.$store.state.musicPlay;
@@ -153,24 +175,23 @@
         case 'recommend':
           this.current = 1;
           break;
-        case 2:
+        case 'fm':
+          this.current = 2;
           break;
         case 'djfs':
           this.current = 3;
           break;
         default:
           this.current = 0;
-
       }
-      console.log(this.isFM )
-      this.changeIsFM();
-      console.log(this.isFM )
+
       this.musicPlay = JSON.parse(localStorage.getItem("musicplay"));
       this.status = sessionStorage.getItem('userStatus');
       if (this.status == '200') {
         this.getUserCount();
       }
     },
+
     watch: {
       loginStatus(status) {
         this.status = status;

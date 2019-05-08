@@ -161,6 +161,7 @@
             lrc: '/lyric?id=' + item.id,
             url: 'https://music.163.com/song/media/outer/url?id=' + item.id + '.mp3',
             pic: item.al.picUrl,
+            type:'mp3'
           }
         });
         this.tracks = tracks;

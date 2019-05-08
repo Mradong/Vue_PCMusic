@@ -149,6 +149,7 @@
           pic: item.album.picUrl,
           lrc: '/lyric?id=' + item.id,
           url: 'https://music.163.com/song/media/outer/url?id=' + item.id + '.mp3',
+          type:'mp3'
         };
         localStorage.setItem("musicplay", JSON.stringify(musicplay));
         this.changemusicPlay();

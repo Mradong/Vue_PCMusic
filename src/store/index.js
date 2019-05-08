@@ -23,6 +23,7 @@ export default new Vuex.Store({
     FMIndex:0,
     FMsLength:0,
     isFM:false,
+    musicType:'mp3',
   },
   // 外部调用方式：store.getters.xxxx()。就和vue的computed差不多；
   // 接受state作为参数，每次 count发生变化时 ， 都会被调用
@@ -41,8 +42,9 @@ export default new Vuex.Store({
   // 提交状态修改。也就是set、get中的set，这是vuex中唯一修改state的方式，但不支持异步操作。
   // 第一个参数默认是state。外部调用方式：store.commit('addNumCount', 18)。和vue中的methods类似。
   mutations: {
-    changemusicPlay: (state, n) => {
+    changemusicPlay: (state) => {
       state.musicPlay = localStorage.getItem("musicplay");
+      JSON.parse(localStorage.getItem("musicplay")).type == 'mp3' ? state.musicType = 'mp3' : state.musicType = 'fm';
     },
     changeMusicList: (state, n) => {
       state.musicList = JSON.parse(localStorage.getItem('musicPlayList'));
@@ -84,16 +86,15 @@ export default new Vuex.Store({
       state.mainScrollTop = n;
     },
     changeFMIndex: (state, n) => {
-      console.log("store"+ n )
-      state.FMIndex < n ?state.FMIndex ++:state.FMIndex = 0;
-      console.log("storeFM"+ state.FMIndex  )
+      state.FMIndex < n ?state.FMIndex ++: state.FMIndex = 0;
+      console.log( state.FMIndex)
     },
     changeFMsLength: (state, n) => {
       state.FMsLength = n;
     },
-    changeIsFM: (state) => {
-      console.log( JSON.parse(localStorage.getItem("musicplay")).type  )
-      JSON.parse(localStorage.getItem("musicplay")).type == 'fm' ? state.isFM = true : state.isFM = false;
+    changeIsFM: (state,n) => {
+      state.isFM = n;
+
     },
   },
   // 和mutations类似。不过actions支持异步操作。第一个参数默认是和store具有相同参数属性的对象。外部调用方式：store.dispatch('addCount')。

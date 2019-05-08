@@ -188,6 +188,7 @@
             pic: bannerMusicData.songs[0].al.picUrl,
             lrc: '/lyric?id=' + bannerMusicData.songs[0].id,
             url: 'https://music.163.com/song/media/outer/url?id=' + bannerMusicData.songs[0].id + '.mp3',
+            type:'mp3'
           };
           localStorage.setItem("musicplay", JSON.stringify(musicInfo));
           this.changemusicPlay();
@@ -205,6 +206,7 @@
           pic: this.newSongList[index].song.album.picUrl,
           lrc: '/lyric?id=' + this.newSongList[index].song.id,
           url: 'https://music.163.com/song/media/outer/url?id=' + this.newSongList[index].song.id + '.mp3',
+          type:'mp3'
         };
         localStorage.setItem("musicplay", JSON.stringify(musicInfo));
         this.changemusicPlay();

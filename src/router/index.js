@@ -52,7 +52,7 @@ export default new VueRouter({
           name: 'fm',
           component: loadView('MUsicPersonalFM'),
           meta: {
-            keepAlive: false,
+            keepAlive: true,
             isBack: false
           }
         },

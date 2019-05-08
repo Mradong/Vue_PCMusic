@@ -3,6 +3,8 @@
     <div class="fm-details">
       <div class="fm-cover">
         <img :src="FM.pic+'?param=300y300'" alt="">
+        <i class="lyd-bofang2 iconfont" @click="FMPlay" v-if="!isFMPlay"></i>
+        <i class="lyd-zanting2 iconfont" @click="FMStop" v-if="isFMPlay"></i>
         <div class="fm-operate">
           <i class="lyd-qunfengcainixihuanxian iconfont"></i>
           <i class="lyd-tubiaolunkuo- iconfont"></i>
@@ -13,8 +15,8 @@
       <div class="fm-detail">
         <h1>{{ FM.name}}</h1>
         <div>
-          专辑：<span >{{FM.album}}</span>
-          歌手：<span >{{FM.singer}}</span>
+          专辑：<span>{{FM.album}}</span>
+          歌手：<span>{{FM.singer}}</span>
         </div>
         <div class="lyrics" ref="lyrics">
           <ul class="lyrics-box" ref="lyricsBox" id="lyrics">
@@ -24,8 +26,8 @@
       </div>
     </div>
     <div style="clear:both;"></div>
-    <div class="music-play-bottom" >
-      <div class="song-reviews" >
+    <div class="music-play-bottom">
+      <div class="song-reviews">
         <div class="user-ratings">
           <div class="music-user">听友评论</div>
           <el-input
@@ -41,7 +43,7 @@
               <img :src="item.user.avatarUrl+'?param=40y40'" alt="">
             </div>
             <div class="fl brilliant-content">
-              <span >{{ item.user.nickname}}</span>
+              <span>{{ item.user.nickname}}</span>
               <span>:</span> {{item.content }}
               <div><span>{{ item.time | convertDate }}</span></div>
             </div>
@@ -61,13 +63,14 @@
     data() {
       return {
         FM: [],
-        FMs:[],
+        FMs: [],
         FMLyricTime: '',
         FMLyricList: '',
-        hotComments:[],
-        currentLrc:null,
-        endTime:null,
-        isOver:true,
+        hotComments: [],
+        currentLrc: null,
+        endTime: null,
+        isOver: true,
+        isFMPlay:false,
       };
     },
     computed: {
@@ -75,27 +78,51 @@
         'musicTime',
         'musicPlay',
         'FMIndex',
-        'FMsLength'
+        'FMsLength',
+        'isPlay'
       ]),
-
     },
     methods: {
       ...mapMutations({
         changeIsMenus: 'changeIsMenus',
         changemusicPlay: 'changemusicPlay',
-        changeFMIndex:'changeFMIndex',
-        changeFMsLength:'changeFMsLength',
+        changeFMIndex: 'changeFMIndex',
+        changeFMsLength: 'changeFMsLength',
+        changeMusicList: 'changeMusicList',
+        changeIsFM: 'changeIsFM',
+        changeIsplay:'changeIsplay',
       }),
-
-      cutFM(){
-        this.changeFMIndex( this.FMsLength -1);
+      FMPlay() {
+        let musicInfo = JSON.parse(localStorage.getItem("musicplay"));
+        if ( musicInfo.type =='mp3') {
+          localStorage.removeItem("musicPlayList");
+          localStorage.setItem("musicPlayList", JSON.stringify(this.FMs));
+          this.changeMusicList();
+        }
+        this.changeIsplay(true);
+        localStorage.removeItem("musicplay");
+        localStorage.setItem("musicplay", JSON.stringify(this.FM));
+        this.changemusicPlay();
+        this.isFMPlay = true;
+        if( this.$route.name == 'fm'){
+          this.changeIsFM(false);
+        }
+      },
+      FMStop(){
+        this.changeIsplay(false);
+        this.isFMPlay = false;
+      },
+      cutFM() {
+        if (this.FMIndex == (this.FMsLength - 1)) {
+          this.changeFMsLength(-1)
+        }
+        this.changeFMIndex(this.FMsLength - 1);
         this.isOver = false;
         this.changeIsMenus(false);
         this.$nextTick(function () {
           this.isOver = false;
           this.changeIsMenus(true);
         })
-
       },
       async getComments(url) {
         try {
@@ -121,22 +148,19 @@
             type: 'fm'
           }
         });
-        localStorage.removeItem("musicPlayList");
-        localStorage.setItem("musicPlayList", JSON.stringify(this.FMs));
-        this.changeFMsLength( this.FMs.length)//储存数组长度
+        this.changeFMsLength(this.FMs.length)//储存数组长度
         this.initFM();
       },
-      initFM(){
+
+      initFM() {
         this.FM = this.FMs[this.FMIndex];//初始化当前页面信息
+        console.log(this.FM)
         let times = this.FM.time.toString().split('：');
         this.endTime = parseFloat(times[0]) * 60 + parseFloat(times[1]);
         let commentsUrl = '/comment/music?id= ' + this.FM.id + '&limit=1';
         this.getFMLrc(this.FM.lrc)
-        this.getComments(commentsUrl )
+        this.getComments(commentsUrl)
 
-        localStorage.removeItem("musicplay");
-        localStorage.setItem("musicplay", JSON.stringify(this.FM));
-        this.changemusicPlay();//更改当前播放音乐
       },
       async getFMLrc(url) {
         let FMLrcData = await this.$http.get(url);
@@ -171,35 +195,66 @@
         }
         return lrcObj;
       },
+      async refresh() {
+        console.log('我是fm==')
+        let time = new Date();
+        let personalFMUrl = '/personal_fm?timestamp=' + this.$moment(time).valueOf();
+        await this.getPersonalFM(personalFMUrl);
+        await this.FMPlay();
+      },
     },
     created() {
-      if( this.FMIndex == 0 ){
-        let time = new Date();
-        let personalFMUrl = '/personal_fm?timestamp='+ this.$moment(time).valueOf();
-        this.getPersonalFM(personalFMUrl);
-        console.log( '我重新请求了')
-      }
-      else {
-        this.FMs = JSON.parse(localStorage.getItem('musicPlayList'));
-        this.initFM();
-        console.log( '我还没有重新请求')
+      let musicInfo = JSON.parse(localStorage.getItem("musicplay"));
+      if (musicInfo != null) {
+        if (musicInfo.type == 'mp3') {
+          console.log('我是mp3')
+          let time = new Date();
+          let personalFMUrl = '/personal_fm?timestamp=' + this.$moment(time).valueOf();
+          this.getPersonalFM(personalFMUrl);
+          this.isFMPlay = false;
+        } else {
+          this.changeIsFM(false);
+          if (this.FMsLength == -1) {
+            this.refresh();
+          } else {
+            console.log('我是fm!=')
+            this.FMs = JSON.parse(localStorage.getItem("musicPlayList"));
+            this.initFM();
+            this.FMPlay();
+            this.isFMPlay = true;
+          }
+        }
+      } else {
+        this.refresh();
       }
     },
-    destroyed(){
-      localStorage.removeItem("musicplay");
+    destroyed() {
+      this.changeIsFM(true);
     },
     watch: {
       musicTime(val) {
-        for (let i = 0; i < this.FMLyricList.length; i++) {
-          if (val == this.FMLyricTime[i]) {
-            this.$Velocity(this.$refs.lyricsBox, 'scroll', {
-              container: this.$refs.lyrics,
-              delay: 300,
-              offset: (i - 2 >= 0 ? i - 2 : 0) * 28 - 221,
-              easing: 'ease-out'
-            }, 1000);
-            this.currentLrc = i
+        let musicInfo = JSON.parse(localStorage.getItem("musicplay"));
+        if (musicInfo.type == 'fm') {
+          for (let i = 0; i < this.FMLyricList.length; i++) {
+            if (val == this.FMLyricTime[i]) {
+              this.$Velocity(this.$refs.lyricsBox, 'scroll', {
+                container: this.$refs.lyrics,
+                delay: 300,
+                offset: (i - 2 >= 0 ? i - 2 : 0) * 28 - 221,
+                easing: 'ease-out'
+              }, 1000);
+              this.currentLrc = i
+            }
           }
+          if (val == this.endTime) {
+            this.cutFM();
+          }
+        }
+      },
+      isPlay( PlayStatus){
+        let musicInfo = JSON.parse(localStorage.getItem("musicplay"));
+        if( musicInfo.type == 'fm' ){
+          this.isFMPlay =   PlayStatus;
         }
       }
     }
@@ -222,7 +277,8 @@
     height: 300px;
     width: 300px;
     position: relative;
-    i.lyd-bofang2{
+
+    i.lyd-bofang2 {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -232,7 +288,15 @@
       cursor: pointer;
       color: #fff;
     }
-    i.lyd-bofang2:hover{
+    i.lyd-zanting2{
+      position: absolute;
+      right: 0;
+      bottom: -10px;
+      font-size: 38px;
+      cursor: pointer;
+      color: #fff;
+    }
+    i.lyd-bofang2:hover,i.lyd-zanting2:hover {
       color: rgba(226, 46, 27, 0.68);
     }
     img {
@@ -250,7 +314,8 @@
         text-align: center;
         cursor: pointer;
       }
-      span{
+
+      span {
 
       }
     }
@@ -258,20 +323,25 @@
 
   .fm-detail {
     width: 350px;
-    h1{
+
+    h1 {
       font-size: 20px;
       font-weight: bold;
     }
-    div{
+
+    div {
       margin-top: 5px;
     }
-    span{
+
+    span {
       color: #0086b3;
     }
-    span:nth-child(1){
+
+    span:nth-child(1) {
       padding-right: 30px;
     }
   }
+
   .lyrics {
     width: 348px;
     height: 330px;
@@ -301,16 +371,20 @@
     background: transparent;
     border-right: 1px solid rgb(186, 179, 176);
   }
-  .music-play-bottom{
-    margin:60px 20px;
+
+  .music-play-bottom {
+    margin: 60px 20px;
     width: 100%;
-    .song-reviews{
+
+    .song-reviews {
       min-height: 500px;
       width: 100%;
     }
   }
-  .user-ratings{
+
+  .user-ratings {
     margin-bottom: 40px;
+
     .music-user {
       padding-bottom: 5px;
       margin-bottom: 15px;
@@ -320,21 +394,24 @@
     }
   }
 
-  .brilliant{
+  .brilliant {
     h4 {
       display: block;
       margin-bottom: 10px;
       border-bottom: 1px solid #d2d8e6;
     }
-    >li {
+
+    > li {
       border-bottom: 1px solid #d2d8e6;
       margin-bottom: 10px;
       padding-bottom: 10px;
       width: 100%;
     }
+
     .brilliant-img {
       width: 40px;
       margin-right: 10px;
+
       img {
         width: 40px;
         height: 40px;
@@ -344,15 +421,20 @@
     }
 
   }
+
   .brilliant-content {
     width: 90%;
-    span:nth-child(1){
+
+    span:nth-child(1) {
       color: #0086b3;
     }
-    div{
+
+    div {
       padding-top: 8px;
-      span{
-        font-size: 12px;color: #909399
+
+      span {
+        font-size: 12px;
+        color: #909399
       }
     }
   }

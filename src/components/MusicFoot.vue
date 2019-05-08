@@ -1,16 +1,21 @@
 <template>
   <div>
     <el-row class="play-detail">
-      <el-col :span="4">
-        <div class="grid-content bg-purple">
+      <el-col :span="4" >
+        <div class="grid-content bg-purple " v-if="musicType =='mp3'">
           <i class="iconfont lyd-shangyixiang" @click="cutUpMusic"></i>
           <i class="iconfont lyd-bofang" v-if="!isPlay" @click=" musicPlay"></i>
           <i class="iconfont lyd-zanting1" v-if="isPlay" @click=" musicStop"></i>
           <i class="lyd-xiayixiang iconfont" @click="cutDownMusic"></i>
         </div>
+        <div class="grid-content bg-purple fm-status-bar" v-if="musicType == 'fm'">
+          <i class="iconfont lyd-bofang" v-if="!isPlay" @click=" musicPlay"></i>
+          <i class="iconfont lyd-zanting1" v-if="isPlay" @click=" musicStop"></i>
+          <i class="lyd-xiayixiang iconfont" @click="cutDownFM"></i>
+        </div>
       </el-col>
       <el-col :span="1"> {{ timeNow | musicDate}}</el-col>
-      <el-col :span="11">
+      <el-col :span="11" v-if="musicType =='mp3'">
         <div class="block">
           <el-slider
             @change="newNum"
@@ -22,6 +27,19 @@
           Your browser does not support the audio tag.
         </audio>
       </el-col>
+      <el-col :span="12" v-if="musicType == 'fm'">
+        <div class="block">
+          <el-slider
+            @change="newNum"
+            :show-tooltip="false"
+            v-model="musicValue "></el-slider>
+        </div>
+        <audio style="display: none" :src="musicUrl"
+               ref='songPlayer' controls="controls">
+          Your browser does not support the audio tag.
+        </audio>
+      </el-col>
+
       <el-col :span="1"> {{ timeDuration | musicDate}}</el-col>
       <el-col :span="1">
         <i class="iconfont lyd-yinliang" v-if="musicVolume != 0" @click="musicVolume = 0"></i>
@@ -34,13 +52,18 @@
           </div>
         </div>
       </el-col>
-      <div class="fr last-iconbox">
+
+        <div class="fr fm-last-iconbox" v-if="musicType =='fm'" >
+          <i class="lyd-gecitiaozheng iconfont"></i>
+        </div>
+
+      <div class="fr last-iconbox" v-if="musicType =='mp3'">
         <i class="lyd-liebiaoxunhuan iconfont" v-if="playOrder == 0" @click="changesPlayOrder"></i>
         <i class="lyd-danquxunhuan iconfont" v-if="playOrder == 1" @click="changesPlayOrder"></i>
         <i class="lyd-suiji iconfont" v-if="playOrder == 2" @click="changesPlayOrder"></i>
         <i class="lyd-shunxubofang iconfont" v-if="playOrder == 3" @click="changesPlayOrder"></i>
         <i class="lyd-gecitiaozheng iconfont"></i>
-        <div class="fr music-plist">
+        <div class="fr music-plist" v-if="musicType =='mp3'">
           <el-popover
             placement="top"
             width="570"
@@ -147,10 +170,13 @@
     computed: {
       ...mapState([
         'isPlay',
-        'musicList'
+        'musicList',
+        'musicType',
+        'FMIndex',
+        'FMsLength'
       ]),
       ...mapGetters([
-        'watchMusicPlay'
+        'watchMusicPlay',
       ]),
     },
     created: function () {
@@ -215,8 +241,17 @@
         musicIfo.volume = val;
         localStorage.setItem("musicplay", JSON.stringify(musicIfo));
       },
+      cutDownFM(){
+        if (this.FMIndex == (this.FMsLength - 1)) {
+          this.changeFMsLength(-1)
+        }
+        this.changeFMIndex(this.FMsLength - 1);
+        this.changeIsMenus(false);
+        this.$nextTick(function () {
+          this.changeIsMenus(true);
+        })
+      },
       cutMusic(index) {
-
         localStorage.setItem("musicplay", JSON.stringify(this.musicPlayList[index]));
         this.changemusicPlay();
       },
@@ -357,6 +392,9 @@
         changeIsplay: 'changeIsplay',
         changeMusicTime: 'changeMusicTime',
         changemusicPlay: 'changemusicPlay',
+        changeIsMenus:'changeIsMenus',
+        changeFMsLength:'changeFMsLength',
+        changeFMIndex:'changeFMIndex',
 
       }),
       ...mapActions([
@@ -405,7 +443,16 @@
       },
       musicList(val) {
         this.musicPlayList = val;
+      },
+      isPlay( playStatus ){
+        if ( playStatus == false) {
+          this.musicStop();
+        }
+        else {
+          this.musicPlay();
+        }
       }
+
     },
     mounted() {
       this.addEventListeners()
@@ -483,7 +530,16 @@
   }
 </style>
 
-<style scoped>
+<style scoped lang="less">
+
+  .play-detail{
+    .grid-content {
+      margin-left: 15px;
+    }
+    .fm-status-bar{
+      padding-left: 20px;
+    }
+  }
 
   .play-detail div:nth-child(2) {
     margin-top: 8px;
@@ -495,9 +551,8 @@
     padding-left: 15px;
   }
 
-  .grid-content {
-    margin-left: 15px;
-  }
+
+
 
   .lyd-bofang, .lyd-zanting1, .lyd-shangyixiang, .lyd-xiayixiang {
     font-size: 28px;
@@ -518,8 +573,11 @@
     width: 98px;
     margin: 5px 10px;
   }
-
-  .last-iconbox i {
+  .fm-last-iconbox{
+    width: 56px;
+    margin: 5px auto;
+  }
+  .last-iconbox i ,.fm-last-iconbox i{
     padding: 0 2px;
     font-size: 18px;
   }
@@ -578,4 +636,5 @@
     margin-left: 10px;
     color: #ee3c07f2;
   }
+
 </style>
