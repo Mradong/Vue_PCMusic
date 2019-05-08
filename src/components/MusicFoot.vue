@@ -437,6 +437,15 @@
           this.musicIndex = this.musicPlayList.findIndex(fruit => fruit.id === musicifo.id);
         }
         localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+
+        console.log( JSON.parse(localStorage.getItem('musicPlayList')) )
+        if( musicifo.type == 'mp3'){
+          console.log( 'mp3')
+        }
+        else {
+          console.log( 'fm')
+        }
+
       },
       musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
