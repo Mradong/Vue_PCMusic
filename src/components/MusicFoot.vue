@@ -165,6 +165,8 @@
         playOrder: 0,//0列表循环、1单曲循环、2随机播放、3、顺序播放
         musicPlayList: [],
         musicIndex: null,
+        FMList:[],
+        MP3List:[],
       }
     },
     computed: {
@@ -173,7 +175,8 @@
         'musicList',
         'musicType',
         'FMIndex',
-        'FMsLength'
+        'FMsLength',
+        'tabMusicType',
       ]),
       ...mapGetters([
         'watchMusicPlay',
@@ -395,7 +398,9 @@
         changeIsMenus:'changeIsMenus',
         changeFMsLength:'changeFMsLength',
         changeFMIndex:'changeFMIndex',
-
+        changeMusicList:'changeMusicList',
+        changeMusicType:'changeMusicType',
+        changeTabMusicType:'changeTabMusicType'
       }),
       ...mapActions([
         // addCount
@@ -414,8 +419,9 @@
 
       },
       //监听vuex中的音乐信息数据
-      watchMusicPlay(musicIfo) {
-        let musicifo = JSON.parse(musicIfo);
+      watchMusicPlay(musicInfo,oldmusicInfo) {
+        let musicifo = JSON.parse(musicInfo);
+        let oldMusicInfo = JSON.parse(oldmusicInfo);
         this.$refs.songPlayer.src = musicifo.url;
         this.musicPlay();
         if (JSON.parse(localStorage.getItem("musicPlayList")) == null) {
@@ -433,25 +439,43 @@
           if (status == true) {
             this.musicPlayList.push(musicifo);
             localStorage.setItem("musicPlayList", JSON.stringify(this.musicPlayList));
+            this.changeMusicList();
           }
+          console.log( this.musicPlayList)
           this.musicIndex = this.musicPlayList.findIndex(fruit => fruit.id === musicifo.id);
         }
         localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
-
-        console.log( JSON.parse(localStorage.getItem('musicPlayList')) )
-        if( musicifo.type == 'mp3'){
-          console.log( 'mp3')
+        console.log(this.musicIndex   )
+        if( musicifo.type == 'mp3' && oldMusicInfo.type == 'fm'){
+          this.changeTabMusicType('mp3')
+          console.log( this.tabMusicType)
+            // fm => mp3
+        }else if ( musicifo.type == 'fm' && oldMusicInfo.type == 'mp3' ){
+          this.changeTabMusicType('fm')
+          console.log( this.tabMusicType)
+          // mp3 => fm
         }
-        else {
-          console.log( 'fm')
-        }
-
       },
       musicVolume(val) {
         this.$refs.songPlayer.volume = val / 100;
       },
-      musicList(val) {
-        this.musicPlayList = val;
+      musicList( newMusicList,oldmusicList) {
+        if( this.tabMusicType == 'fm'){
+          this.MP3List = oldmusicList;
+          this.musicPlayList = newMusicList;
+          this.changeTabMusicType('null')
+        }
+        else if ( this.tabMusicType == 'mp3' ){
+          this.MP3List[this.MP3List.length] = newMusicList[newMusicList.length-1];
+          this.musicPlayList = this.MP3List;
+          localStorage.setItem("musicPlayList", JSON.stringify(this.musicPlayList));
+          this.changeMusicList();
+          this.changeTabMusicType('null')
+          let musicifo = JSON.parse(localStorage.getItem('musicplay'));
+          this.musicIndex = this.musicPlayList.findIndex(fruit => fruit.id === musicifo.id);
+          localStorage.setItem("musicIndex", JSON.stringify(this.musicIndex));
+        }
+
       },
       isPlay( playStatus ){
         if ( playStatus == false) {

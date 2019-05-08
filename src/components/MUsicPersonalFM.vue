@@ -154,7 +154,6 @@
 
       initFM() {
         this.FM = this.FMs[this.FMIndex];//初始化当前页面信息
-        console.log(this.FM)
         let times = this.FM.time.toString().split('：');
         this.endTime = parseFloat(times[0]) * 60 + parseFloat(times[1]);
         let commentsUrl = '/comment/music?id= ' + this.FM.id + '&limit=1';
@@ -200,14 +199,48 @@
         let time = new Date();
         let personalFMUrl = '/personal_fm?timestamp=' + this.$moment(time).valueOf();
         await this.getPersonalFM(personalFMUrl);
+        localStorage.removeItem("musicPlayList");
+        localStorage.setItem("musicPlayList", JSON.stringify(this.FMs));
+        this.changeMusicList();
         await this.FMPlay();
       },
+      async firstInitFM(){
+        let time = new Date();
+        let personalFMUrl = '/personal_fm?timestamp=' + this.$moment(time).valueOf();
+        let personalFMData = await this.$http.get(personalFMUrl);
+        let FMDetails = personalFMData.data;
+        this.FMs = FMDetails.map((item, index) => {
+          return {
+            id: item.id,
+            name: item.name,
+            time: this.$moment(item.duration).format('mm：ss'),
+            singer: item.artists[0].name,
+            album: item.album.name,
+            pic: item.album.blurPicUrl,
+            lrc: '/lyric?id=' + item.id,
+            url: 'https://music.163.com/song/media/outer/url?id=' + item.id + '.mp3',
+            type: 'fm'
+          }
+        });
+        this.changeFMsLength(this.FMs.length)//储存数组长度
+        localStorage.removeItem("musicPlayList");
+        localStorage.setItem("musicPlayList", JSON.stringify(this.FMs));
+        this.changeMusicList();
+        this.initFM();
+        this.changeIsplay(true);
+        localStorage.removeItem("musicplay");
+        localStorage.setItem("musicplay", JSON.stringify(this.FM));
+        this.changemusicPlay();
+        this.isFMPlay = true;
+        if( this.$route.name == 'fm'){
+          this.changeIsFM(false);
+        }
+      }
     },
     created() {
       let musicInfo = JSON.parse(localStorage.getItem("musicplay"));
       if (musicInfo != null) {
         if (musicInfo.type == 'mp3') {
-          console.log('我是mp3')
           let time = new Date();
           let personalFMUrl = '/personal_fm?timestamp=' + this.$moment(time).valueOf();
           this.getPersonalFM(personalFMUrl);
@@ -217,7 +250,6 @@
           if (this.FMsLength == -1) {
             this.refresh();
           } else {
-            console.log('我是fm!=')
             this.FMs = JSON.parse(localStorage.getItem("musicPlayList"));
             this.initFM();
             this.FMPlay();
@@ -225,7 +257,8 @@
           }
         }
       } else {
-        this.refresh();
+        this.firstInitFM();
+
       }
     },
     destroyed() {
